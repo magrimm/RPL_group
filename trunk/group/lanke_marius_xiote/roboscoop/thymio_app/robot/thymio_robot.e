@@ -15,7 +15,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (goal_x, goal_y: REAL_64)
 			-- Create a robot.
 		do
 			-- Initialize sensors.
@@ -32,6 +32,7 @@ feature {NONE} -- Initialization
 
 			-- Initialize behaviors.
 			create wander_behavior.make_with_attributes (odometry_signaler, range_sensors, ground_sensors, diff_drive, sound_player)
+			create moving_to_goal_behavior.make_with_attributes (odometry_signaler, diff_drive, top_leds, goal_x, goal_y)
 		end
 
 feature -- Constants
@@ -56,6 +57,18 @@ feature -- Access
 		do
 			stop_behavior (wander_behavior)
 			light_down_leds (top_leds, buttons_leds, circle_leds)
+		end
+
+	start_moving_to_goal
+			-- Start moving towards a goal position.
+		do
+			start_behavior (moving_to_goal_behavior)
+		end
+
+	stop_moving_to_goal
+			-- Stop moving towards a goal position.
+		do
+			stop_behavior (moving_to_goal_behavior)
 		end
 
 feature {NONE} -- Robot parts
@@ -88,6 +101,9 @@ feature {NONE} -- Behaviors
 
 	wander_behavior: separate WANDER_BEHAVIOUR
 			-- Wandering around, avoiding obstacles.
+
+	moving_to_goal_behavior: separate MOVING_TO_GOAL_BEHAVIOR
+			-- Moving towards a goal position.
 
 	start_behavior (b: separate BEHAVIOUR)
 			-- Launch `b'.
