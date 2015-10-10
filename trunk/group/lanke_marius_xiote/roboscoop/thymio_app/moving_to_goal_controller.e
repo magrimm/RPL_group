@@ -27,13 +27,14 @@ feature {NONE} -- Initialization
 feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 	go (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-		drive: separate DIFFERENTIAL_DRIVE; t_leds: separate THYMIO_TOP_LEDS)
+		drive: separate DIFFERENTIAL_DRIVE; t_leds: separate THYMIO_TOP_LEDS; r_sens: separate THYMIO_RANGE_GROUP)
 			-- Move robot if goal not reached yet.
 		require
 			not m_sig.is_goal_reached or s_sig.is_stop_requested
 		local
 			vtheta: REAL_64
 			vx: REAL_64
+			dist: REAL_32
 		do
 			if s_sig.is_stop_requested then
 				drive.stop
@@ -46,6 +47,11 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 				drive.set_velocity (vx, vtheta)
 				io.put_string ("Current state: GO%N")
+				--- DISTANCE OF OBSTACLE TO SENSOR [3] (sensor in the middle)
+				dist := r_sens.sensors[3].range
+				io.put_string ("Dist sensor[3]: ")
+				io.put_double (dist)
+				io.put_string ("%N")
 			end
 		end
 
