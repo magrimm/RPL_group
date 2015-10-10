@@ -14,7 +14,8 @@ create
 feature {NONE} -- Initialization
 
 	make_with_attributes (odom_sig: separate ODOMETRY_SIGNALER; d_drive: separate DIFFERENTIAL_DRIVE;
-						t_leds: separate THYMIO_TOP_LEDS; g_x, g_y: REAL_64)
+						r_sens: separate THYMIO_RANGE_GROUP; t_leds: separate THYMIO_TOP_LEDS;
+						g_x, g_y: REAL_64)
 			-- Create current with given attributes.
 		do
 			create stop_sig.make
@@ -22,6 +23,7 @@ feature {NONE} -- Initialization
 
 			odometry_sig := odom_sig
 			diff_drive := d_drive
+			range_sens := r_sens
 			top_leds := t_leds
 
 			goal_x := g_x
@@ -62,6 +64,9 @@ feature {NONE} -- Implementation
 	diff_drive: separate DIFFERENTIAL_DRIVE
 			-- Object to control robot's speed.
 
+	range_sens: separate THYMIO_RANGE_GROUP
+			-- 5 Range sensors in front of the robot.
+
 	top_leds: separate THYMIO_TOP_LEDS
 			-- RGB LEDs on the top.
 
@@ -72,7 +77,7 @@ feature {NONE} -- Implementation
 			-- Start controllers asynchronously.
 		do
 			a.repeat_until_stop_requested (
-				agent a.go (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, top_leds))
+				agent a.go (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, top_leds, range_sens))
 			b.repeat_until_stop_requested (
 				agent b.stop_when_goal_reached (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, top_leds))
 		end

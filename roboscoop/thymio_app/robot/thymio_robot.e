@@ -32,7 +32,7 @@ feature {NONE} -- Initialization
 
 			-- Initialize behaviors.
 			create wander_behavior.make_with_attributes (odometry_signaler, range_sensors, ground_sensors, diff_drive, sound_player)
-			create moving_to_goal_behavior.make_with_attributes (odometry_signaler, diff_drive, top_leds, goal_x, goal_y)
+			create moving_to_goal_behavior.make_with_attributes (odometry_signaler, diff_drive, range_sensors, top_leds, goal_x, goal_y)
 		end
 
 feature -- Constants
