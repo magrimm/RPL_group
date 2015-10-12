@@ -46,12 +46,13 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				vx := 0.025 - (vtheta.abs / 10)
 
 				m_sig.clear_all_pendings
+				m_sig.set_is_go_pending (True)
 				drive.set_velocity (vx, vtheta)
 				io.put_string ("Current state: GO%N")
 			end
 		end
 
-	obstacle_avoidance (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+	turn_when_obstacle_detected (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 						drive: separate DIFFERENTIAL_DRIVE; t_leds: separate THYMIO_TOP_LEDS; r_sens: separate THYMIO_RANGE_GROUP)
 		require
 			(not m_sig.is_goal_reached and
@@ -86,9 +87,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				io.put_string ("Dist sensor[3]: ")
 				io.put_double (dist)
 				io.put_string ("%N")
-				-- Clear signals and set turn signal TRUE
+
 				m_sig.clear_all_pendings
-			--	m_sig.set_is_turn_pending (TRUE)
+				m_sig.set_is_turn_pending (TRUE)
 				drive.set_velocity (0.0 * vxsign, 0.5 * vthetasign)
 				io.put_string ("Current state: TURN%N")
 			end

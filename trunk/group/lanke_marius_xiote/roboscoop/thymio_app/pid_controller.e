@@ -49,7 +49,7 @@ feature
 				deri_term := (cur_error - prev_error) / (cur_time - prev_time)
 			end
 
-			Result:= k_p * cur_error + k_i * acc_error + k_d * deri_term
+			Result := k_p * cur_error + k_i * acc_error + k_d * deri_term
 		end
 
 	update_error (robot_x, robot_y, robot_theta: REAL_64)
