@@ -10,6 +10,9 @@ feature -- Access
 	is_goal_reached: BOOLEAN
 			-- Is the goal reached?
 
+	is_go_pending: BOOLEAN
+			-- Has the state "go" been handled by the algorithm?
+
 	is_turn_pending: BOOLEAN
 			-- Has the state "turn" been handled by the algorithm?
 
@@ -19,8 +22,14 @@ feature -- Access
 			is_goal_reached := a_val
 		end
 
+	set_is_go_pending (a_val: BOOLEAN)
+			-- Set is_go_pending value equal to a_val.
+		do
+			is_go_pending := a_val
+		end
+
 	set_is_turn_pending (a_val: BOOLEAN)
-			-- Set `is_turn_pending' value equal to `a_val'.
+			-- Set is_turn_pending value equal to a_val.
 		do
 			is_turn_pending := a_val
 		end
@@ -28,7 +37,7 @@ feature -- Access
 	clear_all_pendings
 			-- Set all pending flags to False.
 		do
+			is_go_pending := False
 			is_turn_pending := False
 		end
-
 end

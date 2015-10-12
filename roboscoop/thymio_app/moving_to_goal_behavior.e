@@ -80,7 +80,7 @@ feature {NONE} -- Implementation
 			a.repeat_until_stop_requested (
 				agent a.go (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, top_leds, range_sens))
 			b.repeat_until_stop_requested (
-				agent b.obstacle_avoidance (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, top_leds, range_sens))
+				agent b.turn_when_obstacle_detected (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, top_leds, range_sens))
 			c.repeat_until_stop_requested (
 				agent c.stop_when_goal_reached (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, top_leds))
 		end
