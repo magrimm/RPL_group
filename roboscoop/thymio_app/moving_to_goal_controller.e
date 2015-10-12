@@ -39,7 +39,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			if s_sig.is_stop_requested then
 				drive.stop
 
-			elseif not m_sig.is_goal_reached then
+			else
 				t_leds.set_to_yellow
 
 				vtheta := pid_controller.update_heading(o_sig.x, o_sig.y, o_sig.theta, o_sig.timestamp)
@@ -54,43 +54,25 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 	turn_when_obstacle_detected (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 						drive: separate DIFFERENTIAL_DRIVE; t_leds: separate THYMIO_TOP_LEDS; r_sens: separate THYMIO_RANGE_GROUP)
+				-- Turn and follow the boundary of the obstacle being detected.
 		require
 			(not m_sig.is_goal_reached and
 			r_sens.is_obstacle) or s_sig.is_stop_requested
 		local
-			vxsign, vthetasign: INTEGER
-			dist: REAL_32
+			vtheta: REAL_64
+			vx: REAL_64
 		do
 			if s_sig.is_stop_requested then
 				drive.stop
 			else
-				-- ONLY EXAMPLE: CHANGE WITH WALL_FOLLOWING...
-				if r_sens.is_obstacle_in_front then
-					if r_sens.is_obstacle_mostly_at_left then
-						vxsign := 1
-						vthetasign := -1
-					elseif r_sens.is_obstacle_mostly_at_right then
-						vxsign := 1
-						vthetasign := 1
-					end
-				elseif r_sens.is_obstacle_at_back then
-					if r_sens.is_obstacle_mostly_at_left then
-						vxsign := -1
-						vthetasign := -1
-					elseif r_sens.is_obstacle_mostly_at_right then
-						vxsign := -1
-						vthetasign := 1
-					end
-				end
-				--- EXAMPLE: DISTANCE OF OBSTACLE TO SENSOR [3] (sensor in the middle)
-				dist := r_sens.sensors[3].range
-				io.put_string ("Dist sensor[3]: ")
-				io.put_double (dist)
-				io.put_string ("%N")
+				t_leds.set_to_red
+
+				vtheta := r_sens.follow_wall_orientation (5.0)
+				vx := 0.02
 
 				m_sig.clear_all_pendings
 				m_sig.set_is_turn_pending (TRUE)
-				drive.set_velocity (0.0 * vxsign, 0.5 * vthetasign)
+				drive.set_velocity (vx, vtheta)
 				io.put_string ("Current state: TURN%N")
 			end
 		end

@@ -169,9 +169,30 @@ feature -- Access.
 
 	follow_wall_orientation (a_desired_distance_from_wall: REAL_64): REAL_64
 			-- <Precursor>
+		local
+		    i: INTEGER
+		    default_point: POINT_MSG
+		    points: ARRAY[POINT_MSG]
+		    rsc: RELATIVE_SPACE_CALCULATIONS
 		do
-			-- TODO.
-			Result := 0.0
+			-- TODO: 1. check there are at least two points (if one point should not change heading)
+			-- TODO: 2. use a_desired_distance_from_wall
+			create rsc.make
+			create default_point.make_empty
+			create points.make_filled (default_point, 1, 7)
+
+			from
+				i := sensors.lower
+			until
+				i > sensors.upper
+			loop
+				if sensors[i].is_valid_range then
+					points.put(rsc.get_relative_coordinates_with_sensor (sensors[i].range, i), i)
+				end
+				i := i + 1
+			end
+
+			Result := rsc.get_relative_angle (points)
 		end
 
 end
