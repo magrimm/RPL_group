@@ -174,8 +174,10 @@ feature -- Access.
 		    default_point: POINT_MSG
 		    points: ARRAY[POINT_MSG]
 		    rsc: RELATIVE_SPACE_CALCULATIONS
+		   	number_detecting_sensors: INTEGER_16
+
 		do
-			-- TODO: 1. check there are at least two points (if one point should not change heading)
+			-- DONE -- TODO: 1. check there are at least two points (if one point should not change heading)
 			-- TODO: 2. use a_desired_distance_from_wall
 			create rsc.make
 			create default_point.make_empty
@@ -188,11 +190,15 @@ feature -- Access.
 			loop
 				if sensors[i].is_valid_range then
 					points.put(rsc.get_relative_coordinates_with_sensor (sensors[i].range, i), i)
+					number_detecting_sensors := number_detecting_sensors + 1
 				end
 				i := i + 1
 			end
-
-			Result := rsc.get_relative_angle (points)
+			if number_detecting_sensors >= 2 then
+				Result := rsc.get_relative_angle (points)
+			else
+				Result := 0
+			end
 		end
 
 end

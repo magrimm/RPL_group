@@ -15,6 +15,7 @@ feature
 	make
 		do
 			initialize_constants
+			create tm
 		end
 
 	initialize_constants
@@ -23,7 +24,7 @@ feature
 			create sensor_distances.make(1, 7)
 			across 1 |..| 5 as i
 			loop
-				sensor_distances.put (8.25, i.item)
+				sensor_distances.put (8.0, i.item)
 			end
 			across 6 |..| 7 as i
 			loop
@@ -39,6 +40,10 @@ feature
 			sensor_angles.put(0.0, 6)  -- PLACEHOLDER
 			sensor_angles.put(0.0, 7)  --PLACEHOLDER
 		end
+
+feature
+
+	tm: TRIGONOMETRY_MATH
 
 feature -- Constants
 
@@ -61,7 +66,7 @@ feature  -- Access
 			relative_coord: POINT_MSG
 		do
 			-- PLACEHOLDER
-			create relative_coord.make_with_values(0, 0, 0)
+			create relative_coord.make_with_values(distance * tm.cosine(angle), distance * tm.sine (angle), 0)
 			Result := relative_coord
 		end
 
@@ -71,4 +76,11 @@ feature  -- Access
 			-- PLACEHOLDER
 			Result := 0
 		end
-end
+
+	get_slope_of_wall(odom_sig: separate ODOMETRY_SIGNALER; r_sens: separate THYMIO_RANGE_GROUP)
+		local
+		do
+			-- TODO: calculate slope of wall
+		end
+
+end -- class RELATIVE_SPACE_CALCULATIONS
