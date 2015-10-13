@@ -77,7 +77,7 @@ feature  -- Access
 			Result := 0
 		end
 
-	get_slope_of_wall(odom_sig: separate ODOMETRY_SIGNALER; r_sens: separate THYMIO_RANGE_GROUP)
+	get_slope_of_wall(points: ARRAY[POINT_MSG]): REAL_64
 		local
 		do
 			-- TODO: calculate slope of wall
