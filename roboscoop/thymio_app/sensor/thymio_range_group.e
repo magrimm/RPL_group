@@ -167,18 +167,18 @@ feature -- Access.
 			Result := create {VECTOR_3D_MSG}.make_empty
 		end
 
-	follow_wall_orientation (a_desired_distance_from_wall: REAL_64): REAL_64
-			-- <Precursor>
+	follow_wall_orientation (desired_distance: REAL_64): REAL_64
+			-- Calculate the heading for wall following to maintain a desired_distance from the wall.
 		local
 		    i: INTEGER
 		    default_point: POINT_MSG
 		    points: ARRAY[POINT_MSG]
 		    rsc: RELATIVE_SPACE_CALCULATIONS
-		   	number_detecting_sensors: INTEGER_16
-
+		   	number_detecting_sensors: INTEGER
+		   	closest_sensor_range, second_closest_sensor_range: REAL_64
+		   	closest_sensor_index, second_closest_sensor_index: INTEGER
+		   	current_distance: REAL_64
 		do
-			-- DONE -- TODO: 1. check there are at least two points (if one point should not change heading)
-			-- TODO: 2. use a_desired_distance_from_wall
 			create rsc.make
 			create default_point.make_empty
 			create points.make_filled (default_point, 1, 7)
@@ -191,11 +191,24 @@ feature -- Access.
 				if sensors[i].is_valid_range then
 					points.put(rsc.get_relative_coordinates_with_sensor (sensors[i].range, i), i)
 					number_detecting_sensors := number_detecting_sensors + 1
+
+					if closest_sensor_index = 0 or sensors[i].range < closest_sensor_range then
+						second_closest_sensor_range := closest_sensor_range
+						second_closest_sensor_index := closest_sensor_index
+						closest_sensor_range := sensors[i].range
+						closest_sensor_index := i
+					elseif second_closest_sensor_index = 0 or sensors[i].range < second_closest_sensor_range then
+						second_closest_sensor_range := sensors[i].range
+						second_closest_sensor_index := i
+					end
 				end
 				i := i + 1
 			end
+
 			if number_detecting_sensors >= 2 then
-				Result := rsc.get_relative_angle (points)
+				current_distance := rsc.get_distance_to_line (points[closest_sensor_index], points[second_closest_sensor_index])
+				Result := rsc.get_heading_to_follow_line (points[closest_sensor_index], points[second_closest_sensor_index],
+															current_distance, desired_distance)
 			else
 				Result := 0
 			end

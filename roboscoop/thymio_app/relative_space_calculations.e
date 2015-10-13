@@ -54,33 +54,35 @@ feature -- Constants
 
 feature  -- Access
 
-	get_relative_coordinates_with_sensor(distance: REAL_64; sensor_i: INTEGER): POINT_MSG
-			-- calculate the relative coordinate of a point given its distance to a sensor and the sensor's index.
-			do
-				Result := get_relative_coordinates(distance + sensor_distances[sensor_i], sensor_angles[sensor_i])
-			end
+	get_relative_coordinates_with_sensor (distance: REAL_64; sensor_i: INTEGER): POINT_MSG
+			-- Calculate the relative coordinate of a point given its distance to a sensor and the sensor's index.
+		do
+			Result := get_relative_coordinates(distance + sensor_distances[sensor_i], sensor_angles[sensor_i])
+		end
 
-	get_relative_coordinates(distance, angle: REAL_64): POINT_MSG
-			-- calculate the relative coordinate of a point given its distance to (0, 0) and the angle.
+	get_relative_coordinates (distance, angle: REAL_64): POINT_MSG
+			-- Calculate the relative coordinate of a point given its distance to (0, 0) and the angle.
 		local
 			relative_coord: POINT_MSG
 		do
-			-- PLACEHOLDER
 			create relative_coord.make_with_values(distance * tm.cosine(angle), distance * tm.sine (angle), 0)
 			Result := relative_coord
 		end
 
-	get_relative_angle(points: ARRAY[POINT_MSG]): REAL_64
-			-- get the angle between the line that best fits the given points and the positive x-axis.
+	get_distance_to_line (p1, p2: POINT_MSG): REAL_64
+			-- Calculate the distance from (0,0) to the line represented by the given two points.
 		do
-			-- PLACEHOLDER
-			Result := 0
+			Result := ((p2.y - p1.y) * p1.x - (p2.x - p1.x) * p1.y) / tm.sqrt ((p2.x - p1.x).power(2) + (p2.y - p1.y).power(2))
 		end
 
-	get_slope_of_wall(points: ARRAY[POINT_MSG]): REAL_64
+	get_heading_to_follow_line (p1, p2: POINT_MSG; current_distance, desired_distance: REAL_64): REAL_64
+			-- Calculate the heading to maintain a desired distance from the line given by p1, p2.
 		local
+			v_theta_x, v_theta_y: REAL_64
 		do
-			-- TODO: calculate slope of wall
+			v_theta_x := desired_distance * (p2.x - p1.x) + (current_distance - desired_distance) * (p2.y - p1.y)
+			v_theta_y := desired_distance * (p2.y - p1.y) + (current_distance - desired_distance) * (p1.x - p2.x)
+			Result := tm.atan2 (v_theta_y, v_theta_x)
 		end
 
 end -- class RELATIVE_SPACE_CALCULATIONS
