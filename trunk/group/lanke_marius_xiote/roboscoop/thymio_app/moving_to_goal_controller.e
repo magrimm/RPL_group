@@ -102,7 +102,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 								drive: separate DIFFERENTIAL_DRIVE)
 			-- Stop if goal reached or goal is unreachable (TODO).
 		require
-			o_sig.is_moving or s_sig.is_stop_requested
+			(o_sig.is_moving and m_sig.is_goal_unreachable)) or s_sig.is_stop_requested
 		local
 			goal_point, robot_point: POINT_MSG
 		do
@@ -112,14 +112,21 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				create goal_point.make_with_values (goal_x, goal_y, 0.0)
 				create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 
+				m_sig.clear_all_pendings
+				s_sig.set_stop_requested (True)
+				drive.stop
+
 				if tm.euclidean_distance (goal_point, robot_point) < 0.02 then
-					drive.stop
-					m_sig.clear_all_pendings
-					s_sig.set_stop_requested (True)
 					m_sig.set_is_goal_reached (True)
 
 					debug
 						io.put_string ("Current state: TURN%N")
+					end
+				elseif  then
+					m_sig.set_is_goal_unreachable (True)
+
+					debug
+					io.put_string ("Current state: NOT REACHABLE%N")
 					end
 				end
 			end

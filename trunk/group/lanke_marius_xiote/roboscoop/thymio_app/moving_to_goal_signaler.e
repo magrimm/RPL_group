@@ -10,8 +10,8 @@ feature -- Access
 	is_goal_reached: BOOLEAN
 			-- Is the goal reached?
 
-	is_goal_reachable: BOOLEAN
-			-- Is the goal reachable?
+	is_goal_unreachable: BOOLEAN
+			-- Is the goal unreachable?
 
 	is_go_pending: BOOLEAN
 			-- Has the state "go" been handled by the algorithm?
@@ -25,10 +25,10 @@ feature -- Access
 			is_goal_reached := a_val
 		end
 
-	set_is_goal_reachable (a_val: BOOLEAN)
-			-- Set is_goal_reachable value to a_val
+	set_is_goal_unreachable (a_val: BOOLEAN)
+			-- Set is_goal_unreachable value to a_val
 		do
-			is_goal_reachable := a_val
+			is_goal_unreachable := a_val
 		end
 
 	set_is_go_pending (a_val: BOOLEAN)
