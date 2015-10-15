@@ -70,7 +70,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			if s_sig.is_stop_requested then
 				drive.stop
 			else
-				
+
 				vtheta := r_sens.follow_wall_orientation (5.0)
 				vx := 0.02
 
@@ -122,12 +122,12 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					debug
 						io.put_string ("Current state: GOAL REACHED%N")
 					end
-				-- TODO elseif then
+				-- TODO elseif condition then
 				else
 					m_sig.set_is_goal_unreachable (True)
 
 					debug
-					io.put_string ("Current state: GOAL NOT REACHABLE%N")
+					io.put_string ("Current state: GOAL UNREACHABLE%N")
 					end
 				end
 			end
