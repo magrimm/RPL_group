@@ -16,7 +16,7 @@ feature -- Access
 	is_go_pending: BOOLEAN
 			-- Has the state "go" been handled by the algorithm?
 
-	is_turn_pending: BOOLEAN
+	is_wall_following: BOOLEAN
 			-- Has the state "turn" been handled by the algorithm?
 
 	set_is_goal_reached (a_val: BOOLEAN)
@@ -37,7 +37,7 @@ feature -- Access
 			is_go_pending := a_val
 		end
 
-	set_is_turn_pending (a_val: BOOLEAN)
+	set_is_wall_following (a_val: BOOLEAN)
 			-- Set is_turn_pending value equal to a_val.
 		do
 			is_turn_pending := a_val
@@ -48,5 +48,6 @@ feature -- Access
 		do
 			is_go_pending := False
 			is_turn_pending := False
+			is_wall_following := False
 		end
 end

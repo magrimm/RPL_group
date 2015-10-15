@@ -57,7 +57,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 		end
 
-	turn_when_obstacle_detected (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+	wall_following (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 						drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
 				-- Turn and follow the boundary of the obstacle being detected.
 		require
@@ -75,11 +75,11 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				vx := 0.02
 
 				m_sig.clear_all_pendings
-				m_sig.set_is_turn_pending (True)
+				m_sig.set_is_wall_following (True)
 				drive.set_velocity (vx, vtheta)
 
 				debug
-					io.put_string ("Current state: TURN%N")
+					io.put_string ("Current state: WALL FOLLOWING%N")
 				end
 			end
 		end
@@ -120,13 +120,13 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					m_sig.set_is_goal_reached (True)
 
 					debug
-						io.put_string ("Current state: TURN%N")
+						io.put_string ("Current state: GOAL REACHED%N")
 					end
 				elseif  then
 					m_sig.set_is_goal_unreachable (True)
 
 					debug
-					io.put_string ("Current state: NOT REACHABLE%N")
+					io.put_string ("Current state: GOAL NOT REACHABLE%N")
 					end
 				end
 			end
