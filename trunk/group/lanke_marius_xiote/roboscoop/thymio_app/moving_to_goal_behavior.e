@@ -35,14 +35,15 @@ feature -- Access
 	start
 			-- Start the behaviour.
 		local
-			a, b, c: separate MOVING_TO_GOAL_CONTROLLER
+			a, b, c, d: separate MOVING_TO_GOAL_CONTROLLER
 		do
 			create a.make (stop_sig, goal_x, goal_y)
 			create b.make (stop_sig, goal_x, goal_y)
 			create c.make (stop_sig, goal_x, goal_y)
+			create d.make (stop_sig, goal_x, goal_y)
 
 			sep_stop (stop_sig, False)
-			sep_start (a, b, c)
+			sep_start (a, b, c, d)
 		end
 
 	stop
@@ -74,7 +75,7 @@ feature {NONE} -- Implementation
 	goal_x, goal_y: REAL_64
 			-- Goal position.
 
-	sep_start (a, b, c: separate MOVING_TO_GOAL_CONTROLLER)
+	sep_start (a, b, c, d: separate MOVING_TO_GOAL_CONTROLLER)
 			-- Start controllers asynchronously.
 		do
 			a.repeat_until_stop_requested (
@@ -83,6 +84,8 @@ feature {NONE} -- Implementation
 				agent b.turn_when_obstacle_detected (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
 			c.repeat_until_stop_requested (
 				agent c.stop (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
+			d.repeat_until_stop_requested (
+				agent d.change_features (moving_to_goal_sig, stop_sig, top_leds) )
 		end
 
 	sep_stop (s_sig: separate STOP_SIGNALER; val: BOOLEAN)

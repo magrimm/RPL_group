@@ -84,6 +84,20 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 		end
 
+	change_features (m_sig: separate MOVING_TO_GOAL_SIGNALER; s_sig: separate STOP_SIGNALER; top_leds: separate THYMIO_TOP_LEDS)
+			-- Change features including light color based on current state.
+		do
+			if m_sig.is_go_pending then
+				top_leds.set_to_yellow
+			elseif m_sig.is_turn_pending then
+				top_leds.set_to_red
+			elseif m_sig.is_goal_reached then
+				top_leds.set_to_green
+			elseif not m_sig.is_goal_reachable then
+				top_leds.set_to_magenta
+			end
+		end
+
 	stop (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 								drive: separate DIFFERENTIAL_DRIVE)
 			-- Stop if goal reached or goal is unreachable (TODO).
