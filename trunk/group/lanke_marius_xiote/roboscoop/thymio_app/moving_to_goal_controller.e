@@ -89,11 +89,11 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		do
 			if m_sig.is_go_pending then
 				top_leds.set_to_yellow
-			elseif m_sig.is_turn_pending then
+			elseif m_sig.is_wall_following then
 				top_leds.set_to_red
 			elseif m_sig.is_goal_reached then
 				top_leds.set_to_green
-			elseif not m_sig.is_goal_reachable then
+			elseif not m_sig.is_goal_unreachable then
 				top_leds.set_to_magenta
 			end
 		end
@@ -102,7 +102,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 								drive: separate DIFFERENTIAL_DRIVE)
 			-- Stop if goal reached or goal is unreachable (TODO).
 		require
-			(o_sig.is_moving and m_sig.is_goal_unreachable)) or s_sig.is_stop_requested
+			(o_sig.is_moving and m_sig.is_goal_unreachable) or s_sig.is_stop_requested
 		local
 			goal_point, robot_point: POINT_MSG
 		do
@@ -122,7 +122,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					debug
 						io.put_string ("Current state: GOAL REACHED%N")
 					end
-				elseif  then
+				-- TODO elseif then
+				else
 					m_sig.set_is_goal_unreachable (True)
 
 					debug
