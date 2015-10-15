@@ -70,7 +70,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			if s_sig.is_stop_requested then
 				drive.stop
 			else
-
+				
 				vtheta := r_sens.follow_wall_orientation (5.0)
 				vx := 0.02
 

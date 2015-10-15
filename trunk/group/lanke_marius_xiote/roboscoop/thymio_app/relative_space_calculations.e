@@ -21,7 +21,7 @@ feature
 	initialize_constants
 			-- Initialize sensor_distances and sensor_angles
 		do
-			create sensor_distances.make(1, 7)
+			create sensor_distances.make (1, 7)
 			across 1 |..| 5 as i
 			loop
 				sensor_distances.put (8.0, i.item)
@@ -31,14 +31,14 @@ feature
 				sensor_distances.put (0.0, i.item)  -- PLACEHOLDER
 			end
 
-			create sensor_angles.make(1, 7)
-			sensor_angles.put(0.672, 1)
-			sensor_angles.put(0.336, 2)
-			sensor_angles.put(0.0, 3)
-			sensor_angles.put(-0.336, 4)
-			sensor_angles.put(-0.672, 5)
-			sensor_angles.put(0.0, 6)  -- PLACEHOLDER
-			sensor_angles.put(0.0, 7)  --PLACEHOLDER
+			create sensor_angles.make (1, 7)
+			sensor_angles.put (0.672, 1)
+			sensor_angles.put (0.336, 2)
+			sensor_angles.put (0.0, 3)
+			sensor_angles.put (-0.336, 4)
+			sensor_angles.put (-0.672, 5)
+			sensor_angles.put (0.0, 6)  -- PLACEHOLDER
+			sensor_angles.put (0.0, 7)  --PLACEHOLDER
 		end
 
 feature
@@ -67,6 +67,15 @@ feature  -- Access
 		do
 			create relative_coord.make_with_values(distance * tm.cosine(angle), distance * tm.sine (angle), 0)
 			Result := relative_coord
+		end
+
+	convert_relative_coordinates_to_absolute_coordinates (p0, p1: POINT_MSG): POINT_MSG
+			-- Calculate the absolute coordinates given p0, the absoluate coordinates of (0, 0), and p1, the relative coordinates
+		local
+			absolute_coord: POINT_MSG
+		do
+			create absolute_coord.make_with_values (p0.x + p1.x, p0.y + p1.y, 0)
+			Result := absolute_coord
 		end
 
 	get_distance_to_line (p1, p2: POINT_MSG): REAL_64
