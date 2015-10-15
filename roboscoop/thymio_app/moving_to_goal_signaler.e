@@ -40,14 +40,13 @@ feature -- Access
 	set_is_wall_following (a_val: BOOLEAN)
 			-- Set is_turn_pending value equal to a_val.
 		do
-			is_turn_pending := a_val
+			is_wall_following := a_val
 		end
 
 	clear_all_pendings
 			-- Set all pending flags to False.
 		do
 			is_go_pending := False
-			is_turn_pending := False
 			is_wall_following := False
 		end
 end
