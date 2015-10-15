@@ -20,19 +20,21 @@ feature {NONE} -- Initialization
 			goal_x := g_x
 			goal_y := g_y
 
-			create pid_controller.make(goal_x, goal_y)
+			create pid_controller.make(0.5, 0.0, 0.0)
 			create tm
+			create ec
 		end
 
 feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 	go (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-		drive: separate DIFFERENTIAL_DRIVE; t_leds: separate THYMIO_TOP_LEDS;r_sens: separate THYMIO_RANGE_GROUP)
+		drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
 			-- Move robot if goal not reached yet.
 		require
 			(not m_sig.is_goal_reached and
 			not r_sens.is_obstacle) or s_sig.is_stop_requested
 		local
+			heading_error: REAL_64
 			vtheta: REAL_64
 			vx: REAL_64
 		do
@@ -40,20 +42,23 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				drive.stop
 
 			else
-				t_leds.set_to_yellow
+				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, goal_x, goal_y)
 
-				vtheta := pid_controller.update_heading(o_sig.x, o_sig.y, o_sig.theta, o_sig.timestamp)
+				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
 				vx := 0.025 - (vtheta.abs / 10)
 
 				m_sig.clear_all_pendings
 				m_sig.set_is_go_pending (True)
 				drive.set_velocity (vx, vtheta)
-				io.put_string ("Current state: GO%N")
+
+				debug
+					io.put_string ("Current state: GO%N")
+				end
 			end
 		end
 
 	turn_when_obstacle_detected (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-						drive: separate DIFFERENTIAL_DRIVE; t_leds: separate THYMIO_TOP_LEDS; r_sens: separate THYMIO_RANGE_GROUP)
+						drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
 				-- Turn and follow the boundary of the obstacle being detected.
 		require
 			(not m_sig.is_goal_reached and
@@ -65,21 +70,23 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			if s_sig.is_stop_requested then
 				drive.stop
 			else
-				t_leds.set_to_red
 
 				vtheta := r_sens.follow_wall_orientation (5.0)
 				vx := 0.02
 
 				m_sig.clear_all_pendings
-				m_sig.set_is_turn_pending (TRUE)
+				m_sig.set_is_turn_pending (True)
 				drive.set_velocity (vx, vtheta)
-				io.put_string ("Current state: TURN%N")
+
+				debug
+					io.put_string ("Current state: TURN%N")
+				end
 			end
 		end
 
-	stop_when_goal_reached (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-								drive: separate DIFFERENTIAL_DRIVE; t_leds: separate THYMIO_TOP_LEDS)
-			-- Stop if goal reached.
+	stop (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+								drive: separate DIFFERENTIAL_DRIVE)
+			-- Stop if goal reached or goal is unreachable (TODO).
 		require
 			o_sig.is_moving or s_sig.is_stop_requested
 		local
@@ -96,8 +103,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					m_sig.clear_all_pendings
 					s_sig.set_stop_requested (True)
 					m_sig.set_is_goal_reached (True)
-					t_leds.set_to_green
-					io.put_string ("Current state: REACHED%N")
+
+					debug
+						io.put_string ("Current state: TURN%N")
+					end
 				end
 			end
 		end
@@ -105,6 +114,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 feature
 
 	tm: TRIGONOMETRY_MATH
+	ec: ERROR_CALCULATIONS
 	pid_controller: PID_CONTROLLER
 	goal_x, goal_y: REAL_64
 
