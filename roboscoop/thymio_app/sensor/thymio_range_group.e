@@ -181,12 +181,12 @@ feature -- Access.
 		do
 			create rsc.make
 			create default_point.make_empty
-			create points.make_filled (default_point, 1, 7)
+			create points.make_filled (default_point, 1, 5)
 
 			from
 				i := sensors.lower
 			until
-				i > sensors.upper
+				i > sensors.upper - 2
 			loop
 				if sensors[i].is_valid_range then
 					points.put(rsc.get_relative_coordinates_with_sensor (sensors[i].range, i), i)
