@@ -10,38 +10,28 @@ create
 
 feature
 
-	tm: TRIGONOMETRY_MATH
-	goal_x, goal_y: REAL_64
 	cur_error, prev_error, acc_error: REAL_64
 	cur_time, prev_time: REAL_64
-
-feature -- Constants
-
-	k_p: REAL_64 = 0.5
-	k_i: REAL_64 = 0.0
-	k_d: REAL_64 = 0.0
+	k_p, k_i, k_d: REAL_64
 
 feature -- Initialization
 
-	make (g_x, g_y: REAL_64)
+	make (k_proportional, k_integral, k_derivative: REAL_64)
 			-- Create current with given attributes.
 		do
-			goal_x := g_x
-			goal_y := g_y
-			create tm
+			k_p := k_proportional
+			k_i := k_integral
+			k_d := k_derivative
 		end
 
 feature
 
-	update_heading (robot_x, robot_y, robot_theta: REAL_64; current_time: REAL_64): REAL_64
+	get_control_output (current_error, current_time: REAL_64): REAL_64
 			-- Return new v_theta.
 		local
-			u: REAL_64
 			deri_term: REAL_64
 		do
-			prev_time := cur_time
-			cur_time := current_time
-			update_error(robot_x, robot_y, robot_theta)
+			update_error(current_error, current_time)
 
 			if  cur_time = prev_time then
 				deri_term := 0.0
@@ -52,17 +42,14 @@ feature
 			Result := k_p * cur_error + k_i * acc_error + k_d * deri_term
 		end
 
-	update_error (robot_x, robot_y, robot_theta: REAL_64)
+	update_error (current_error, current_time: REAL_64)
 			-- Update prev_error, cur_error and acc_error accordingly.
-		local
-			x_diff: REAL_64
-			y_diff: REAL_64
 		do
-			x_diff := goal_x - robot_x
-			y_diff := goal_y - robot_y
+			prev_time := cur_time
+			cur_time := current_time
 
 			prev_error := cur_error
-			cur_error := tm.atan2 (y_diff, x_diff) - robot_theta
+			cur_error := current_error
 			acc_error := acc_error + cur_error * (cur_time - prev_time)
 		end
 end
