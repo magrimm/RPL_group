@@ -206,7 +206,12 @@ feature -- Access.
 			end
 
 			if number_detecting_sensors >= 2 then
+				--current_distance := rsc.get_distance_to_line (points[closest_sensor_index], points[second_closest_sensor_index])
+				if closest_sensor_index < second_closest_sensor_index then
 				current_distance := rsc.get_distance_to_line (points[closest_sensor_index], points[second_closest_sensor_index])
+				else
+				current_distance := rsc.get_distance_to_line (points[second_closest_sensor_index],points[closest_sensor_index])
+				end
 				Result := -rsc.get_heading_to_follow_line (points[closest_sensor_index], points[second_closest_sensor_index],
 															current_distance, desired_distance)
 			else
