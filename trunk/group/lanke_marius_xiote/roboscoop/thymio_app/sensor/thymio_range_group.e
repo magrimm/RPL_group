@@ -39,6 +39,8 @@ feature {NONE} -- Initialization.
 
 feature -- Access.
 
+	prev_closest_sensor_index: INTEGER
+
 	is_obstacle: BOOLEAN
 			-- Whether an obstacle is observed by any sensor in valid range?
 		local
@@ -206,26 +208,20 @@ feature -- Access.
 			end
 
 			if number_detecting_sensors >= 2 then
-				--current_distance := rsc.get_distance_to_line (points[closest_sensor_index], points[second_closest_sensor_index])
-				if closest_sensor_index < second_closest_sensor_index then
-					current_distance := rsc.get_distance_to_line (points[closest_sensor_index], points[second_closest_sensor_index])
-				else
-					current_distance := rsc.get_distance_to_line (points[second_closest_sensor_index],points[closest_sensor_index])
-				end
-
 				if closest_sensor_index < second_closest_sensor_index then
 					current_distance := rsc.get_distance_to_line (points[closest_sensor_index], points[second_closest_sensor_index])
 				else
 					current_distance := rsc.get_distance_to_line (points[second_closest_sensor_index], points[closest_sensor_index])
 				end
+
+				prev_closest_sensor_index := closest_sensor_index
 				Result := -rsc.get_heading_to_follow_line (points[second_closest_sensor_index], points[closest_sensor_index],
 															current_distance, desired_distance)
-			elseif number_detecting_sensors = 1 and closest_sensor_index < 3 then
-				Result := 0.02
-			elseif number_detecting_sensors = 1 and closest_sensor_index > 3 and closest_sensor_index < 6 then
-				Result := -0.02
-			else
+			elseif number_detecting_sensors = 1 then
+				prev_closest_sensor_index := closest_sensor_index
 				Result := 0
+			else
+				Result := (3 - prev_closest_sensor_index) * 0.5 / desired_distance
 			end
 		end
 end
