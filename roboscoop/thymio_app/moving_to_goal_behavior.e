@@ -90,8 +90,8 @@ feature {NONE} -- Implementation
 				agent d.change_features (moving_to_goal_sig, stop_sig, top_leds))
 			e.repeat_until_stop_requested (
 				agent e.stop_when_goal_unreachable (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
-			f.repeat_until_stop_requested (
-				agent f.transit_vleave (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
+--			f.repeat_until_stop_requested (
+--				agent f.transit_vleave (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
 		end
 
 	sep_stop (s_sig: separate STOP_SIGNALER; val: BOOLEAN)
