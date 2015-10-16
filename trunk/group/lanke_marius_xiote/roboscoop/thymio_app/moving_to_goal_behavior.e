@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 			-- Create current with given attributes.
 		do
 			create stop_sig.make
-			create moving_to_goal_sig
+			create moving_to_goal_sig.make
 
 			odometry_sig := odom_sig
 			diff_drive := d_drive
