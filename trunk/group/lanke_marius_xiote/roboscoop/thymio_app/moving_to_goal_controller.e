@@ -24,24 +24,6 @@ feature {NONE} -- Initialization
 			create tm
 			create rsc.make
 			create ec
-			create start_point_wall.make_empty
-		end
-
-feature
-
-	start_point_wall: POINT_MSG
-
-feature {NONE}
-
-	start_wall_following_point (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER): POINT_MSG
-		require
-			not m_sig.is_wall_first_detected
-		local
-			start_point: POINT_MSG
-		do
-			create start_point.make_with_values (o_sig.x, o_sig.y, 0.0)
-			start_point_wall := start_point
-			Result := start_point_wall
 		end
 
 feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
@@ -83,24 +65,28 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			(not m_sig.is_goal_reached and
 			r_sens.is_obstacle) or s_sig.is_stop_requested
 		local
+			robot_point: separate POINT_MSG
 			vtheta: REAL_64
 			vx: REAL_64
 		do
+			create robot_point.make_with_values (o_sig.x, o_sig.y, 0)
 			if s_sig.is_stop_requested then
 				drive.stop
 			else
+				if not m_sig.is_wall_following_start_point_set then
+					m_sig.set_wall_following_start_point (robot_point)
+					m_sig.set_is_wall_following_start_point_set (True)
+				end
+
 				vtheta := r_sens.follow_wall_orientation (5.0)
 				vx := 0.04
 
 				m_sig.clear_all_pendings
 				m_sig.set_is_wall_following (True)
-				m_sig.set_is_wall_first_detected (True)
 				drive.set_velocity (vx, vtheta)
 
 				debug
 					io.put_string ("Current state: FOLLOW WALL%N")
-					io.put_string ("Point wall first detected: " + start_wall_following_point (m_sig, o_sig).out + "%NFirst_detected: " + m_sig.is_wall_first_detected.out + "%N")
-					io.put_string ("start_point_wall: " + start_point_wall.out + "%N")
 				end
 			end
 		end
@@ -208,22 +194,22 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 								drive: separate DIFFERENTIAL_DRIVE)
 			-- Stop if goal reached or goal is unreachable (TODO).
 		require
-			(o_sig.is_moving and
-			m_sig.is_wall_first_detected) or s_sig.is_stop_requested
+			o_sig.is_moving or s_sig.is_stop_requested
 		local
-			goal_point, robot_point: POINT_MSG -- start_wall_following_point: POINT_MSG
+			goal_point, robot_point, wall_following_start_point: POINT_MSG
 		do
 			if s_sig.is_stop_requested then
 				drive.stop
 			else
 				create goal_point.make_with_values (goal_x, goal_y, 0.0)
 				create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
+				create wall_following_start_point.make_from_separate (m_sig.wall_following_start_point)
 
 				m_sig.clear_all_pendings
 				s_sig.set_stop_requested (True)
 				drive.stop
 
-				if (tm.euclidean_distance (start_wall_following_point(m_sig, o_sig), robot_point) < 0.05) then
+				if (tm.euclidean_distance (wall_following_start_point, robot_point) < 0.05) then
 					m_sig.set_is_goal_unreachable (True)
 
 					debug
