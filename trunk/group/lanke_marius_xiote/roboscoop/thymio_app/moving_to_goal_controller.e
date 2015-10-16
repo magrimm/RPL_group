@@ -99,7 +99,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 				debug
 					io.put_string ("Current state: FOLLOW WALL%N")
-					--io.put_string ("Point wall first detected: " + start_wall_following_point (m_sig, o_sig).out + "%NFirst_detected: " + m_sig.is_wall_first_detected.out + "%N")
+					io.put_string ("Point wall first detected: " + start_wall_following_point (m_sig, o_sig).out + "%NFirst_detected: " + m_sig.is_wall_first_detected.out + "%N")
 					io.put_string ("start_point_wall: " + start_point_wall.out + "%N")
 				end
 			end
@@ -170,7 +170,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				top_leds.set_to_blue
 			elseif m_sig.is_goal_reached then
 				top_leds.set_to_green
-			elseif not m_sig.is_goal_unreachable then
+			elseif m_sig.is_goal_unreachable then
 				top_leds.set_to_magenta
 			end
 		end
@@ -218,13 +218,12 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			else
 				create goal_point.make_with_values (goal_x, goal_y, 0.0)
 				create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
-			--	create start_wall_following_point.make_with_values (startpoint_wall_following_x, startpoint_wall_following_y, 0.0) --------------- TODO: startpoint_wall_follwing_x and _y
 
 				m_sig.clear_all_pendings
 				s_sig.set_stop_requested (True)
 				drive.stop
 
-				if tm.euclidean_distance (start_wall_following_point(m_sig, o_sig), robot_point) < 0.1 then
+				if (tm.euclidean_distance (start_wall_following_point(m_sig, o_sig), robot_point) < 0.05) then
 					m_sig.set_is_goal_unreachable (True)
 
 					debug
