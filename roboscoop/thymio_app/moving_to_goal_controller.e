@@ -22,6 +22,7 @@ feature {NONE} -- Initialization
 
 			create pid_controller.make(0.5, 0.0, 0.0)
 			create tm
+			create rsc.make
 			create ec
 		end
 
@@ -70,7 +71,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			if s_sig.is_stop_requested then
 				drive.stop
 			else
-
 				vtheta := r_sens.follow_wall_orientation (5.0)
 				vx := 0.02
 
@@ -84,6 +84,59 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 		end
 
+	transit_vleave (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+					drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
+				-- Transit to v_leave if found
+		require
+			(not m_sig.is_goal_reached and not m_sig.is_goal_unreachable and m_sig.is_wall_following)
+				or s_sig.is_stop_requested
+		local
+			goal_point, robot_point, sensor_max_range_rel_point, sensor_max_range_abs_point: POINT_MSG
+			vleave_point: separate POINT_MSG
+			cur_distance: REAL_64
+			vleave_d_min, sensor_max_range_d_min: REAL_64
+			vleave_sensor_index, i: INTEGER
+		do
+			vleave_d_min := 2^64
+			create goal_point.make_with_values (goal_x, goal_y, 0.0)
+			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
+			create vleave_point.make_empty
+			cur_distance := tm.euclidean_distance (goal_point, robot_point)
+
+			if cur_distance < m_sig.d_min then
+				m_sig.set_d_min (cur_distance)
+			end
+
+			if m_sig.is_transiting and tm.euclidean_distance (m_sig.v_leave, robot_point) < 0.02 then
+				m_sig.clear_all_pendings
+
+			else
+				from
+					i := r_sens.sensors.lower
+				until
+					i > r_sens.sensors.upper
+				loop
+					if not r_sens.sensors[i].is_valid_range then
+						 sensor_max_range_rel_point := rsc.get_relative_coordinates_with_sensor (r_sens.sensors[i].max_range, i)
+						 sensor_max_range_abs_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point, sensor_max_range_rel_point)
+						 sensor_max_range_d_min := tm.euclidean_distance (goal_point, sensor_max_range_abs_point)
+						 if sensor_max_range_d_min < vleave_d_min and sensor_max_range_d_min < m_sig.d_min then
+						 	vleave_d_min := sensor_max_range_d_min
+						 	vleave_sensor_index := i
+						 	vleave_point := sensor_max_range_abs_point
+						 end
+					end
+					i := i + 1
+				end
+
+				if not vleave_d_min.is_positive_infinity then
+					m_sig.set_v_leave (vleave_point)
+					m_sig.clear_all_pendings
+					m_sig.set_is_transiting (True)
+					drive.set_velocity (0.02, rsc.sensor_angles[vleave_sensor_index])
+				end
+		end
+
 	change_features (m_sig: separate MOVING_TO_GOAL_SIGNALER; s_sig: separate STOP_SIGNALER; top_leds: separate THYMIO_TOP_LEDS)
 			-- Change features including light color based on current state.
 		do
@@ -91,6 +144,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				top_leds.set_to_yellow
 			elseif m_sig.is_wall_following then
 				top_leds.set_to_red
+			elseif m_sig.is_transiting then
+				top_leds.set_to_blue
 			elseif m_sig.is_goal_reached then
 				top_leds.set_to_green
 			elseif not m_sig.is_goal_unreachable then
@@ -127,7 +182,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					m_sig.set_is_goal_unreachable (True)
 
 					debug
-					io.put_string ("Current state: GOAL UNREACHABLE%N")
+						io.put_string ("Current state: GOAL UNREACHABLE%N")
 					end
 				end
 			end
@@ -137,6 +192,7 @@ feature
 
 	tm: TRIGONOMETRY_MATH
 	ec: ERROR_CALCULATIONS
+	rsc: RELATIVE_SPACE_CALCULATIONS
 	pid_controller: PID_CONTROLLER
 	goal_x, goal_y: REAL_64
 
