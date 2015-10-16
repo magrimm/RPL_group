@@ -9,6 +9,7 @@
 		<external_include location="$$ROS_LOCATION/include/"/>
 		<external_include location="$ECF_CONFIG_PATH/_cpp"/>
 		<external_include location="$$CATKIN_WORKSPACE/devel/include/"/>
+		<external_include location="$$CATKIN_WORKSPACE/src/ful/"/>
 		<external_include location="$$ROBOLAB_ASEBA_PATH/asebaros/srv_gen/cpp/include/"/>
 		<external_include location="$$ROBOLAB_ASEBA_PATH/asebaros/msg_gen/cpp/include/"/>
 		<external_object location="$$ROS_LOCATION/lib/librospack.so"/>
