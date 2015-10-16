@@ -128,10 +128,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				m_sig.set_d_min (cur_distance)
 			end
 
-			if m_sig.is_transiting and tm.euclidean_distance (m_sig.v_leave, robot_point) < 0.02 then
-				m_sig.clear_all_pendings
+			--if m_sig.is_transiting and tm.euclidean_distance (m_sig.v_leave, robot_point) < 0.02 then
+			--	m_sig.clear_all_pendings
 
-			else
+			--else
 				from
 					i := r_sens.sensors.lower
 				until
@@ -156,6 +156,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					m_sig.set_is_transiting (True)
 					drive.set_velocity (0.02, rsc.sensor_angles[vleave_sensor_index])
 				end
+			--end
 		end
 
 	change_features (m_sig: separate MOVING_TO_GOAL_SIGNALER; s_sig: separate STOP_SIGNALER; top_leds: separate THYMIO_TOP_LEDS)

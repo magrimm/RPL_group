@@ -86,8 +86,8 @@ feature {NONE} -- Implementation
 			c.repeat_until_stop_requested (
 				agent c.stop_when_goal_reached (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
 			d.repeat_until_stop_requested (
-				agent d.change_features (moving_to_goal_sig, stop_sig, top_leds) )
-			d.repeat_until_stop_requested (
+				agent d.change_features (moving_to_goal_sig, stop_sig, top_leds))
+			e.repeat_until_stop_requested (
 				agent e.stop_when_goal_unreachable (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
 
 		end
