@@ -35,16 +35,17 @@ feature -- Access
 	start
 			-- Start the behaviour.
 		local
-			a, b, c, d, e: separate MOVING_TO_GOAL_CONTROLLER
+			a, b, c, d, e, f: separate MOVING_TO_GOAL_CONTROLLER
 		do
 			create a.make (stop_sig, goal_x, goal_y)
 			create b.make (stop_sig, goal_x, goal_y)
 			create c.make (stop_sig, goal_x, goal_y)
 			create d.make (stop_sig, goal_x, goal_y)
 			create e.make (stop_sig, goal_x, goal_y)
+			create f.make (stop_sig, goal_x, goal_y)
 
 			sep_stop (stop_sig, False)
-			sep_start (a, b, c, d, e)
+			sep_start (a, b, c, d, e, f)
 		end
 
 	stop
@@ -76,7 +77,7 @@ feature {NONE} -- Implementation
 	goal_x, goal_y: REAL_64
 			-- Goal position.
 
-	sep_start (a, b, c, d, e: separate MOVING_TO_GOAL_CONTROLLER)
+	sep_start (a, b, c, d, e, f: separate MOVING_TO_GOAL_CONTROLLER)
 			-- Start controllers asynchronously.
 		do
 			a.repeat_until_stop_requested (
@@ -87,9 +88,10 @@ feature {NONE} -- Implementation
 				agent c.stop_when_goal_reached (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
 			d.repeat_until_stop_requested (
 				agent d.change_features (moving_to_goal_sig, stop_sig, top_leds))
---			e.repeat_until_stop_requested (
---				agent e.stop_when_goal_unreachable (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
-
+			e.repeat_until_stop_requested (
+				agent e.stop_when_goal_unreachable (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
+			f.repeat_until_stop_requested (
+				agent f.transit_vleave (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
 		end
 
 	sep_stop (s_sig: separate STOP_SIGNALER; val: BOOLEAN)

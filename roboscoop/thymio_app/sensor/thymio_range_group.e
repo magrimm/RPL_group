@@ -220,9 +220,12 @@ feature -- Access.
 				end
 				Result := -rsc.get_heading_to_follow_line (points[second_closest_sensor_index], points[closest_sensor_index],
 															current_distance, desired_distance)
+			elseif number_detecting_sensors = 1 and closest_sensor_index < 3 then
+				Result := 0.02
+			elseif number_detecting_sensors = 1 and closest_sensor_index > 3 and closest_sensor_index < 6 then
+				Result := -0.02
 			else
 				Result := 0
 			end
 		end
-
 end

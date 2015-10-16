@@ -36,6 +36,9 @@ feature -- Access
 	is_transiting: BOOLEAN
 			-- Has the state "transit" been handled by the algorithm?
 
+	has_ever_transited: BOOLEAN
+			-- Did state "transit" state ever occur?
+
 	d_min: REAL_64
 			-- Minimum distance between robot and the goal so far.
 
@@ -79,6 +82,12 @@ feature -- Access
 			-- Set is_transiting value equal to a_val
 		do
 			is_transiting := a_val
+		end
+
+	set_has_ever_transited (a_val: BOOLEAN)
+			-- Set has_ever_transited value equal to a_val
+		do
+			has_ever_transited := a_val
 		end
 
 	set_d_min (a_val: REAL_64)
