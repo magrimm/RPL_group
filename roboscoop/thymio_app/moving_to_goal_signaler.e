@@ -29,6 +29,9 @@ feature -- Access
 	is_wall_following: BOOLEAN
 			-- Has the state "turn" been handled by the algorithm?
 
+	is_wall_first_detected: BOOLEAN
+			-- Is the wall first detected?
+
 	is_transiting: BOOLEAN
 			-- Has the state "transit" been handled by the algorithm?
 
@@ -60,6 +63,12 @@ feature -- Access
 			-- Set is_turn_pending value equal to a_val.
 		do
 			is_wall_following := a_val
+		end
+
+	set_is_wall_first_detected (a_val: BOOLEAN)
+			-- Set is_wall_first_detected to a_val
+		do
+			is_wall_first_detected := a_val
 		end
 
 	set_is_transiting (a_val: BOOLEAN)

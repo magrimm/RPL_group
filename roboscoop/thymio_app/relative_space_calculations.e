@@ -16,6 +16,7 @@ feature
 		do
 			initialize_constants
 			create tm
+			create dm
 		end
 
 	initialize_constants
@@ -44,6 +45,7 @@ feature
 feature
 
 	tm: TRIGONOMETRY_MATH
+	dm: DOUBLE_MATH
 
 feature -- Constants
 
@@ -91,7 +93,7 @@ feature  -- Access
 		do
 			v_theta_x := desired_distance * (p2.x - p1.x) + (current_distance - desired_distance) * (p2.y - p1.y)
 			v_theta_y := desired_distance * (p2.y - p1.y) + (current_distance - desired_distance) * (p1.x - p2.x)
-			Result := tm.atan2 (v_theta_y, v_theta_x)
+			Result := dm.arc_tangent (v_theta_y/ v_theta_x)
 		end
 
 end -- class RELATIVE_SPACE_CALCULATIONS
