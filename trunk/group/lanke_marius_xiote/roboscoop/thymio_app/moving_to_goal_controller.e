@@ -78,7 +78,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					m_sig.set_is_wall_following_start_point_set (True)
 				end
 
-				vtheta := r_sens.follow_wall_orientation (5.0)
+				vtheta := r_sens.follow_wall_orientation (6.0)
 				vx := 0.04
 
 				m_sig.clear_all_pendings
@@ -103,21 +103,23 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			cur_distance: REAL_64
 			vleave_d_min, sensor_max_range_d_min: REAL_64
 			vleave_sensor_index, i: INTEGER
+			v_leave: POINT_MSG
 		do
 			vleave_d_min := 2^64
 			create goal_point.make_with_values (goal_x, goal_y, 0.0)
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create vleave_point.make_empty
+			create v_leave.make_from_separate (m_sig.v_leave)
 			cur_distance := tm.euclidean_distance (goal_point, robot_point)
 
 			if cur_distance < m_sig.d_min then
 				m_sig.set_d_min (cur_distance)
 			end
 
-			--if m_sig.is_transiting and tm.euclidean_distance (m_sig.v_leave, robot_point) < 0.02 then
-			--	m_sig.clear_all_pendings
+			if m_sig.is_transiting and tm.euclidean_distance (v_leave, robot_point) < 0.02 then
+				m_sig.clear_all_pendings
 
-			--else
+			else
 				from
 					i := r_sens.sensors.lower
 				until
@@ -140,9 +142,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					m_sig.set_v_leave (vleave_point)
 					m_sig.clear_all_pendings
 					m_sig.set_is_transiting (True)
+					m_sig.set_has_ever_transited (True)
 					drive.set_velocity (0.02, rsc.sensor_angles[vleave_sensor_index])
 				end
-			--end
+			end
 		end
 
 	change_features (m_sig: separate MOVING_TO_GOAL_SIGNALER; s_sig: separate STOP_SIGNALER; top_leds: separate THYMIO_TOP_LEDS)
@@ -194,7 +197,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 								drive: separate DIFFERENTIAL_DRIVE)
 			-- Stop if goal reached or goal is unreachable (TODO).
 		require
-			o_sig.is_moving or s_sig.is_stop_requested
+			(o_sig.is_moving and
+			m_sig.has_ever_transited) or s_sig.is_stop_requested
 		local
 			goal_point, robot_point, wall_following_start_point: POINT_MSG
 		do
