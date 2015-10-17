@@ -62,7 +62,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 						drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
 				-- Turn and follow the boundary of the obstacle being detected.
 		require
-			(not m_sig.is_goal_reached and (r_sens.is_obstacle or m_sig.is_wall_following)) or s_sig.is_stop_requested
+			(not m_sig.is_goal_reached and
+			(r_sens.is_obstacle or m_sig.is_wall_following)) or s_sig.is_stop_requested
 		local
 			robot_point: separate POINT_MSG
 			vtheta: REAL_64
@@ -94,8 +95,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
 				-- Transit to v_leave if found
 		require
-			(not m_sig.is_goal_reached and not m_sig.is_goal_unreachable and m_sig.is_wall_following)
-				or s_sig.is_stop_requested
+			(not m_sig.is_goal_reached and
+			not m_sig.is_goal_unreachable and
+			m_sig.is_wall_following) or s_sig.is_stop_requested
 		local
 			goal_point, robot_point, sensor_max_range_rel_point, sensor_max_range_abs_point: POINT_MSG
 			vleave_point: separate POINT_MSG
