@@ -209,14 +209,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		local
 			wall_following_start_point_, goal_point_, robot_point_: POINT_MSG
 		do
-			debug
-				io.put_string ("%Nwall_foll_point: " + wall_following_start_point_.out
-								+ " robot_point " + robot_point_.out
-								+ "euk_dist: " + tm.euclidean_distance (robot_point_, wall_following_start_point_).out
-								+ " angle_loo_around: " + m_sig.angle_looped_around_obstacle.out
-								+ "%N")
-			end
-
 			if s_sig.is_stop_requested then
 				drive.stop
 			else
@@ -234,6 +226,13 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					debug
 						io.put_string ("Current state: GOAL UNREACHABLE%N")
 					end
+				end
+				debug
+					io.put_string ("%Nwall_foll_point: " + wall_following_start_point_.out
+									+ " robot_point " + robot_point_.out
+									+ "euk_dist: " + tm.euclidean_distance (robot_point_, wall_following_start_point_).out
+									+ " angle_loo_around: " + m_sig.angle_looped_around_obstacle.out
+									+ "%N")
 				end
 			end
 		end
