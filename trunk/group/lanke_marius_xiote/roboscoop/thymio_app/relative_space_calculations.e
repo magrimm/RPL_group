@@ -84,6 +84,9 @@ feature  -- Access
 			-- Calculate the distance from (0,0) to the line represented by the given two points.
 		do
 			Result := ((p2.y - p1.y) * p1.x - (p2.x - p1.x) * p1.y) / tm.sqrt ((p2.x - p1.x).power(2) + (p2.y - p1.y).power(2))
+			debug
+				io.put_string ("distance to wall: " + Result.out + "%N")
+			end
 		end
 
 	get_heading_to_follow_line (p1, p2: POINT_MSG; current_distance, desired_distance: REAL_64): REAL_64
@@ -95,5 +98,4 @@ feature  -- Access
 			v_theta_y := desired_distance * (p2.y - p1.y) + (current_distance - desired_distance) * (p1.x - p2.x)
 			Result := dm.arc_tangent (v_theta_y/ v_theta_x)
 		end
-
 end -- class RELATIVE_SPACE_CALCULATIONS
