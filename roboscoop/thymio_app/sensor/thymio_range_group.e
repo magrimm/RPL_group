@@ -23,6 +23,8 @@ feature {NONE} -- Initialization.
 		do
 			make_with_topic (topic_name)
 			register_ranges
+			is_obstacle_vanished := false
+			time_steps_obstacle_vanished := 1
 		end
 
 	register_ranges
@@ -40,16 +42,25 @@ feature {NONE} -- Initialization.
 feature -- Access.
 
 	prev_closest_sensor_index: INTEGER
+	prev_closest_sensor_range: REAL_64
+
+
+	is_obstacle_vanished: BOOLEAN
+			-- Whether a wall obstacle disappeared or not?
+
+	time_steps_obstacle_vanished: REAL_32
+			-- Remembers how long the wall vanished for
 
 	is_obstacle: BOOLEAN
 			-- Whether an obstacle is observed by any sensor in valid range?
+
 		local
 			i: INTEGER
 		do
 			from
 				i := sensors.lower
 			until
-				i > sensors.upper or Result
+				i > sensors.upper - 2 or Result
 			loop
 				Result := Result or sensors[i].is_valid_range
 				i := i + 1
@@ -134,6 +145,23 @@ feature -- Access.
 			Result := False
 		end
 
+	set_obstacle_vanished (a_val : BOOLEAN)
+			-- This informs if a wall obstacle vanished
+		do
+			if (a_val = False) then
+				is_obstacle_vanished := False
+				time_steps_obstacle_vanished := 1
+			else
+				is_obstacle_vanished := a_val
+			end
+		end
+
+	increment_obstacle_vanished_time_steps
+			-- Increments the amount of time the wall has vanished by one
+		do
+			time_steps_obstacle_vanished := time_steps_obstacle_vanished + 0.05
+		end
+
 	hit_point_front (a_sensor_index: INTEGER): VECTOR_3D_MSG
 			-- <Precursor>
 		do
@@ -180,6 +208,8 @@ feature -- Access.
 		   	closest_sensor_range, second_closest_sensor_range: REAL_64
 		   	closest_sensor_index, second_closest_sensor_index: INTEGER
 		   	current_distance: REAL_64
+		   	last_detecting_point_before_corner: POINT_MSG
+		   	distance_before_turn: REAL_64
 		do
 			create rsc.make
 			create default_point.make_empty
@@ -190,7 +220,7 @@ feature -- Access.
 			until
 				i > sensors.upper - 2
 			loop
-				if sensors[i].is_valid_range then
+				if (sensors[i].is_valid_range and sensors[i].range < 0.2) then
 					points.put(rsc.get_relative_coordinates_with_sensor (sensors[i].range, i), i)
 					number_detecting_sensors := number_detecting_sensors + 1
 
@@ -204,24 +234,62 @@ feature -- Access.
 						second_closest_sensor_index := i
 					end
 				end
+				debug
+					io.put_string ("Sensor " + i.out + " is: " + sensors[i].is_valid_range.out
+									+ "    Range: " + sensors[i].range.out
+									+ " clos. sens.: " + closest_sensor_index.out
+									+ " sec. clos. sens.: " + second_closest_sensor_index.out
+									+ "%N")
+				end
 				i := i + 1
 			end
 
 			if number_detecting_sensors >= 2 then
+				set_obstacle_vanished(False)
 				if closest_sensor_index < second_closest_sensor_index then
-					current_distance := rsc.get_distance_to_line (points[closest_sensor_index], points[second_closest_sensor_index])
+					current_distance := -rsc.get_distance_to_line (points[closest_sensor_index], points[second_closest_sensor_index])
+					debug
+						io.put_string ("Pos. 1"	+ "%N")
+					end
 				else
-					current_distance := rsc.get_distance_to_line (points[second_closest_sensor_index], points[closest_sensor_index])
+					current_distance := -rsc.get_distance_to_line (points[second_closest_sensor_index], points[closest_sensor_index])
+					debug
+						io.put_string ("Pos. 2"	+ "%N")
+					end
 				end
 
 				prev_closest_sensor_index := closest_sensor_index
-				Result := -rsc.get_heading_to_follow_line (points[second_closest_sensor_index], points[closest_sensor_index],
+				Result := rsc.get_heading_to_follow_line (points[closest_sensor_index], points[second_closest_sensor_index],
 															current_distance, desired_distance)
 			elseif number_detecting_sensors = 1 then
+				set_obstacle_vanished(False)
 				prev_closest_sensor_index := closest_sensor_index
+				prev_closest_sensor_range := closest_sensor_range
 				Result := 0
+				debug
+					io.put_string ("Pos. 3"
+									+ " prev_clo_sens_range: " + prev_closest_sensor_range.out
+									+ "%N")
+				end
 			else
-				Result := (3 - prev_closest_sensor_index) * 0.5 / desired_distance
+
+				if not is_obstacle_vanished then
+						set_obstacle_vanished(true)
+				end
+				increment_obstacle_vanished_time_steps
+
+				Result := (3.0 - prev_closest_sensor_index) * 0.2 / desired_distance
+				debug
+					io.put_string ("Pos. 4,"
+									+ " prev_clo_sens_ind: " + prev_closest_sensor_index.out
+									+ "%N")
+				end
+			end
+			debug
+				io.put_string ("#det. sensors " + number_detecting_sensors.out
+								+ " curr dist. " + current_distance.out
+								+ " Result: " + Result.out
+								+ "%N")
 			end
 		end
 end

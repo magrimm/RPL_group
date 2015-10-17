@@ -36,9 +36,6 @@ feature -- Access
 	is_transiting: BOOLEAN
 			-- Has the state "transit" been handled by the algorithm?
 
-	has_ever_transited: BOOLEAN
-			-- Did state "transit" state ever occur?
-
 	d_min: REAL_64
 			-- Minimum distance between robot and the goal so far.
 
@@ -47,6 +44,9 @@ feature -- Access
 
 	wall_following_start_point: POINT_MSG
 			-- start_point for wall following
+
+	angle_looped_around_obstacle: REAL_64
+			-- angle by which the robot has looped around the obstacle.
 
 	set_is_goal_reached (a_val: BOOLEAN)
 			-- Set is_goal_reached value to a_val
@@ -84,12 +84,6 @@ feature -- Access
 			is_transiting := a_val
 		end
 
-	set_has_ever_transited (a_val: BOOLEAN)
-			-- Set has_ever_transited value equal to a_val
-		do
-			has_ever_transited := a_val
-		end
-
 	set_d_min (a_val: REAL_64)
 			-- Set d_min value equal to a_val
 		do
@@ -106,6 +100,12 @@ feature -- Access
 			-- Set wall_following_start_point
 		do
 			create wall_following_start_point.make_with_values (a_val.x, a_val.y, a_val.z)
+		end
+
+	set_angle_looped_around_obstacle (a_val: REAL_64)
+			-- Set angle by which the robot has looped around the obstacle.
+		do
+			angle_looped_around_obstacle := a_val
 		end
 
 	clear_all_pendings
