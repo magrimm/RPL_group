@@ -77,7 +77,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					m_sig.set_is_wall_following_start_point_set (True)
 				end
 
-				vtheta := r_sens.follow_wall_orientation (6.0)
+				vtheta := r_sens.follow_wall_orientation (5.0)
 				vx := 0.04
 
 				m_sig.clear_all_pendings
