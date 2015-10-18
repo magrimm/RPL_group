@@ -1,5 +1,5 @@
 note
-	description: "Behavior that moves the robot towards a goal position"
+	description: "Behavior that moves the robot towards a goal position with obstacle avoidance"
 	author: "Xiaote Zhu"
 
 class

@@ -1,5 +1,5 @@
 note
-	description: "Class to execute MOVING_TO_GOAL_BEHAVIOR functionality."
+	description: "Different controllers for different behaviours/ states."
 	author: "Xiaote Zhu"
 
 class
