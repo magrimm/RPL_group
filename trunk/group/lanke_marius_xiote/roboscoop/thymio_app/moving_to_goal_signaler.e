@@ -27,6 +27,9 @@ feature -- Access
 	is_wall_following_start_point_set: BOOLEAN
 			-- Is wall_following_start_point set yet?
 
+	is_v_leave_found: BOOLEAN
+			-- Is v_leave found yet?
+
 	is_go_pending: BOOLEAN
 			-- Has the state "go" been handled by the algorithm?
 
@@ -64,6 +67,12 @@ feature -- Access
 			-- Set is_wall_following_start_point_set value to a_val
 		do
 			is_wall_following_start_point_set := a_val
+		end
+
+	set_is_v_leave_found (a_val: BOOLEAN)
+			-- Set is_v_leave_found value to a_val
+		do
+			is_v_leave_found := a_val
 		end
 
 	set_is_go_pending (a_val: BOOLEAN)
