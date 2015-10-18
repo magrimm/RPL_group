@@ -64,7 +64,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		require
 			(not m_sig.is_goal_reached and not m_sig.is_goal_unreachable and
 			not m_sig.is_goal_unreachable and
-			(r_sens.is_obstacle or m_sig.is_wall_following)) or s_sig.is_stop_requested
+			(r_sens.is_obstacle or m_sig.is_wall_following) and not m_sig.is_transiting) or s_sig.is_stop_requested
 		local
 			wall_following_start_point, goal_point, robot_point: POINT_MSG
 			vtheta: REAL_64
