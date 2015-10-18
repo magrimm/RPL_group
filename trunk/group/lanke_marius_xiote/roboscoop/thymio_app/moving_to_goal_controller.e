@@ -77,7 +77,14 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			create relative_wall_following_start_point.make_with_values ((rsc.sensor_distances[r_sens.get_closest_sensor_index]-desired_wall_distance)/tm.cosine (rsc.sensor_angles[r_sens.get_closest_sensor_index]), 0.0, 0.0)
 			desired_wall_distance := 0.15
 
-			m_sig.set_angle_looped_around_obstacle (m_sig.angle_looped_around_obstacle + o_sig.vtheta)
+			if(m_sig.previous_time_stamp = 0) then
+				m_sig.set_previous_time_stamp (o_sig.timestamp-0.02)		-- To initialize the previous timestamp variable
+			end
+
+			m_sig.set_angle_looped_around_obstacle (m_sig.angle_looped_around_obstacle + o_sig.vtheta *(o_sig.timestamp - m_sig.previous_time_stamp))
+			m_sig.set_previous_time_stamp (o_sig.timestamp)
+			io.put_string ("The angle looped around : " + m_sig.angle_looped_around_obstacle.out)
+
 
 			if s_sig.is_stop_requested then
 				drive.stop

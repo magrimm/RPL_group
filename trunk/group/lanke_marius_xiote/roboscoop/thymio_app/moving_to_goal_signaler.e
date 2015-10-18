@@ -50,6 +50,9 @@ feature -- Access
 	wall_following_start_point: POINT_MSG
 			-- start_point for wall following
 
+	previous_time_stamp: REAL_64
+			-- The previous time stamp
+
 	angle_looped_around_obstacle: REAL_64
 			-- angle by which the robot has looped around the obstacle.
 
@@ -117,6 +120,12 @@ feature -- Access
 			-- Set angle by which the robot has looped around the obstacle.
 		do
 			angle_looped_around_obstacle := a_val
+		end
+
+	set_previous_time_stamp (time_point : REAL_64)
+			-- Set the previous time step to value time_point (For use in timestep differences)
+		do
+			previous_time_stamp := time_point
 		end
 
 	clear_all_pendings

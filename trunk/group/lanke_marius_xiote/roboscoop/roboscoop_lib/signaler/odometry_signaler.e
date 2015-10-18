@@ -24,6 +24,7 @@ feature {NONE} -- Initilization
 
 feature -- Access
 
+
 	data: ODOMETRY_MSG
 			-- Odometry.
 
