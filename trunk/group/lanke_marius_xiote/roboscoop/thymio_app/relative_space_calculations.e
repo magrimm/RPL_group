@@ -24,7 +24,7 @@ feature
 			create sensor_distances.make (1, 7)
 			across 1 |..| 5 as i
 			loop
-				sensor_distances.put (8.0, i.item)
+				sensor_distances.put (0.08, i.item)
 			end
 			across 6 |..| 7 as i
 			loop
@@ -96,5 +96,6 @@ feature  -- Access
 			v_theta_x := desired_distance * (p2.x - p1.x) + (current_distance - desired_distance) * (p2.y - p1.y)
 			v_theta_y := desired_distance * (p2.y - p1.y) + (current_distance - desired_distance) * (p1.x - p2.x)
 			Result := dm.arc_tangent (v_theta_y/ v_theta_x)
+--			Result := tm.atan2 (v_theta_y, v_theta_x)
 		end
 end -- class RELATIVE_SPACE_CALCULATIONS

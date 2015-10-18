@@ -157,7 +157,7 @@ feature -- Access.
 	increment_obstacle_vanished_time_steps
 			-- Increments the amount of time the wall has vanished by one
 		do
-			time_steps_obstacle_vanished := time_steps_obstacle_vanished + 0.06
+			time_steps_obstacle_vanished := time_steps_obstacle_vanished + 0.0
 		end
 
 	hit_point_front (a_sensor_index: INTEGER): VECTOR_3D_MSG
@@ -269,7 +269,7 @@ feature -- Access.
 				end
 				increment_obstacle_vanished_time_steps
 
-				Result := (3.0 - prev_closest_sensor_index) * 0.2 / desired_distance
+				Result := (3.0 - prev_closest_sensor_index) * 0.0 / desired_distance
 				debug
 					io.put_string ("Pos. 3"
 									+ "%N")
