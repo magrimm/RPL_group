@@ -127,9 +127,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			from
 				i := r_sens.sensors.lower
 			until
-				i > r_sens.sensors.upper
+				i > r_sens.sensors.upper - 2
 			loop
-				if not r_sens.sensors[i].is_valid_range then
+				if not r_sens.sensors[i].is_valid_range and (i = 1 or not r_sens.sensors[i - 1].is_valid_range)
+					and (i = 5 or not r_sens.sensors[i + 1].is_valid_range) then
 					 sensor_max_range_rel_point := rsc.get_relative_coordinates_with_sensor (r_sens.sensors[i].max_range, i)
 					 sensor_max_range_abs_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point, sensor_max_range_rel_point)
 					 sensor_max_range_d_min := tm.euclidean_distance (goal_point, sensor_max_range_abs_point)
