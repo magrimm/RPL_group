@@ -23,7 +23,7 @@ feature {NONE} -- Initialization.
 		do
 			make_with_topic (topic_name)
 			register_ranges
-			is_obstacle_vanished := false
+			is_obstacle_vanished := False
 			time_steps_obstacle_vanished := 1
 		end
 
