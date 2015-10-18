@@ -46,7 +46,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, goal_x, goal_y)
 
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
-				vx := 0.1 --0.025 - (vtheta.abs / 10)
+				vx := 0.04 --0.025 - (vtheta.abs / 10)
 
 				m_sig.clear_all_pendings
 				m_sig.set_is_go_pending (True)
@@ -89,7 +89,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				if r_sens.is_obstacle_vanished then
 					vtheta := r_sens.time_steps_obstacle_vanished * vtheta
 				end
-				vx := 0.1
+				vx := 0.04
 
 				m_sig.clear_all_pendings
 				m_sig.set_is_wall_following (True)
