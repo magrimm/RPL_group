@@ -155,9 +155,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			if not vleave_d_min.is_positive_infinity then
 				m_sig.set_v_leave (vleave_point)
 				m_sig.set_is_v_leave_found (True)
-				io.put_boolean (True)
-				io.put_string ("bullshit")
-				io.put_string ("VLEAVE FOUND")
 			end
 		end
 
