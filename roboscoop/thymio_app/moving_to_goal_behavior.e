@@ -91,8 +91,8 @@ feature {NONE} -- Implementation
 				agent d.transit_to_vleave (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
 			e.repeat_until_stop_requested (
 				agent e.stop_when_goal_reached (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
---			f.repeat_until_stop_requested (
---				agent f.stop_when_goal_unreachable (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
+			f.repeat_until_stop_requested (
+				agent f.stop_when_goal_unreachable (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
 			g.repeat_until_stop_requested (
 				agent g.change_features (moving_to_goal_sig, stop_sig, top_leds))
 		end

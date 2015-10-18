@@ -157,7 +157,7 @@ feature -- Access.
 	increment_obstacle_vanished_time_steps
 			-- Increments the amount of time the wall has vanished by one
 		do
-			time_steps_obstacle_vanished := time_steps_obstacle_vanished + 0.6
+			time_steps_obstacle_vanished := time_steps_obstacle_vanished + 0.001
 		end
 
 	hit_point_front (a_sensor_index: INTEGER): VECTOR_3D_MSG
@@ -232,13 +232,13 @@ feature -- Access.
 						second_closest_sensor_index := i
 					end
 				end
-				debug
-					io.put_string ("Sensor " + i.out + " is: " + sensors[i].is_valid_range.out
-									+ "    Range: " + sensors[i].range.out
-									+ " clos. sens.: " + closest_sensor_index.out
-									+ " sec. clos. sens.: " + second_closest_sensor_index.out
-									+ "%N")
-				end
+--				debug
+--					io.put_string ("Sensor " + i.out + " is: " + sensors[i].is_valid_range.out
+--									+ "    Range: " + sensors[i].range.out
+--									+ " clos. sens.: " + closest_sensor_index.out
+--									+ " sec. clos. sens.: " + second_closest_sensor_index.out
+--									+ "%N")
+--				end
 				i := i + 1
 			end
 
@@ -276,7 +276,7 @@ feature -- Access.
 				end
 				increment_obstacle_vanished_time_steps
 
-				Result := (3.0 - prev_closest_sensor_index) * 0.002 / desired_distance
+				Result := (3.0 - prev_closest_sensor_index) * 0.005 / desired_distance
 				debug
 					io.put_string ("Pos. 3"
 									+ "%N")
@@ -284,10 +284,10 @@ feature -- Access.
 			end
 
 			debug
-				io.put_string ("#det. sensors " + number_detecting_sensors.out
-								+ " curr dist. " + current_distance.out
-								+ " Result: " + Result.out
-								+ "%N")
+--				io.put_string ("#det. sensors " + number_detecting_sensors.out
+--								+ " curr dist. " + current_distance.out
+--								+ " Result: " + Result.out
+--								+ "%N")
 			end
 		end
 end
