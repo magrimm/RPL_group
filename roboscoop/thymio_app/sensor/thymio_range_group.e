@@ -157,7 +157,7 @@ feature -- Access.
 	increment_obstacle_vanished_time_steps
 			-- Increments the amount of time the wall has vanished by one
 		do
-			time_steps_obstacle_vanished := time_steps_obstacle_vanished + 0.05
+			time_steps_obstacle_vanished := time_steps_obstacle_vanished + 0.06
 		end
 
 	hit_point_front (a_sensor_index: INTEGER): VECTOR_3D_MSG
@@ -262,8 +262,8 @@ feature -- Access.
 					io.put_string ("Pos. 2"
 									+ "%N")
 				end
-			else
 
+			else
 				if not is_obstacle_vanished then
 						set_obstacle_vanished(true)
 				end
@@ -275,6 +275,7 @@ feature -- Access.
 									+ "%N")
 				end
 			end
+
 			debug
 				io.put_string ("#det. sensors " + number_detecting_sensors.out
 								+ " curr dist. " + current_distance.out
