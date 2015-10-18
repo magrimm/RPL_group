@@ -66,7 +66,7 @@ feature  -- Access
 		local
 			relative_coord: POINT_MSG
 		do
-			create relative_coord.make_with_values(distance * tm.cosine(angle), distance * tm.cosine (angle), 0)
+			create relative_coord.make_with_values(distance * tm.cosine(angle), distance * tm.sine (angle), 0)
 			Result := relative_coord
 		end
 
