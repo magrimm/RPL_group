@@ -84,7 +84,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					m_sig.set_is_wall_following_start_point_set (True)
 				end
 
-				vtheta := r_sens.follow_wall_orientation (7.5)
+				vtheta := r_sens.follow_wall_orientation (0.075)
 
 				if r_sens.is_obstacle_vanished then
 					vtheta := r_sens.time_steps_obstacle_vanished * vtheta
@@ -113,7 +113,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			vleave_d_min, sensor_max_range_d_min: REAL_64
 			vleave_sensor_index, i: INTEGER
 		do
-			vleave_d_min := 2^64
+			vleave_d_min := 2^2000
 			create goal_point.make_with_values (goal_x, goal_y, 0.0)
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create vleave_point.make_empty
@@ -136,7 +136,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					 if sensor_max_range_d_min < vleave_d_min and sensor_max_range_d_min < m_sig.d_min then
 					 	vleave_d_min := sensor_max_range_d_min
 					 	vleave_sensor_index := i
-					 	vleave_point := sensor_max_range_abs_point
+					 	create vleave_point.make_with_values (sensor_max_range_abs_point.x, sensor_max_range_abs_point.y, 0)
 					 end
 				end
 				i := i + 1
@@ -178,6 +178,11 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				m_sig.clear_all_pendings
 				m_sig.set_is_transiting (True)
 				drive.set_velocity (vx, vtheta)
+			end
+			debug
+				io.put_string ("vleave_point.x: " + m_sig.v_leave.x.out
+								+ " vleave_point.y: " + m_sig.v_leave.y.out
+								+ "%N")
 			end
 		end
 
