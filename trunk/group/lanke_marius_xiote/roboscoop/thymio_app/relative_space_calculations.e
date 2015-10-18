@@ -76,7 +76,8 @@ feature  -- Access
 		local
 			absolute_coord: POINT_MSG
 		do
-			create absolute_coord.make_with_values (p0.x + p1.x * tm.cosine (theta), p0.y + p1.y * tm.sine (theta), 0)
+			create absolute_coord.make_with_values (p0.x + p1.x * tm.cosine (theta) - p1.y * tm.sine (theta),
+														p0.y + p1.x * tm.sine (theta) + p1.y * tm.cosine (theta), 0)
 			Result := absolute_coord
 		end
 
