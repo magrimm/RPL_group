@@ -1,8 +1,7 @@
 note
-	description: "Summary description for {ERROR_CALCULATIONS}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Calculation class for errors like the heading."
+	author: "Group lanke_marius_xiaote"
+	date: "13.10.2015"
 
 class
 	ERROR_CALCULATIONS

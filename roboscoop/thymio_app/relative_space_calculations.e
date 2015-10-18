@@ -1,8 +1,7 @@
 note
-	description: "Summary description for {RELATIVE_SPACE_CALCULATIONS}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Calculation class in local frame of the robot."
+	author: "Group lanke_marius_xiaote"
+	date: "13.10.2015"
 
 class
 	RELATIVE_SPACE_CALCULATIONS
