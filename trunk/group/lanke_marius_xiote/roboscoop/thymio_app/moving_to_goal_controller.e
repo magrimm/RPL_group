@@ -114,6 +114,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			vleave_sensor_index, i: INTEGER
 		do
 			vleave_d_min := 2^2000
+
 			create goal_point.make_with_values (goal_x, goal_y, 0.0)
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create vleave_point.make_empty
