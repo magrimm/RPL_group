@@ -70,12 +70,12 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			vtheta: REAL_64
 			vx: REAL_64
 			desired_wall_distance: REAL_64
+			closest_sensor_index: INTEGER
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0)
 			create wall_following_start_point.make_with_values (m_sig.wall_following_start_point.x, m_sig.wall_following_start_point.y, 0.0)
 			create goal_point.make_with_values (goal_x, goal_y, 0.0)
-			create relative_wall_following_start_point.make_with_values ((rsc.sensor_distances[r_sens.get_closest_sensor_index]-desired_wall_distance)/tm.cosine (rsc.sensor_angles[r_sens.get_closest_sensor_index]), 0.0, 0.0)
-			desired_wall_distance := 0.15
+			desired_wall_distance := 0.10
 
 			if(m_sig.previous_time_stamp = 0) then
 				m_sig.set_previous_time_stamp (o_sig.timestamp-0.02)		-- To initialize the previous timestamp variable
@@ -83,15 +83,24 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 			m_sig.set_angle_looped_around_obstacle (m_sig.angle_looped_around_obstacle + o_sig.vtheta *(o_sig.timestamp - m_sig.previous_time_stamp))
 			m_sig.set_previous_time_stamp (o_sig.timestamp)
-			io.put_string ("The angle looped around : " + m_sig.angle_looped_around_obstacle.out)
-
 
 			if s_sig.is_stop_requested then
 				drive.stop
 			else
 				if not m_sig.is_wall_following_start_point_set then
 					--m_sig.set_wall_following_start_point (robot_point)
-					m_sig.set_wall_following_start_point (rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point, relative_wall_following_start_point, o_sig.theta))
+					closest_sensor_index := r_sens.get_closest_sensor_index
+					create relative_wall_following_start_point.make_with_values (
+								(rsc.sensor_distances[closest_sensor_index]+ r_sens.sensors[closest_sensor_index].range -desired_wall_distance)
+									/tm.cosine (rsc.sensor_angles[closest_sensor_index]), 0.0, 0.0)
+					wall_following_start_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,
+															relative_wall_following_start_point, o_sig.theta)
+					m_sig.set_wall_following_start_point (wall_following_start_point)
+					debug
+						io.put_double (rsc.sensor_distances[closest_sensor_index])
+						io.put_string ("wall_following_start_point_relative: " + relative_wall_following_start_point.out)
+						io.put_string ("absolute_point: " + wall_following_start_point.out)
+					end
 					m_sig.set_is_wall_following_start_point_set (True)
 				end
 
@@ -116,7 +125,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 						r_sens: separate THYMIO_RANGE_GROUP)
 				-- Look for v_leave when in wall_following state
 		require
-			m_sig.is_wall_following and m_sig.angle_looped_around_obstacle > 1000
+			m_sig.is_wall_following and m_sig.angle_looped_around_obstacle.abs > 1.5
 		local
 			goal_point, robot_point, sensor_max_range_rel_point, sensor_max_range_abs_point: POINT_MSG
 			vleave_point: separate POINT_MSG
@@ -159,7 +168,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				i := i + 1
 			end
 
-			if not vleave_d_min.is_positive_infinity then
+			if not vleave_d_min.is_positive_infinity and vleave_sensor_index /= 3 then
 				m_sig.set_v_leave (vleave_point)
 				m_sig.set_is_v_leave_found (True)
 			end
@@ -267,8 +276,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				create robot_point_.make_with_values (o_sig.x, o_sig.y, 0.0)
 				create wall_following_start_point_.make_from_separate (m_sig.wall_following_start_point)
 
-				if (m_sig.angle_looped_around_obstacle.abs > 2000 and
-					tm.euclidean_distance (robot_point_, wall_following_start_point_) < 0.15) then
+				if (m_sig.angle_looped_around_obstacle.abs > 5 and
+					tm.euclidean_distance (robot_point_, wall_following_start_point_) < 0.02) then
 					m_sig.clear_all_pendings
 					m_sig.set_is_goal_unreachable (True)
 					drive.stop
@@ -277,13 +286,13 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 						io.put_string ("Current state: GOAL UNREACHABLE%N")
 					end
 				end
-				debug
-					io.put_string (--"%Nwall_foll_point: " + wall_following_start_point_.out
-								--	+ " robot_point " + robot_point_.out
-									 "%Neuk_dist: " + tm.euclidean_distance (robot_point_, wall_following_start_point_).out
-									+ " angle_loo_around: " + m_sig.angle_looped_around_obstacle.out
-									+ "%N")
-				end
+--				debug
+--					io.put_string ("%Nwall_foll_point: " + wall_following_start_point_.out
+--									+ " robot_point " + robot_point_.out
+--									+ "%Neuk_dist: " + tm.euclidean_distance (robot_point_, wall_following_start_point_).out
+--									+ " angle_loo_around: " + m_sig.angle_looped_around_obstacle.out
+--									+ "%N")
+--				end
 			end
 		end
 
