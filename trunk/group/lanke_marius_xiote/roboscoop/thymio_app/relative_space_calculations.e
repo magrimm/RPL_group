@@ -70,12 +70,13 @@ feature  -- Access
 			Result := relative_coord
 		end
 
-	convert_relative_coordinates_to_absolute_coordinates (p0, p1: POINT_MSG): POINT_MSG
-			-- Calculate the absolute coordinates given p0, the absoluate coordinates of (0, 0), and p1, the relative coordinates
+	convert_relative_coordinates_to_absolute_coordinates (p0, p1: POINT_MSG; theta: REAL_64): POINT_MSG
+			-- Calculate the absolute coordinates given p0, the absoluate coordinates of (0, 0), p1, the relative coordinates,
+			-- and theta, the angle between the x-axis of the absolute frame and the x-axis of the relative frame.
 		local
 			absolute_coord: POINT_MSG
 		do
-			create absolute_coord.make_with_values (p0.x + p1.x, p0.y + p1.y, 0)
+			create absolute_coord.make_with_values (p0.x + p1.x * tm.cosine (theta), p0.y + p1.y * tm.sine (theta), 0)
 			Result := absolute_coord
 		end
 
