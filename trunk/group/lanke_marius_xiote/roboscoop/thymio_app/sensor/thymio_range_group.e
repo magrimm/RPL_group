@@ -42,8 +42,6 @@ feature {NONE} -- Initialization.
 feature -- Access.
 
 	prev_closest_sensor_index: INTEGER
-	prev_closest_sensor_range: REAL_64
-
 
 	is_obstacle_vanished: BOOLEAN
 			-- Whether a wall obstacle disappeared or not?
@@ -264,11 +262,9 @@ feature -- Access.
 			elseif number_detecting_sensors = 1 then
 				set_obstacle_vanished(False)
 				prev_closest_sensor_index := closest_sensor_index
-				prev_closest_sensor_range := closest_sensor_range
 				Result := 0
 				debug
 					io.put_string ("Pos. 3"
-									+ " prev_clo_sens_range: " + prev_closest_sensor_range.out
 									+ "%N")
 				end
 			else
