@@ -249,10 +249,10 @@ feature -- Access.
 				current_distance := rsc.get_distance_to_line (points[closest_sensor_index], points[second_closest_sensor_index])
 
 				if second_closest_sensor_index < closest_sensor_index then
-					Result := rsc.get_heading_to_follow_line (points[closest_sensor_index], points[second_closest_sensor_index],
+					Result := rsc.get_heading_to_follow_line (points[second_closest_sensor_index], points[closest_sensor_index],
 																current_distance, desired_distance)
 				else
-					Result := rsc.get_heading_to_follow_line (points[second_closest_sensor_index], points[closest_sensor_index],
+					Result := rsc.get_heading_to_follow_line (points[closest_sensor_index], points[second_closest_sensor_index],
 																current_distance, desired_distance)
 				end
 
