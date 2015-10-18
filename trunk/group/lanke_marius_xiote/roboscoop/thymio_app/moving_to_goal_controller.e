@@ -84,7 +84,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					m_sig.set_is_wall_following_start_point_set (True)
 				end
 
-				vtheta := r_sens.follow_wall_orientation (0.075)
+				vtheta := r_sens.follow_wall_orientation (0.15)
 
 				if r_sens.is_obstacle_vanished then
 					vtheta := r_sens.time_steps_obstacle_vanished * vtheta
@@ -105,7 +105,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 						r_sens: separate THYMIO_RANGE_GROUP)
 				-- Look for v_leave when in wall_following state
 		require
-			m_sig.is_wall_following and m_sig.angle_looped_around_obstacle > 10
+			m_sig.is_wall_following and m_sig.angle_looped_around_obstacle > 1000
 		local
 			goal_point, robot_point, sensor_max_range_rel_point, sensor_max_range_abs_point: POINT_MSG
 			vleave_point: separate POINT_MSG
@@ -134,7 +134,11 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					 sensor_max_range_rel_point := rsc.get_relative_coordinates_with_sensor (r_sens.sensors[i].max_range, i)
 					 sensor_max_range_abs_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point, sensor_max_range_rel_point)
 					 sensor_max_range_d_min := tm.euclidean_distance (goal_point, sensor_max_range_abs_point)
+					 debug
+					 	io.put_string ("m_sig_d_min: " + m_sig.d_min.out + " sensor_max: " + sensor_max_range_d_min.out)
+					 end
 					 if sensor_max_range_d_min < vleave_d_min and sensor_max_range_d_min < m_sig.d_min then
+
 					 	vleave_d_min := sensor_max_range_d_min
 					 	vleave_sensor_index := i
 					 	create vleave_point.make_with_values (sensor_max_range_abs_point.x, sensor_max_range_abs_point.y, 0)
@@ -146,6 +150,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			if not vleave_d_min.is_positive_infinity then
 				m_sig.set_v_leave (vleave_point)
 				m_sig.set_is_v_leave_found (True)
+				io.put_boolean (True)
+				io.put_string ("bullshit")
+				io.put_string ("VLEAVE FOUND")
 			end
 		end
 
@@ -169,6 +176,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			elseif tm.euclidean_distance (vleave, robot_point) < 0.02 then
 				m_sig.clear_all_pendings
 				m_sig.set_is_v_leave_found (False)
+				io.put_boolean (m_sig.is_v_leave_found)
+				io.put_boolean (m_sig.is_transiting)
+				io.put_string ("wierd")
 
 			else
 				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)
@@ -179,6 +189,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				m_sig.clear_all_pendings
 				m_sig.set_is_transiting (True)
 				drive.set_velocity (vx, vtheta)
+			end
+
+			debug
+				io.put_string ("Current state: TRANSITION%N")
 			end
 			debug
 				io.put_string ("vleave_point.x: " + m_sig.v_leave.x.out
@@ -244,7 +258,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				create robot_point_.make_with_values (o_sig.x, o_sig.y, 0.0)
 				create wall_following_start_point_.make_from_separate (m_sig.wall_following_start_point)
 
-				if (m_sig.angle_looped_around_obstacle.abs > 50 and
+				if (m_sig.angle_looped_around_obstacle.abs > 2000 and
 					tm.euclidean_distance (robot_point_, wall_following_start_point_) < 0.15) then
 					m_sig.clear_all_pendings
 					m_sig.set_is_goal_unreachable (True)
@@ -255,9 +269,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					end
 				end
 				debug
-					io.put_string ("%Nwall_foll_point: " + wall_following_start_point_.out
-									+ " robot_point " + robot_point_.out
-									+ "euk_dist: " + tm.euclidean_distance (robot_point_, wall_following_start_point_).out
+					io.put_string (--"%Nwall_foll_point: " + wall_following_start_point_.out
+								--	+ " robot_point " + robot_point_.out
+									 "%Neuk_dist: " + tm.euclidean_distance (robot_point_, wall_following_start_point_).out
 									+ " angle_loo_around: " + m_sig.angle_looped_around_obstacle.out
 									+ "%N")
 				end

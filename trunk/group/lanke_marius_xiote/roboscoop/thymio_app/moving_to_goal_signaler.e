@@ -14,6 +14,8 @@ feature
 		do
 			create v_leave.make_empty
 			create wall_following_start_point.make_empty
+
+			d_min := 2^2000
 		end
 
 feature -- Access
