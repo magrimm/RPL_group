@@ -244,27 +244,22 @@ feature -- Access.
 
 			if number_detecting_sensors >= 2 then
 				set_obstacle_vanished(False)
-				if closest_sensor_index < second_closest_sensor_index then
-					current_distance := -rsc.get_distance_to_line (points[closest_sensor_index], points[second_closest_sensor_index])
-					debug
-						io.put_string ("Pos. 1"	+ "%N")
-					end
-				else
-					current_distance := -rsc.get_distance_to_line (points[second_closest_sensor_index], points[closest_sensor_index])
-					debug
-						io.put_string ("Pos. 2"	+ "%N")
-					end
-				end
-
 				prev_closest_sensor_index := closest_sensor_index
+
+				current_distance := rsc.get_distance_to_line (points[closest_sensor_index], points[second_closest_sensor_index])
 				Result := rsc.get_heading_to_follow_line (points[closest_sensor_index], points[second_closest_sensor_index],
 															current_distance, desired_distance)
+				debug
+					io.put_string ("Pos. 1"
+									+ "%N")
+				end
+
 			elseif number_detecting_sensors = 1 then
 				set_obstacle_vanished(False)
 				prev_closest_sensor_index := closest_sensor_index
 				Result := 0
 				debug
-					io.put_string ("Pos. 3"
+					io.put_string ("Pos. 2"
 									+ "%N")
 				end
 			else
@@ -276,8 +271,7 @@ feature -- Access.
 
 				Result := (3.0 - prev_closest_sensor_index) * 0.2 / desired_distance
 				debug
-					io.put_string ("Pos. 4,"
-									+ " prev_clo_sens_ind: " + prev_closest_sensor_index.out
+					io.put_string ("Pos. 3"
 									+ "%N")
 				end
 			end

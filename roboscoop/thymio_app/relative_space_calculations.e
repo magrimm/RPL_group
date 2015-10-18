@@ -82,7 +82,7 @@ feature  -- Access
 	get_distance_to_line (p1, p2: POINT_MSG): REAL_64
 			-- Calculate the distance from (0,0) to the line represented by the given two points.
 		do
-			Result := ((p2.y - p1.y) * p1.x - (p2.x - p1.x) * p1.y) / tm.sqrt ((p2.x - p1.x).power(2) + (p2.y - p1.y).power(2))
+			Result := (((p2.y - p1.y) * p1.x - (p2.x - p1.x) * p1.y) / tm.sqrt ((p2.x - p1.x).power(2) + (p2.y - p1.y).power(2))).abs
 			debug
 				io.put_string ("distance to wall: " + Result.out + "%N")
 			end
