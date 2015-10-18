@@ -160,6 +160,45 @@ feature -- Access.
 			time_steps_obstacle_vanished := time_steps_obstacle_vanished + 0.001
 		end
 
+	get_closest_sensor_index: INTEGER
+		local
+		    i, closest_sensor_index: INTEGER
+		    closest_sensor_range: REAL_64
+		do
+			from
+				i := sensors.lower
+			until
+				i > sensors.upper - 2
+			loop
+				if sensors[i].is_valid_range and sensors[i].range < closest_sensor_range then
+						closest_sensor_range := sensors[i].range
+						closest_sensor_index := i
+				end
+				i := i + 1
+			end
+
+			Result := closest_sensor_index
+		end
+
+	get_number_detecting_sensors: INTEGER
+		local
+			i: INTEGER
+			number_detecting_sensors: INTEGER
+		do
+			from
+				i := sensors.lower
+			until
+				i > sensors.upper - 2
+			loop
+				if (sensors[i].is_valid_range and sensors[i].range < 0.2) then
+					number_detecting_sensors := number_detecting_sensors + 1
+				end
+				i := i + 1
+			end
+
+			Result := number_detecting_sensors
+		end
+
 	hit_point_front (a_sensor_index: INTEGER): VECTOR_3D_MSG
 			-- <Precursor>
 		do
@@ -198,11 +237,10 @@ feature -- Access.
 	follow_wall_orientation (desired_distance: REAL_64): REAL_64
 			-- Calculate the heading for wall following to maintain a desired_distance from the wall.
 		local
-		    i: INTEGER
+
 		    rsc: RELATIVE_SPACE_CALCULATIONS
 		   	number_detecting_sensors: INTEGER
 		   	closest_sensor_point, second_closest_sensor_point: POINT_MSG
-		   	closest_sensor_range: REAL_64
 		   	closest_sensor_index, second_closest_sensor_index: INTEGER
 		   	current_distance: REAL_64
 		   	last_detecting_point_before_corner: POINT_MSG
@@ -212,34 +250,27 @@ feature -- Access.
 			create closest_sensor_point.make_empty
 			create second_closest_sensor_point.make_empty
 
-			from
-				i := sensors.lower
-			until
-				i > sensors.upper - 2
-			loop
-				if (sensors[i].is_valid_range and sensors[i].range < 0.2) then
-					number_detecting_sensors := number_detecting_sensors + 1
-
-					if sensors[i].range < closest_sensor_range then
-						closest_sensor_range := sensors[i].range
-						closest_sensor_index := i
-						closest_sensor_point := rsc.get_relative_coordinates_with_sensor (sensors[i].range, i)
-					end
-				end
-				i := i + 1
-			end
+			number_detecting_sensors := get_number_detecting_sensors
+			closest_sensor_index := get_closest_sensor_index
 
 			if number_detecting_sensors > 0 then
 				set_obstacle_vanished (False)
 				prev_closest_sensor_index := closest_sensor_index
 			end
 
-			if (i > 1 and sensors[i - 1].is_valid_range) or (i < 5 and sensors[i + 1].is_valid_range) then
-				if (i = 1) or (sensors[i - 1].range > sensors[i + 1].range) then
-					second_closest_sensor_point := rsc.get_relative_coordinates_with_sensor (sensors[i + 1].range, i + 1)
+			if (closest_sensor_index > 1 and sensors[closest_sensor_index - 1].is_valid_range)
+				or (closest_sensor_index < 5 and sensors[closest_sensor_index + 1].is_valid_range) then
+				closest_sensor_point := rsc.get_relative_coordinates_with_sensor (sensors[closest_sensor_index].range,
+																					closest_sensor_index)
+				if (closest_sensor_index = 1)
+					or (sensors[closest_sensor_index - 1].range > sensors[closest_sensor_index + 1].range) then
+					second_closest_sensor_index := closest_sensor_index + 1
 				else
-					second_closest_sensor_point := rsc.get_relative_coordinates_with_sensor (sensors[i - 1].range, i - 1)
+					second_closest_sensor_index := closest_sensor_index - 1
 				end
+
+				second_closest_sensor_point := rsc.get_relative_coordinates_with_sensor (sensors[second_closest_sensor_index].range,
+																					second_closest_sensor_index)
 			end
 
 			if number_detecting_sensors >= 2 then
