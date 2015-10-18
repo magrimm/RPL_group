@@ -66,13 +66,16 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			not m_sig.is_goal_unreachable and
 			(r_sens.is_obstacle or m_sig.is_wall_following) and not m_sig.is_transiting) or s_sig.is_stop_requested
 		local
-			wall_following_start_point, goal_point, robot_point: POINT_MSG
+			wall_following_start_point, relative_wall_following_start_point, goal_point, robot_point: POINT_MSG
 			vtheta: REAL_64
 			vx: REAL_64
+			desired_wall_distance: REAL_64
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0)
 			create wall_following_start_point.make_with_values (m_sig.wall_following_start_point.x, m_sig.wall_following_start_point.y, 0.0)
 			create goal_point.make_with_values (goal_x, goal_y, 0.0)
+			create relative_wall_following_start_point.make_with_values ((rsc.sensor_distances[r_sens.get_closest_sensor_index]-desired_wall_distance)/tm.cosine (rsc.sensor_angles[r_sens.get_closest_sensor_index]), 0.0, 0.0)
+			desired_wall_distance := 0.15
 
 			m_sig.set_angle_looped_around_obstacle (m_sig.angle_looped_around_obstacle + o_sig.vtheta)
 
@@ -80,11 +83,12 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				drive.stop
 			else
 				if not m_sig.is_wall_following_start_point_set then
-					m_sig.set_wall_following_start_point (robot_point)
+					--m_sig.set_wall_following_start_point (robot_point)
+					m_sig.set_wall_following_start_point (rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point, relative_wall_following_start_point, o_sig.theta))
 					m_sig.set_is_wall_following_start_point_set (True)
 				end
 
-				vtheta := r_sens.follow_wall_orientation (0.15)
+				vtheta := r_sens.follow_wall_orientation (desired_wall_distance)
 
 				if r_sens.is_obstacle_vanished then
 					vtheta := r_sens.time_steps_obstacle_vanished * vtheta
