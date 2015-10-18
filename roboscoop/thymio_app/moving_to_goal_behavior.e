@@ -35,7 +35,7 @@ feature -- Access
 	start
 			-- Start the behaviour.
 		local
-			a, b, c, d, e, f: separate MOVING_TO_GOAL_CONTROLLER
+			a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER
 		do
 			create a.make (stop_sig, goal_x, goal_y)
 			create b.make (stop_sig, goal_x, goal_y)
@@ -43,9 +43,10 @@ feature -- Access
 			create d.make (stop_sig, goal_x, goal_y)
 			create e.make (stop_sig, goal_x, goal_y)
 			create f.make (stop_sig, goal_x, goal_y)
+			create g.make (stop_sig, goal_x, goal_y)
 
 			sep_stop (stop_sig, False)
-			sep_start (a, b, c, d, e, f)
+			sep_start (a, b, c, d, e, f, g)
 		end
 
 	stop
@@ -77,7 +78,7 @@ feature {NONE} -- Implementation
 	goal_x, goal_y: REAL_64
 			-- Goal position.
 
-	sep_start (a, b, c, d, e, f: separate MOVING_TO_GOAL_CONTROLLER)
+	sep_start (a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER)
 			-- Start controllers asynchronously.
 		do
 			a.repeat_until_stop_requested (
@@ -85,13 +86,15 @@ feature {NONE} -- Implementation
 			b.repeat_until_stop_requested (
 				agent b.follow_wall (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
 			c.repeat_until_stop_requested (
-				agent c.stop_when_goal_reached (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
+				agent c.look_for_vleave (moving_to_goal_sig, odometry_sig, stop_sig, range_sens))
 			d.repeat_until_stop_requested (
-				agent d.stop_when_goal_unreachable (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
---			e.repeat_until_stop_requested (
---				agent e.transit_vleave (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
+				agent d.transit_to_vleave (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
+			e.repeat_until_stop_requested (
+				agent e.stop_when_goal_reached (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
 			f.repeat_until_stop_requested (
-				agent f.change_features (moving_to_goal_sig, stop_sig, top_leds))
+				agent f.stop_when_goal_unreachable (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
+			g.repeat_until_stop_requested (
+				agent g.change_features (moving_to_goal_sig, stop_sig, top_leds))
 		end
 
 	sep_stop (s_sig: separate STOP_SIGNALER; val: BOOLEAN)
