@@ -132,7 +132,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				if not r_sens.sensors[i].is_valid_range and (i = 1 or not r_sens.sensors[i - 1].is_valid_range)
 					and (i = 5 or not r_sens.sensors[i + 1].is_valid_range) then
 					 sensor_max_range_rel_point := rsc.get_relative_coordinates_with_sensor (r_sens.sensors[i].max_range, i)
-					 sensor_max_range_abs_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point, sensor_max_range_rel_point)
+					 sensor_max_range_abs_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,
+					 									sensor_max_range_rel_point, o_sig.theta)
 					 sensor_max_range_d_min := tm.euclidean_distance (goal_point, sensor_max_range_abs_point)
 					 debug
 					 	io.put_string ("m_sig_d_min: " + m_sig.d_min.out + " sensor_max: " + sensor_max_range_d_min.out)
@@ -141,7 +142,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 					 	vleave_d_min := sensor_max_range_d_min
 					 	vleave_sensor_index := i
-					 	create vleave_point.make_with_values (sensor_max_range_abs_point.x, sensor_max_range_abs_point.y, 0)
+					 	vleave_point := sensor_max_range_abs_point
 					 end
 				end
 				i := i + 1
