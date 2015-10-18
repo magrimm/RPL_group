@@ -199,19 +199,18 @@ feature -- Access.
 			-- Calculate the heading for wall following to maintain a desired_distance from the wall.
 		local
 		    i: INTEGER
-		    default_point: POINT_MSG
-		    points: ARRAY[POINT_MSG]
 		    rsc: RELATIVE_SPACE_CALCULATIONS
 		   	number_detecting_sensors: INTEGER
-		   	closest_sensor_range, second_closest_sensor_range: REAL_64
+		   	closest_sensor_point, second_closest_sensor_point: POINT_MSG
+		   	closest_sensor_range: REAL_64
 		   	closest_sensor_index, second_closest_sensor_index: INTEGER
 		   	current_distance: REAL_64
 		   	last_detecting_point_before_corner: POINT_MSG
 		   	distance_before_turn: REAL_64
 		do
 			create rsc.make
-			create default_point.make_empty
-			create points.make_filled (default_point, 1, 5)
+			create closest_sensor_point.make_empty
+			create second_closest_sensor_point.make_empty
 
 			from
 				i := sensors.lower
@@ -219,75 +218,51 @@ feature -- Access.
 				i > sensors.upper - 2
 			loop
 				if (sensors[i].is_valid_range and sensors[i].range < 0.2) then
-					points.put(rsc.get_relative_coordinates_with_sensor (sensors[i].range, i), i)
 					number_detecting_sensors := number_detecting_sensors + 1
 
-					if closest_sensor_index = 0 or sensors[i].range < closest_sensor_range then
-						second_closest_sensor_range := closest_sensor_range
-						second_closest_sensor_index := closest_sensor_index
+					if sensors[i].range < closest_sensor_range then
 						closest_sensor_range := sensors[i].range
 						closest_sensor_index := i
-					elseif second_closest_sensor_index = 0 or sensors[i].range < second_closest_sensor_range then
-						second_closest_sensor_range := sensors[i].range
-						second_closest_sensor_index := i
+						closest_sensor_point := rsc.get_relative_coordinates_with_sensor (sensors[i].range, i)
 					end
 				end
---				debug
---					io.put_string ("Sensor " + i.out + " is: " + sensors[i].is_valid_range.out
---									+ "    Range: " + sensors[i].range.out
---									+ " clos. sens.: " + closest_sensor_index.out
---									+ " sec. clos. sens.: " + second_closest_sensor_index.out
---									+ "%N")
---				end
 				i := i + 1
 			end
 
-			if number_detecting_sensors >= 2 then
-				set_obstacle_vanished(False)
+			if number_detecting_sensors > 0 then
+				set_obstacle_vanished (False)
 				prev_closest_sensor_index := closest_sensor_index
+			end
 
-				current_distance := rsc.get_distance_to_line (points[closest_sensor_index], points[second_closest_sensor_index])
+			if (i > 1 and sensors[i - 1].is_valid_range) or (i < 5 and sensors[i + 1].is_valid_range) then
+				if (i = 1) or (sensors[i - 1].range > sensors[i + 1].range) then
+					second_closest_sensor_point := rsc.get_relative_coordinates_with_sensor (sensors[i + 1].range, i + 1)
+				else
+					second_closest_sensor_point := rsc.get_relative_coordinates_with_sensor (sensors[i - 1].range, i - 1)
+				end
+			end
+
+			if number_detecting_sensors >= 2 then
+				current_distance := rsc.get_distance_to_line (closest_sensor_point, second_closest_sensor_point)
 
 				if second_closest_sensor_index < closest_sensor_index then
-					Result := rsc.get_heading_to_follow_line (points[second_closest_sensor_index], points[closest_sensor_index],
+					Result := rsc.get_heading_to_follow_line (second_closest_sensor_point, closest_sensor_point,
 																current_distance, desired_distance)
 				else
-					Result := rsc.get_heading_to_follow_line (points[closest_sensor_index], points[second_closest_sensor_index],
+					Result := rsc.get_heading_to_follow_line (closest_sensor_point, second_closest_sensor_point,
 																current_distance, desired_distance)
-				end
-
-				debug
-					io.put_string ("Pos. 1"
-									+ "%N")
 				end
 
 			elseif number_detecting_sensors = 1 then
-				set_obstacle_vanished(False)
-				prev_closest_sensor_index := closest_sensor_index
 				Result := 0
-				debug
-					io.put_string ("Pos. 2"
-									+ "%N")
-				end
 
 			else
 				if not is_obstacle_vanished then
-						set_obstacle_vanished(true)
+					set_obstacle_vanished(true)
 				end
 				increment_obstacle_vanished_time_steps
 
 				Result := (3.0 - prev_closest_sensor_index) * 0.005 / desired_distance
-				debug
-					io.put_string ("Pos. 3"
-									+ "%N")
-				end
-			end
-
-			debug
---				io.put_string ("#det. sensors " + number_detecting_sensors.out
---								+ " curr dist. " + current_distance.out
---								+ " Result: " + Result.out
---								+ "%N")
 			end
 		end
 end
