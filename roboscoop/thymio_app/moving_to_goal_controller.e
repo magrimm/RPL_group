@@ -105,7 +105,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 						r_sens: separate THYMIO_RANGE_GROUP)
 				-- Look for v_leave when in wall_following state
 		require
-			m_sig.is_wall_following and m_sig.angle_looped_around_obstacle > 50
+			m_sig.is_wall_following and m_sig.angle_looped_around_obstacle > 10
 		local
 			goal_point, robot_point, sensor_max_range_rel_point, sensor_max_range_abs_point: POINT_MSG
 			vleave_point: separate POINT_MSG
