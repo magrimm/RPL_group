@@ -50,6 +50,8 @@ feature
 	    		params.set_angle_looped_around_threshold_unreachable (string_tokens.at (2).to_real)
 	    		elseif (string_tokens.at (1).is_equal ("goal_unreachable_distance_threshold")) then
 	    		params.set_goal_unreachable_distance_threshold (string_tokens.at (2).to_real)
+	    		elseif (string_tokens.at (1).is_equal ("vx")) then
+	    		params.set_vx (string_tokens.at (2).to_real)
 --	    		elseif
 	    		end
 
