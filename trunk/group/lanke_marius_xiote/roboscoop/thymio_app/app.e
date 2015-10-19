@@ -19,8 +19,6 @@ feature {NONE} -- Initialization
 			robo_node: separate ROBOSCOOP_NODE
 			ros_spinner: separate ROS_SPINNER
 			thymio: separate THYMIO_ROBOT
-			goal_x: REAL_64
-			goal_y: REAL_64
 		do
 			-- Initialize this application as a ROS node.
 			robo_node := (create {ROS_NODE_STARTER}).roboscoop_node
@@ -30,12 +28,8 @@ feature {NONE} -- Initialization
 			create ros_spinner.make
 			start_spinning (ros_spinner)
 
-			-- Get goal position from command line.
-			goal_x := Arguments.argument (1).to_double
-			goal_y := Arguments.argument (2).to_double
-
 			-- Create a robot object.
-			create thymio.make (goal_x, goal_y)
+			create thymio.make (Arguments.argument (1).to_string_8)
 
 			-- Launch Thymio.
 			separate thymio as t do
