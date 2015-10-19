@@ -66,24 +66,19 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			(r_sens.is_obstacle or m_sig.is_wall_following) and
 			not m_sig.is_transiting) or s_sig.is_stop_requested
 		local
-			robot_point: POINT_MSG
 			vtheta, vx, desired_wall_distance: REAL_64
 		do
-			create robot_point.make_with_values (o_sig.x, o_sig.y, 0)
 			desired_wall_distance := 0.10
-
-			if (m_sig.previous_time_stamp = 0) then
-				m_sig.set_previous_time_stamp (o_sig.timestamp-0.02)		-- To initialize the previous timestamp variable
-			end -- TODO: where does this belong?
-
-			m_sig.set_angle_looped_around_obstacle (m_sig.angle_looped_around_obstacle + o_sig.vtheta *(o_sig.timestamp - m_sig.previous_time_stamp))
-			m_sig.set_previous_time_stamp (o_sig.timestamp) -- TODO: where does this belong
 
 			if s_sig.is_stop_requested then
 				drive.stop
 			else
-				if not m_sig.is_wall_following_start_point_set then
+				if not m_sig.is_wall_following_start_set then
+					-- Set wall_following_start_point and wall_following_start_theta
+					-- when enter into wall following state the first time.
 					set_wall_following_start_point (m_sig, o_sig, r_sens, desired_wall_distance)
+					m_sig.set_wall_following_start_theta (o_sig.theta)
+					m_sig.set_is_wall_following_start_set (True)
 				end
 
 				if r_sens.is_obstacle_vanished then
@@ -110,7 +105,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Look for v_leave when in wall_following state
 		require
 			(m_sig.is_wall_following and
-			m_sig.angle_looped_around_obstacle.abs > 0.5 and
+			(m_sig.wall_following_start_theta - o_sig.theta).abs > 0.5 and
 			r_sens.is_obstacle and
 
 			not m_sig.is_goal_unreachable and
@@ -174,9 +169,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			not m_sig.is_goal_unreachable and
 			not m_sig.is_goal_reached) or s_sig.is_stop_requested
 		local
-			heading_error: REAL_64
-			vtheta: REAL_64
-			vx: REAL_64
+			heading_error, vtheta, vx: REAL_64
 			vleave, robot_point: POINT_MSG
 		do
 			create vleave.make_from_separate (m_sig.v_leave)
@@ -186,12 +179,12 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				drive.stop
 
 			elseif tm.euclidean_distance (vleave, robot_point) < 0.02 then
+				-- Exit transition state when vleave point reached.
 				m_sig.clear_all_pendings
 				m_sig.set_is_v_leave_found (False)
 
 			else
 				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)
-
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
 				vx := 0.04
 
@@ -229,21 +222,17 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		local
 			robot_point, goal_point: POINT_MSG
 		do
-			if s_sig.is_stop_requested then
+			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
+			create goal_point.make_from_separate (m_sig.goal_point)
+
+			if tm.euclidean_distance (goal_point, robot_point) < 0.05 then
+				m_sig.clear_all_pendings
+				m_sig.set_is_goal_reached (True)
+				s_sig.set_stop_requested (True)
 				drive.stop
-			else
-				create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
-				create goal_point.make_from_separate (m_sig.goal_point)
 
-				if tm.euclidean_distance (goal_point, robot_point) < 0.05 then
-					m_sig.clear_all_pendings
-					m_sig.set_is_goal_reached (True)
-					s_sig.set_stop_requested (True)
-					drive.stop
-
-					debug
-						io.put_string ("Current state: STOP - GOAL REACHED%N")
-					end
+				debug
+					io.put_string ("Current state: STOP - GOAL REACHED%N")
 				end
 			end
 		end
@@ -254,24 +243,20 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		require
 			o_sig.is_moving or s_sig.is_stop_requested
 		local
-			wall_following_start_point_, robot_point_: POINT_MSG
+			wall_following_start_point, robot_point: POINT_MSG
 		do
-			if s_sig.is_stop_requested then
+			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
+			create wall_following_start_point.make_from_separate (m_sig.wall_following_start_point)
+
+			if ((m_sig.wall_following_start_theta - o_sig.theta).abs > 3.14 and
+				tm.euclidean_distance (robot_point, wall_following_start_point) < 0.15) then
+				m_sig.clear_all_pendings
+				s_sig.set_stop_requested (True)
+				m_sig.set_is_goal_unreachable (True)
 				drive.stop
-			else
-				create robot_point_.make_with_values (o_sig.x, o_sig.y, 0.0)
-				create wall_following_start_point_.make_from_separate (m_sig.wall_following_start_point)
 
-				if (m_sig.angle_looped_around_obstacle.abs > 3.14 and
-					tm.euclidean_distance (robot_point_, wall_following_start_point_) < 0.15) then
-					m_sig.clear_all_pendings
-					s_sig.set_stop_requested (True)
-					m_sig.set_is_goal_unreachable (True)
-					drive.stop
-
-					debug
-						io.put_string ("Current state: GOAL UNREACHABLE%N")
-					end
+				debug
+					io.put_string ("Current state: GOAL UNREACHABLE%N")
 				end
 			end
 		end
@@ -302,7 +287,6 @@ feature {NONE}
 			abs_start_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,
 													relative_start_point, o_sig.theta)
 			m_sig.set_wall_following_start_point (abs_start_point)
-			m_sig.set_is_wall_following_start_point_set (True)
 		end
 
 end -- class MOVING_TO_GOAL_CONTROLLER
