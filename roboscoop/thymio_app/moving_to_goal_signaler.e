@@ -107,13 +107,13 @@ feature -- Access
 	set_v_leave (a_val: separate POINT_MSG)
 			-- Set v_leave value equal to a_val
 		do
-			create v_leave.make_with_values (a_val.x, a_val.y, a_val.z)
+			create v_leave.make_from_separate (a_val)
 		end
 
 	set_wall_following_start_point (a_val: separate POINT_MSG)
 			-- Set wall_following_start_point
 		do
-			create wall_following_start_point.make_with_values (a_val.x, a_val.y, a_val.z)
+			create wall_following_start_point.make_from_separate (a_val)
 		end
 
 	set_angle_looped_around_obstacle (a_val: REAL_64)

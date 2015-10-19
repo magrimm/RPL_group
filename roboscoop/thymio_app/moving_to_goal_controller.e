@@ -47,16 +47,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			else
 				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, goal_x, goal_y)
 
-				-- USED IN CALIBRATION OF BACKWARDS MOTION
-				--vtheta := pid_controller.get_control_output ((3.1415 - heading_error.abs)*-heading_error/heading_error.abs, o_sig.timestamp)
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
-				vx := 0.04 --0.025 - (vtheta.abs / 10)
-
-				debug
-					io.put_string ("odom_x: " + o_sig.x.out
-									+ "odom_y: " + o_sig.y.out
-									+ "%N")
-				end
+				vx := 0.04
 
 				m_sig.clear_all_pendings
 				m_sig.set_is_go_pending (True)
@@ -106,20 +98,14 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					wall_following_start_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,
 															relative_wall_following_start_point, o_sig.theta)
 					m_sig.set_wall_following_start_point (wall_following_start_point)
-					debug
-						io.put_double (rsc.sensor_distances[closest_sensor_index])
-						io.put_string ("wall_following_start_point_relative: " + relative_wall_following_start_point.out)
-						io.put_string ("absolute_point: " + wall_following_start_point.out)
-					end
 					m_sig.set_is_wall_following_start_point_set (True)
 				end
 
 				vtheta := r_sens.follow_wall_orientation (desired_wall_distance)
 
 				if r_sens.is_obstacle_vanished then
---					vtheta := vtheta * (r_sens.time_steps_obstacle_vanished-2).power(2.5)
 					if (r_sens.time_steps_obstacle_vanished-6.5) > 0 then
-						vtheta := vtheta --* (r_sens.time_steps_obstacle_vanished-1.23).power(1)
+						vtheta := vtheta
 					else
 						vtheta := 0
 					end
@@ -127,7 +113,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				end
 
 				vx := 0.04
-
 				m_sig.clear_all_pendings
 				m_sig.set_is_wall_following (True)
 				drive.set_velocity (vx, vtheta)
@@ -178,9 +163,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					 sensor_max_range_abs_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,
 					 									sensor_max_range_rel_point, o_sig.theta)
 					 sensor_max_range_d_min := tm.euclidean_distance (goal_point, sensor_max_range_abs_point)
-					 debug
-					 	io.put_string ("m_sig_d_min: " + m_sig.d_min.out + " sensor_max: " + sensor_max_range_d_min.out)
-					 end
+
 					 if sensor_max_range_d_min < vleave_d_min and sensor_max_range_d_min < m_sig.d_min then
 
 					 	vleave_d_min := sensor_max_range_d_min
@@ -195,6 +178,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				m_sig.set_v_leave (vleave_point)
 				m_sig.set_is_v_leave_found (True)
 			end
+
 			debug
 				io.put_string ("Current state: LOOK FOR VLEAVE%N")
 			end
@@ -218,16 +202,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 			if s_sig.is_stop_requested then
 				drive.stop
-				debug
-					io.put_string ("stop_sig: " + s_sig.is_stop_requested.out + "%N")
-				end
 
 			elseif tm.euclidean_distance (vleave, robot_point) < 0.02 then
 				m_sig.clear_all_pendings
 				m_sig.set_is_v_leave_found (False)
-				io.put_boolean (m_sig.is_v_leave_found)
-				io.put_boolean (m_sig.is_transiting)
-				io.put_string ("wierd")
 
 			else
 				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)
@@ -241,12 +219,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 
 			debug
-				io.put_string ("Current state: TRANSITION%N")
-			end
-			debug
-				io.put_string ("vleave_point.x: " + m_sig.v_leave.x.out
-								+ " vleave_point.y: " + m_sig.v_leave.y.out
-								+ "%N")
+				io.put_string ("Current state: TRANSIT%N")
 			end
 		end
 
@@ -283,7 +256,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				if tm.euclidean_distance (goal_point, robot_point) < 0.05 then
 					m_sig.clear_all_pendings
 					m_sig.set_is_goal_reached (True)
---					s_sig.set_stop_requested (True)
+					s_sig.set_stop_requested (True)
 					drive.stop
 
 					debug
@@ -318,13 +291,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					debug
 						io.put_string ("Current state: GOAL UNREACHABLE%N")
 					end
-				end
-				debug
-					io.put_string ("%Nwall_foll_point: " + wall_following_start_point_.out
-									+ " robot_point " + robot_point_.out
-									+ "%Neuk_dist: " + tm.euclidean_distance (robot_point_, wall_following_start_point_).out
-									+ " angle_loo_around: " + m_sig.angle_looped_around_obstacle.out
-									+ "%N")
 				end
 			end
 		end
