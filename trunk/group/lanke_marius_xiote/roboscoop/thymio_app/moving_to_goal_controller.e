@@ -271,6 +271,7 @@ feature
 	ec: ERROR_CALCULATIONS
 	rsc: RELATIVE_SPACE_CALCULATIONS
 	pid_controller: PID_CONTROLLER
+	params: separate PARAMETERS
 
 feature {NONE}
 

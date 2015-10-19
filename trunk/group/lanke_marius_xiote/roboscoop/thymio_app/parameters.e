@@ -22,6 +22,13 @@ feature -- Parameters
 			goal_y := a_val
 		end
 
+	vx: REAL_64
+
+	set_vx (a_val: REAL_64)
+		do
+			vx := a_val
+		end
+
 	k_p, k_i, k_d: REAL_64
 
 	set_k_p (a_val: REAL_64)
