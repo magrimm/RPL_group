@@ -118,8 +118,14 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 				if r_sens.is_obstacle_vanished then
 --					vtheta := vtheta * (r_sens.time_steps_obstacle_vanished-2).power(2.5)
-					vtheta := vtheta * 0.5 * (r_sens.time_steps_obstacle_vanished-1.25).power(1)
+					if (r_sens.time_steps_obstacle_vanished-1.725) > 0 then
+						vtheta := vtheta --* (r_sens.time_steps_obstacle_vanished-1.23).power(1)
+					else
+						vtheta := 0
+					end
+
 				end
+
 				vx := 0.04
 
 				m_sig.clear_all_pendings
@@ -272,7 +278,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				create goal_point.make_with_values (goal_x, goal_y, 0.0)
 				create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 
-				if tm.euclidean_distance (goal_point, robot_point) < 0.1 then
+				if tm.euclidean_distance (goal_point, robot_point) < 0.05 then
 					m_sig.clear_all_pendings
 					m_sig.set_is_goal_reached (True)
 --					s_sig.set_stop_requested (True)
