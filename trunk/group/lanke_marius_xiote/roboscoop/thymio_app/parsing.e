@@ -14,7 +14,7 @@ feature
 			string_tokens: LIST[STRING]
 			params: PARAMETERS
 	  	do
-	  		create params
+	  		create params.make
 	    	create input_file.make_open_read (file_path)
 
 	    	from
