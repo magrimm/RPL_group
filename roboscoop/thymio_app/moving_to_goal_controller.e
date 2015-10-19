@@ -44,12 +44,12 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 			else
 				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, m_sig.goal_point.x, m_sig.goal_point.y)	-- Find angular deviation
-				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)						-- Calculate control input
+				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)					-- Calculate control input
 				vx := 0.04 -- TODO: CONSTANT SPEED
 
 				m_sig.clear_all_pendings
 				m_sig.set_is_go_pending (True)
-				drive.set_velocity (vx, vtheta)																		-- Set the calculated control input
+				drive.set_velocity (vx, vtheta)																	-- Set the calculated control input
 
 				debug
 					io.put_string ("Current state: GO%N")
@@ -68,10 +68,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		local
 			vtheta, vx, desired_wall_distance: REAL_64
 		do
-			desired_wall_distance := 0.10				               												-- Set minimum distance to obstacle																			--
+			desired_wall_distance := 0.10				               											-- Set minimum distance to obstacle																			--
 
 			if s_sig.is_stop_requested then
-				drive.stop																							-- Stop behavior when needed
+				drive.stop																						-- Stop behavior when needed
 			else
 				if not m_sig.is_wall_following_start_set then
 					-- Set wall_following_start_point and wall_following_start_theta
@@ -81,19 +81,19 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					m_sig.set_is_wall_following_start_set (True)
 				end
 
-				if r_sens.is_obstacle_vanished then																	-- Handle situation when the robot
-					if (r_sens.time_steps_obstacle_vanished - 6.5) > 0 then											-- turns a corner
+				if r_sens.is_obstacle_vanished then																-- Handle situation when the robot
+					if (r_sens.time_steps_obstacle_vanished - 6.5) > 0 then										-- turns a corner
 						vtheta := r_sens.follow_wall_orientation (desired_wall_distance)
 					else
 						vtheta := 0
 					end
 				end
 
-				vx := 0.04																							-- Set velocity
+				vx := 0.04																						-- Set velocity
 
 				m_sig.clear_all_pendings
 				m_sig.set_is_wall_following (True)
-				drive.set_velocity (vx, vtheta)																		-- Set control input
+				drive.set_velocity (vx, vtheta)																	-- Set control input
 
 				debug
 					io.put_string ("Current state: FOLLOW WALL%N")
@@ -117,14 +117,14 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			cur_distance, vleave_d_min, sensor_max_range_d_min: REAL_64
 			i: INTEGER
 		do
-			vleave_d_min := 2^2000																					-- Initialize minimum exit to goal to inf
-			create goal_point.make_from_separate (m_sig.goal_point)													-- local object for goal location
-			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)												-- local object for robot position
-			create vleave_point.make_empty																			-- local object for optimal point to leave obstacle
+			vleave_d_min := 2^2000																				-- Initialize minimum exit to goal to inf
+			create goal_point.make_from_separate (m_sig.goal_point)												-- local object for goal location
+			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)											-- local object for robot position
+			create vleave_point.make_empty																		-- local object for optimal point to leave obstacle
 
-			cur_distance := tm.euclidean_distance (goal_point, robot_point)											-- Set current distance to goal
+			cur_distance := tm.euclidean_distance (goal_point, robot_point)										-- Set current distance to goal
 
-			if cur_distance < m_sig.d_min then																		-- Update current minimum distance to goal if true
+			if cur_distance < m_sig.d_min then																	-- Update current minimum distance to goal if true
 				-- Update d_min.
 				m_sig.set_d_min (cur_distance)
 			end
@@ -185,10 +185,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				m_sig.set_is_v_leave_found (False)
 
 			else
-				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)        	-- Set control input
-				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)						--
-				vx := 0.04																							--
-																													--
+				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)      	-- Set control input
+				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)					--
+				vx := 0.04																						--
+																												--
 				m_sig.clear_all_pendings
 				m_sig.set_is_transiting (True)
 				drive.set_velocity (vx, vtheta)
