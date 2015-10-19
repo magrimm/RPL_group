@@ -83,9 +83,11 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					m_sig.set_is_wall_following_start_set (True)
 				end
 
+				vtheta := r_sens.follow_wall_orientation (desired_wall_distance)
+
 				if r_sens.is_obstacle_vanished then																-- Handle situation when the robot
 					if (r_sens.time_steps_obstacle_vanished - params.obstacle_vanished_time_threshold) > 0 then		-- turns a corner
-						vtheta := r_sens.follow_wall_orientation (desired_wall_distance)
+						vtheta := vtheta
 					else
 						vtheta := 0
 					end
