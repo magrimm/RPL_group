@@ -13,7 +13,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (s_sig: separate STOP_SIGNALER; par: separate PARAMETERS)
+	make (s_sig: separate STOP_SIGNALER; par: PARAMETERS)
 			-- Create current and assign given attributes.
 		do
 			stop_signaler := s_sig
@@ -23,6 +23,7 @@ feature {NONE} -- Initialization
 			create tm
 			create rsc.make
 			create ec
+
 		end
 
 feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
@@ -44,7 +45,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				drive.stop
 
 			else
-				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, m_sig.goal_point.x, m_sig.goal_point.y)	-- Find angular deviation
+				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, params.goal_x, params.goal_y)	-- Find angular deviation
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)					-- Calculate control input
 				vx := params.vx
 
@@ -271,7 +272,7 @@ feature
 	ec: ERROR_CALCULATIONS
 	rsc: RELATIVE_SPACE_CALCULATIONS
 	pid_controller: PID_CONTROLLER
-	params: separate PARAMETERS
+	params: PARAMETERS
 
 feature {NONE}
 
