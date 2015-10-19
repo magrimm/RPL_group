@@ -15,9 +15,15 @@ create
 
 feature {NONE} -- Initialization
 
-	make (goal_x, goal_y: REAL_64)
+	make (params_path: separate STRING)--; goal_x, goal_y: REAL_64)
 			-- Create a robot.
 		do
+			-- Initialize parameter parser.
+			create parser
+			params := parser.read_parameters (create {STRING}.make_from_separate (params_path))
+			goal_x := params.goal_x
+			goal_y := params.goal_y
+
 			-- Initialize sensors.
 			create range_sensors.make ({THYMIO_TOPICS}.prox_horizontal)
 			create ground_sensors.make ({THYMIO_TOPICS}.prox_ground)
@@ -42,6 +48,9 @@ feature -- Constants
 
 	default_linear_speed: REAL_64 = 0.08
 			-- Default linear speed of the robot.
+
+	goal_x: REAL_64
+	goal_y: REAL_64
 
 feature -- Access
 
@@ -96,6 +105,12 @@ feature {NONE} -- Robot parts
 
 	circle_leds: separate THYMIO_CIRCLE_LEDS
 			-- 8 Orange LEDS around the buttons.
+
+	parser: PARSER
+			-- Parser class for paramteters from text file.
+
+	params: PARAMETERS
+			-- All Parameters needed.
 
 feature {NONE} -- Behaviors
 
