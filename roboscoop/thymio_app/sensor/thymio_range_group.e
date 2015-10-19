@@ -46,7 +46,7 @@ feature -- Access.
 	is_obstacle_vanished: BOOLEAN
 			-- Whether a wall obstacle disappeared or not?
 
-	time_steps_obstacle_vanished: REAL_32
+	time_steps_obstacle_vanished: REAL_64
 			-- Remembers how long the wall vanished for
 
 	is_obstacle: BOOLEAN
@@ -157,7 +157,7 @@ feature -- Access.
 	increment_obstacle_vanished_time_steps
 			-- Increments the amount of time the wall has vanished by one
 		do
-			time_steps_obstacle_vanished := time_steps_obstacle_vanished + 0.001
+			time_steps_obstacle_vanished := time_steps_obstacle_vanished + 0.002
 		end
 
 	get_closest_sensor_index: INTEGER
@@ -299,14 +299,16 @@ feature -- Access.
 --				Result := rsc.get_heading_to_follow_line (closest_sensor_point, second_closest_sensor_point, current_distance, desired_distance)
 
 			elseif number_detecting_sensors = 1 then
-				Result := 0
+				Result := (prev_closest_sensor_index - 3.0) * 0.0031 / desired_distance
+				--Result := 0
 			else
 				if not is_obstacle_vanished then
 					set_obstacle_vanished(true)
 				end
 				increment_obstacle_vanished_time_steps
 
-				Result := (3.0 - prev_closest_sensor_index) * 0.003 / desired_distance
+--				Result := (3.0 - prev_closest_sensor_index) * 0.000065 / desired_distance -- 0.0004 before
+				Result := (3.0 - prev_closest_sensor_index) * 0.03 / desired_distance -- 0.0004 before
 			end
 		end
 end
