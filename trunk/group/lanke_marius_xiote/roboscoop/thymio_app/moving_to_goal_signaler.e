@@ -10,8 +10,9 @@ create
 
 feature
 
-	make
+	make (goal_x, goal_y : REAL_64)
 		do
+			create goal_point.make_with_values (goal_x, goal_y, 0.0)
 			create v_leave.make_empty
 			create wall_following_start_point.make_empty
 
@@ -43,6 +44,9 @@ feature -- Access
 
 	d_min: REAL_64
 			-- Minimum distance between robot and the goal so far.
+
+	goal_point: POINT_MSG
+			-- goal position
 
 	v_leave: POINT_MSG
 			-- v_leave for transition state.
