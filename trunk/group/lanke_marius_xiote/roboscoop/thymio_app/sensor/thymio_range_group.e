@@ -203,6 +203,15 @@ feature -- Access.
 			Result := number_detecting_sensors
 		end
 
+	is_enough_space_for_moving_to_the_max_range (sensor_index: INTEGER): BOOLEAN
+			-- Is there enough space for moving towards the max range of
+			-- the sensor at given sensor_index.
+		do
+			Result := not sensors[sensor_index].is_valid_range and
+					(sensor_index = 1 or not sensors[sensor_index - 1].is_valid_range) and
+					(sensor_index = 5 or not sensors[sensor_index + 1].is_valid_range)
+		end
+
 	hit_point_front (a_sensor_index: INTEGER): VECTOR_3D_MSG
 			-- <Precursor>
 		do
@@ -217,14 +226,14 @@ feature -- Access.
 			Result := False
 		end
 
-	is_enough_space_for_changing_direction: BOOLEAN
+	is_all_front_sensors_open: BOOLEAN
 			-- <Precursor>
 		do
 			-- TODO.
 			Result := False
 		end
 
-	is_all_front_sensors_open: BOOLEAN
+	is_enough_space_for_changing_direction: BOOLEAN
 			-- <Precursor>
 		do
 			-- TODO.
