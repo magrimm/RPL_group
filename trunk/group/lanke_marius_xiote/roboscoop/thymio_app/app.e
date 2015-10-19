@@ -34,7 +34,7 @@ feature {NONE} -- Initialization
 			params := parser.read_parameters (create {STRING}.make_from_separate (params_path))
 
 			-- Create a robot object.
-			create thymio.make (params)--Arguments.argument (1).to_string_8)
+			create thymio.make (params)
 
 			-- Launch Thymio.
 			separate thymio as t do
