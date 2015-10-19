@@ -118,7 +118,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 				if r_sens.is_obstacle_vanished then
 --					vtheta := vtheta * (r_sens.time_steps_obstacle_vanished-2).power(2.5)
-					if (r_sens.time_steps_obstacle_vanished-1.725) > 0 then
+					if (r_sens.time_steps_obstacle_vanished-6.5) > 0 then
 						vtheta := vtheta --* (r_sens.time_steps_obstacle_vanished-1.23).power(1)
 					else
 						vtheta := 0
@@ -145,8 +145,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			(m_sig.is_wall_following and
 			m_sig.angle_looped_around_obstacle.abs > 0.5 and
 			r_sens.is_obstacle and
+
 			not m_sig.is_goal_unreachable and
-			not m_sig.is_goal_reached)
+			not m_sig.is_goal_reached and
+			not s_sig.is_stop_requested)
 		local
 			goal_point, robot_point, sensor_max_range_rel_point, sensor_max_range_abs_point: POINT_MSG
 			vleave_point: separate POINT_MSG
