@@ -29,34 +29,33 @@ feature
 	    		elseif (string_tokens.at (1).is_equal ("goal_y")) then
 	    			params.set_goal_y (string_tokens.at (2).to_real)
 	    		elseif (string_tokens.at (1).is_equal ("k_i")) then
-	    		params.set_k_i (string_tokens.at (2).to_real)
+	    			params.set_k_i (string_tokens.at (2).to_real)
 	    		elseif (string_tokens.at (1).is_equal ("k_p")) then
-	    		params.set_k_p (string_tokens.at (2).to_real)
+	    			params.set_k_p (string_tokens.at (2).to_real)
 	    		elseif (string_tokens.at (1).is_equal ("k_d")) then
-	    		params.set_k_d (string_tokens.at (2).to_real)
+	    			params.set_k_d (string_tokens.at (2).to_real)
 	    		elseif (string_tokens.at (1).is_equal ("desired_wall_distance")) then
-	    		params.set_desired_wall_distance (string_tokens.at (2).to_real)
+	    			params.set_desired_wall_distance (string_tokens.at (2).to_real)
 	    		elseif (string_tokens.at (1).is_equal ("obstacle_vanished_time_threshold")) then
-	    		params.set_obstacle_vanished_time_threshold (string_tokens.at (2).to_real)
+	    			params.set_obstacle_vanished_time_threshold (string_tokens.at (2).to_real)
 	    		elseif (string_tokens.at (1).is_equal ("angle_looped_around_threshold")) then
-	    		params.set_angle_looped_around_threshold (string_tokens.at (2).to_real)
+	    			params.set_angle_looped_around_threshold (string_tokens.at (2).to_real)
 	    		elseif (string_tokens.at (1).is_equal ("vleave_reached_distance_threshold")) then
-	    		params.set_vleave_reached_distance_threshold (string_tokens.at (2).to_real)
+	    			params.set_vleave_reached_distance_threshold (string_tokens.at (2).to_real)
 	    		elseif (string_tokens.at (1).is_equal ("goal_reached_distance_threshold")) then
-	    		params.set_goal_reached_distance_threshold (string_tokens.at (2).to_real)
+	    			params.set_goal_reached_distance_threshold (string_tokens.at (2).to_real)
 	    		elseif (string_tokens.at (1).is_equal ("vleave_reached_distance_threshold")) then
-	    		params.set_vleave_reached_distance_threshold (string_tokens.at (2).to_real)
+	    			params.set_vleave_reached_distance_threshold (string_tokens.at (2).to_real)
 	    		elseif (string_tokens.at (1).is_equal ("angle_looped_around_threshold_unreachable")) then
-	    		params.set_angle_looped_around_threshold_unreachable (string_tokens.at (2).to_real)
+	    			params.set_angle_looped_around_threshold_unreachable (string_tokens.at (2).to_real)
 	    		elseif (string_tokens.at (1).is_equal ("goal_unreachable_distance_threshold")) then
-	    		params.set_goal_unreachable_distance_threshold (string_tokens.at (2).to_real)
+	    			params.set_goal_unreachable_distance_threshold (string_tokens.at (2).to_real)
 	    		elseif (string_tokens.at (1).is_equal ("vx")) then
-	    		params.set_vx (string_tokens.at (2).to_real)
---	    		elseif
+	    			params.set_vx (string_tokens.at (2).to_real)
 	    		end
-
-	    		Result := params
+	    		
 	    		input_file.read_line
 	    	end
+	    	Result := params
 	  	end
 end -- class PARSING
