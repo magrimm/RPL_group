@@ -43,13 +43,13 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				drive.stop
 
 			else
-				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, m_sig.goal_point.x, m_sig.goal_point.y)
-				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
+				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, m_sig.goal_point.x, m_sig.goal_point.y)	-- Find angular deviation
+				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)						-- Calculate control input
 				vx := 0.04 -- TODO: CONSTANT SPEED
 
 				m_sig.clear_all_pendings
 				m_sig.set_is_go_pending (True)
-				drive.set_velocity (vx, vtheta)
+				drive.set_velocity (vx, vtheta)																		-- Set the calculated control input
 
 				debug
 					io.put_string ("Current state: GO%N")
@@ -68,10 +68,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		local
 			vtheta, vx, desired_wall_distance: REAL_64
 		do
-			desired_wall_distance := 0.10
+			desired_wall_distance := 0.10				               												-- Set minimum distance to obstacle																			--
 
 			if s_sig.is_stop_requested then
-				drive.stop
+				drive.stop																							-- Stop behavior when needed
 			else
 				if not m_sig.is_wall_following_start_set then
 					-- Set wall_following_start_point and wall_following_start_theta
@@ -81,18 +81,19 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					m_sig.set_is_wall_following_start_set (True)
 				end
 
-				if r_sens.is_obstacle_vanished then
-					if (r_sens.time_steps_obstacle_vanished - 6.5) > 0 then
+				if r_sens.is_obstacle_vanished then																	-- Handle situation when the robot
+					if (r_sens.time_steps_obstacle_vanished - 6.5) > 0 then											-- turns a corner
 						vtheta := r_sens.follow_wall_orientation (desired_wall_distance)
 					else
 						vtheta := 0
 					end
 				end
 
-				vx := 0.04
+				vx := 0.04																							-- Set velocity
+
 				m_sig.clear_all_pendings
 				m_sig.set_is_wall_following (True)
-				drive.set_velocity (vx, vtheta)
+				drive.set_velocity (vx, vtheta)																		-- Set control input
 
 				debug
 					io.put_string ("Current state: FOLLOW WALL%N")
@@ -116,15 +117,14 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			cur_distance, vleave_d_min, sensor_max_range_d_min: REAL_64
 			i: INTEGER
 		do
-			vleave_d_min := 2^2000
+			vleave_d_min := 2^2000																					-- Initialize minimum exit to goal to inf
+			create goal_point.make_from_separate (m_sig.goal_point)													-- local object for goal location
+			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)												-- local object for robot position
+			create vleave_point.make_empty																			-- local object for optimal point to leave obstacle
 
-			create goal_point.make_from_separate (m_sig.goal_point)
-			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
-			create vleave_point.make_empty
+			cur_distance := tm.euclidean_distance (goal_point, robot_point)											-- Set current distance to goal
 
-			cur_distance := tm.euclidean_distance (goal_point, robot_point)
-
-			if cur_distance < m_sig.d_min then
+			if cur_distance < m_sig.d_min then																		-- Update current minimum distance to goal if true
 				-- Update d_min.
 				m_sig.set_d_min (cur_distance)
 			end
@@ -185,10 +185,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				m_sig.set_is_v_leave_found (False)
 
 			else
-				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)
-				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
-				vx := 0.04
-
+				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)        	-- Set control input
+				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)						--
+				vx := 0.04																							--
+																													--
 				m_sig.clear_all_pendings
 				m_sig.set_is_transiting (True)
 				drive.set_velocity (vx, vtheta)
@@ -226,11 +226,11 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create goal_point.make_from_separate (m_sig.goal_point)
 
-			if tm.euclidean_distance (goal_point, robot_point) < 0.05 then
+			if tm.euclidean_distance (goal_point, robot_point) < 0.05 then										-- Check if distance to goal is less than tolerance
 				m_sig.clear_all_pendings
 				m_sig.set_is_goal_reached (True)
 				s_sig.set_stop_requested (True)
-				drive.stop
+				drive.stop																						-- Stop moving
 
 				debug
 					io.put_string ("Current state: STOP - GOAL REACHED%N")
@@ -249,8 +249,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create wall_following_start_point.make_from_separate (m_sig.wall_following_start_point)
 
-			if ((m_sig.wall_following_start_theta - o_sig.theta).abs > 3.14 and
-				tm.euclidean_distance (robot_point, wall_following_start_point) < 0.15) then
+			if ((m_sig.wall_following_start_theta - o_sig.theta).abs > 3.14 and									-- Check if robot has looped a cycle
+				tm.euclidean_distance (robot_point, wall_following_start_point) < 0.15) then					-- Check if robot is close enough to
+																												-- initial obstacle point
 				m_sig.clear_all_pendings
 				s_sig.set_stop_requested (True)
 				m_sig.set_is_goal_unreachable (True)
@@ -281,11 +282,11 @@ feature {NONE}
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0)
 			closest_sensor_index := r_sens.get_closest_sensor_index
-			create relative_start_point.make_with_values (
-						(rsc.sensor_distances[closest_sensor_index] +
-						r_sens.sensors[closest_sensor_index].range - desired_wall_distance)
-						/ tm.cosine (rsc.sensor_angles[closest_sensor_index]), 0.0, 0.0)
-			abs_start_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,
+			create relative_start_point.make_with_values (														-- Calculate first wall point in
+						(rsc.sensor_distances[closest_sensor_index] +											-- global coordinates
+						r_sens.sensors[closest_sensor_index].range - desired_wall_distance)						-- using sensor return values
+						/ tm.cosine (rsc.sensor_angles[closest_sensor_index]), 0.0, 0.0)						-- and coordinate transformation
+			abs_start_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,			-- functions
 													relative_start_point, o_sig.theta)
 			m_sig.set_wall_following_start_point (abs_start_point)
 		end
