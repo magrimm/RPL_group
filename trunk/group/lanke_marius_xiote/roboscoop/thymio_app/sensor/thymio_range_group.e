@@ -299,7 +299,7 @@ feature -- Access.
 --				Result := rsc.get_heading_to_follow_line (closest_sensor_point, second_closest_sensor_point, current_distance, desired_distance)
 
 			elseif number_detecting_sensors = 1 then
-				Result := (prev_closest_sensor_index - 3.0) * 0.00065 / desired_distance
+				Result := (prev_closest_sensor_index - 3.0) * 0.00008/ desired_distance
 				--Result := 0
 			else
 				if not is_obstacle_vanished then
@@ -308,7 +308,7 @@ feature -- Access.
 				increment_obstacle_vanished_time_steps
 
 --				Result := (3.0 - prev_closest_sensor_index) * 0.000065 / desired_distance -- 0.0004 before
-				Result := (3.0 - prev_closest_sensor_index) * 0.05 / desired_distance -- 0.0004 before
+				Result := (3.0 - prev_closest_sensor_index) * 0.07 / desired_distance -- 0.0004 before
 			end
 		end
 end

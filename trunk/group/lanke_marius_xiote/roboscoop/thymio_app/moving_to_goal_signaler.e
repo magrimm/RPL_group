@@ -23,6 +23,13 @@ feature -- Access
 	is_goal_reached: BOOLEAN
 			-- Is the goal reached?
 
+	can_go_to_goal : BOOLEAN
+
+	set_can_go_to_goal (val : BOOLEAN)
+	do
+		can_go_to_goal := val
+	end
+
 	is_goal_unreachable: BOOLEAN
 			-- Is the goal unreachable?
 
