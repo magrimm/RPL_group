@@ -287,10 +287,10 @@ feature -- Access.
 			create second_closest_sensor_point.make_empty
 
 			number_detecting_sensors := get_number_detecting_sensors
-			closest_sensor_index := get_closest_sensor_index
 
 			if number_detecting_sensors > 0 then
 				set_obstacle_vanished (False)
+				closest_sensor_index := get_closest_sensor_index
 				prev_closest_sensor_index := closest_sensor_index
 			end
 
@@ -300,8 +300,13 @@ feature -- Access.
 																					closest_sensor_index)
 				second_closest_sensor_point := rsc.get_relative_coordinates_with_sensor (sensors[second_closest_sensor_index].range,
 																							second_closest_sensor_index)
-				current_distance := rsc.get_distance_to_line (closest_sensor_point, second_closest_sensor_point)
-				Result := rsc.get_heading_to_follow_line (closest_sensor_point, second_closest_sensor_point, current_distance, desired_distance)
+				current_distance := rsc.get_distance_to_line (closest_sensor_point,
+																second_closest_sensor_point)
+	
+				Result := rsc.get_heading_to_follow_line (closest_sensor_point,
+															second_closest_sensor_point,
+															current_distance,
+															desired_distance)
 
 			elseif number_detecting_sensors = 1 then
 				Result := (prev_closest_sensor_index - 3.0) * 0.00008/ desired_distance
