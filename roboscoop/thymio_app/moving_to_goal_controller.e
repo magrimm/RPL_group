@@ -13,7 +13,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (s_sig: separate STOP_SIGNALER)
+	make (s_sig: separate STOP_SIGNALER; par: separate PARAMETERS)
 			-- Create current and assign given attributes.
 		do
 			stop_signaler := s_sig

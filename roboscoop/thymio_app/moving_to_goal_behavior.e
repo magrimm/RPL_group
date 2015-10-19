@@ -15,16 +15,17 @@ feature {NONE} -- Initialization
 
 	make_with_attributes (odom_sig: separate ODOMETRY_SIGNALER; d_drive: separate DIFFERENTIAL_DRIVE;
 						r_sens: separate THYMIO_RANGE_GROUP; t_leds: separate THYMIO_TOP_LEDS;
-						g_x, g_y: REAL_64)
+						par: separate PARAMETERS)
 			-- Create current with given attributes.
 		do
 			create stop_sig.make
-			create moving_to_goal_sig.make (g_x, g_y)
+			create moving_to_goal_sig.make (params.goal_x, params.goal_y)
 
 			odometry_sig := odom_sig
 			diff_drive := d_drive
 			range_sens := r_sens
 			top_leds := t_leds
+			params := par
 		end
 
 feature -- Access
@@ -34,13 +35,13 @@ feature -- Access
 		local
 			a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER
 		do
-			create a.make (stop_sig)
-			create b.make (stop_sig)
-			create c.make (stop_sig)
-			create d.make (stop_sig)
-			create e.make (stop_sig)
-			create f.make (stop_sig)
-			create g.make (stop_sig)
+			create a.make (stop_sig, params)
+			create b.make (stop_sig, params)
+			create c.make (stop_sig, params)
+			create d.make (stop_sig, params)
+			create e.make (stop_sig, params)
+			create f.make (stop_sig, params)
+			create g.make (stop_sig, params)
 
 			sep_stop (stop_sig, False)
 			sep_start (a, b, c, d, e, f, g)
@@ -71,6 +72,8 @@ feature {NONE} -- Implementation
 
 	top_leds: separate THYMIO_TOP_LEDS
 			-- RGB LEDs on the top.
+
+	params: separate PARAMETERS
 
 	sep_start (a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER)
 			-- Start controllers asynchronously.

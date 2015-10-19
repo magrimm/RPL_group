@@ -28,12 +28,27 @@ feature {NONE} -- Initialization
 			create ros_spinner.make
 			start_spinning (ros_spinner)
 
+			-- Parse parameter text file
+			create parser
+			params_path := Arguments.argument (1).to_string_8
+			params := parser.read_parameters (create {STRING}.make_from_separate (params_path))
+
 			-- Create a robot object.
-			create thymio.make (Arguments.argument (1).to_string_8)
+			create thymio.make (params)--Arguments.argument (1).to_string_8)
 
 			-- Launch Thymio.
 			separate thymio as t do
 				t.start_moving_to_goal
 			end
 		end
+feature
+
+	parser: PARSER
+			-- Parser class for paramteters from text file.
+
+	params: PARAMETERS
+			-- All Parameters needed.
+
+	params_path: separate STRING
+
 end
