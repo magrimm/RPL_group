@@ -6,6 +6,16 @@ note
 expanded class
 	PARAMETERS
 
+create
+	make
+
+feature
+
+	make
+		do
+			infinity := 2^2000
+		end
+
 feature -- Parameters
 
 	goal_x: REAL_64
@@ -19,10 +29,6 @@ feature -- Parameters
 		do
 			goal_y := a_val
 		end
-
-
-
-	--
 
 	cruising_velocity : REAL_64
 			-- The nominal cruising velocity of a given task
