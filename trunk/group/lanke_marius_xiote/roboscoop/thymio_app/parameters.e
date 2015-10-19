@@ -6,16 +6,6 @@ note
 expanded class
 	PARAMETERS
 
-create
-	make
-
-feature
-
-	make
-		do
-			infinity := 2^2000
-		end
-
 feature -- Parameters
 
 	goal_x: REAL_64
