@@ -17,8 +17,9 @@ feature {NONE} -- Initialization
 			-- Create current and assign given attributes.
 		do
 			stop_signaler := s_sig
+			params := par
 
-			create pid_controller.make(0.5, 0.0, 0.0)
+			create pid_controller.make(params.k_p, params.k_i, params.k_d)
 			create tm
 			create rsc.make
 			create ec
@@ -45,7 +46,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			else
 				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, m_sig.goal_point.x, m_sig.goal_point.y)	-- Find angular deviation
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)					-- Calculate control input
-				vx := 0.04 -- TODO: CONSTANT SPEED
+				vx := params.vx
 
 				m_sig.clear_all_pendings
 				m_sig.set_is_go_pending (True)
@@ -68,7 +69,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		local
 			vtheta, vx, desired_wall_distance: REAL_64
 		do
-			desired_wall_distance := 0.10				               											-- Set minimum distance to obstacle																			--
+			desired_wall_distance := params.desired_wall_distance     											-- Set minimum distance to obstacle																			--
 
 			if s_sig.is_stop_requested then
 				drive.stop																						-- Stop behavior when needed
@@ -82,14 +83,14 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				end
 
 				if r_sens.is_obstacle_vanished then																-- Handle situation when the robot
-					if (r_sens.time_steps_obstacle_vanished - 6.5) > 0 then										-- turns a corner
+					if (r_sens.time_steps_obstacle_vanished - params.obstacle_vanished_time_threshold) > 0 then		-- turns a corner
 						vtheta := r_sens.follow_wall_orientation (desired_wall_distance)
 					else
 						vtheta := 0
 					end
 				end
 
-				vx := 0.04																						-- Set velocity
+				vx := params.vx																					-- Set velocity
 
 				m_sig.clear_all_pendings
 				m_sig.set_is_wall_following (True)
@@ -106,7 +107,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Look for v_leave when in wall_following state
 		require
 			(m_sig.is_wall_following and
-			(m_sig.wall_following_start_theta - o_sig.theta).abs > 0.5 and
+			(m_sig.wall_following_start_theta - o_sig.theta).abs > params.angle_looped_around_threshold and
 			r_sens.is_obstacle and
 			not m_sig.is_goal_unreachable and
 			not m_sig.is_goal_reached and
@@ -179,7 +180,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			if s_sig.is_stop_requested then
 				drive.stop
 
-			elseif tm.euclidean_distance (vleave, robot_point) < 0.02 then
+			elseif tm.euclidean_distance (vleave, robot_point) < params.vleave_reached_distance_threshold then
 				-- Exit transition state when vleave point reached.
 				m_sig.clear_all_pendings
 				m_sig.set_is_v_leave_found (False)
@@ -187,7 +188,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			else
 				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)      	-- Set control input
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)					--
-				vx := 0.04																						--
+				vx := params.vx																					--
 																												--
 				m_sig.clear_all_pendings
 				m_sig.set_is_transiting (True)
@@ -226,7 +227,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create goal_point.make_from_separate (m_sig.goal_point)
 
-			if tm.euclidean_distance (goal_point, robot_point) < 0.05 then										-- Check if distance to goal is less than tolerance
+			if tm.euclidean_distance (goal_point, robot_point) < params.goal_reached_distance_threshold then										-- Check if distance to goal is less than tolerance
 				m_sig.clear_all_pendings
 				m_sig.set_is_goal_reached (True)
 				s_sig.set_stop_requested (True)
@@ -249,8 +250,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create wall_following_start_point.make_from_separate (m_sig.wall_following_start_point)
 
-			if ((m_sig.wall_following_start_theta - o_sig.theta).abs > 3.14 and									-- Check if robot has looped a cycle
-				tm.euclidean_distance (robot_point, wall_following_start_point) < 0.15) then					-- Check if robot is close enough to
+			if ((m_sig.wall_following_start_theta - o_sig.theta).abs > params.angle_looped_around_threshold_unreachable and									-- Check if robot has looped a cycle
+				tm.euclidean_distance (robot_point, wall_following_start_point) < params.goal_unreachable_distance_threshold) then					-- Check if robot is close enough to
 																												-- initial obstacle point
 				m_sig.clear_all_pendings
 				s_sig.set_stop_requested (True)
