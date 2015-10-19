@@ -66,46 +66,32 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			(r_sens.is_obstacle or m_sig.is_wall_following) and
 			not m_sig.is_transiting) or s_sig.is_stop_requested
 		local
-			wall_following_start_point, relative_wall_following_start_point, robot_point: POINT_MSG
-			vtheta: REAL_64
-			vx: REAL_64
-			desired_wall_distance: REAL_64
-			closest_sensor_index: INTEGER
+			robot_point: POINT_MSG
+			vtheta, vx, desired_wall_distance: REAL_64
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0)
-			create wall_following_start_point.make_with_values (m_sig.wall_following_start_point.x, m_sig.wall_following_start_point.y, 0.0)
 			desired_wall_distance := 0.10
 
 			if (m_sig.previous_time_stamp = 0) then
 				m_sig.set_previous_time_stamp (o_sig.timestamp-0.02)		-- To initialize the previous timestamp variable
-			end
+			end -- TODO: where does this belong?
 
 			m_sig.set_angle_looped_around_obstacle (m_sig.angle_looped_around_obstacle + o_sig.vtheta *(o_sig.timestamp - m_sig.previous_time_stamp))
-			m_sig.set_previous_time_stamp (o_sig.timestamp)
+			m_sig.set_previous_time_stamp (o_sig.timestamp) -- TODO: where does this belong
 
 			if s_sig.is_stop_requested then
 				drive.stop
 			else
 				if not m_sig.is_wall_following_start_point_set then
-					closest_sensor_index := r_sens.get_closest_sensor_index
-					create relative_wall_following_start_point.make_with_values (
-								(rsc.sensor_distances[closest_sensor_index]+ r_sens.sensors[closest_sensor_index].range -desired_wall_distance)
-									/tm.cosine (rsc.sensor_angles[closest_sensor_index]), 0.0, 0.0)
-					wall_following_start_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,
-															relative_wall_following_start_point, o_sig.theta)
-					m_sig.set_wall_following_start_point (wall_following_start_point)
-					m_sig.set_is_wall_following_start_point_set (True)
+					set_wall_following_start_point (m_sig, o_sig, r_sens, desired_wall_distance)
 				end
 
-				vtheta := r_sens.follow_wall_orientation (desired_wall_distance)
-
 				if r_sens.is_obstacle_vanished then
-					if (r_sens.time_steps_obstacle_vanished-6.5) > 0 then
-						vtheta := vtheta
+					if (r_sens.time_steps_obstacle_vanished - 6.5) > 0 then
+						vtheta := r_sens.follow_wall_orientation (desired_wall_distance)
 					else
 						vtheta := 0
 					end
-
 				end
 
 				vx := 0.04
@@ -290,11 +276,33 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 		end
 
+
 feature
 
 	tm: TRIGONOMETRY_MATH
 	ec: ERROR_CALCULATIONS
 	rsc: RELATIVE_SPACE_CALCULATIONS
 	pid_controller: PID_CONTROLLER
+
+feature {NONE}
+
+	set_wall_following_start_point (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER;
+										r_sens: separate THYMIO_RANGE_GROUP; desired_wall_distance: REAL_64)
+			-- Set the start point of the wall following state
+		local
+			closest_sensor_index : INTEGER
+			robot_point, abs_start_point, relative_start_point : POINT_MSG
+		do
+			create robot_point.make_with_values (o_sig.x, o_sig.y, 0)
+			closest_sensor_index := r_sens.get_closest_sensor_index
+			create relative_start_point.make_with_values (
+						(rsc.sensor_distances[closest_sensor_index] +
+						r_sens.sensors[closest_sensor_index].range - desired_wall_distance)
+						/ tm.cosine (rsc.sensor_angles[closest_sensor_index]), 0.0, 0.0)
+			abs_start_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,
+													relative_start_point, o_sig.theta)
+			m_sig.set_wall_following_start_point (abs_start_point)
+			m_sig.set_is_wall_following_start_point_set (True)
+		end
 
 end -- class MOVING_TO_GOAL_CONTROLLER
