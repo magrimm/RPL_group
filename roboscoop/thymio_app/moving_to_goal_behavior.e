@@ -19,15 +19,12 @@ feature {NONE} -- Initialization
 			-- Create current with given attributes.
 		do
 			create stop_sig.make
-			create moving_to_goal_sig.make
+			create moving_to_goal_sig.make (g_x, g_y)
 
 			odometry_sig := odom_sig
 			diff_drive := d_drive
 			range_sens := r_sens
 			top_leds := t_leds
-
-			goal_x := g_x
-			goal_y := g_y
 		end
 
 feature -- Access
@@ -37,13 +34,13 @@ feature -- Access
 		local
 			a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER
 		do
-			create a.make (stop_sig, goal_x, goal_y)
-			create b.make (stop_sig, goal_x, goal_y)
-			create c.make (stop_sig, goal_x, goal_y)
-			create d.make (stop_sig, goal_x, goal_y)
-			create e.make (stop_sig, goal_x, goal_y)
-			create f.make (stop_sig, goal_x, goal_y)
-			create g.make (stop_sig, goal_x, goal_y)
+			create a.make (stop_sig)
+			create b.make (stop_sig)
+			create c.make (stop_sig)
+			create d.make (stop_sig)
+			create e.make (stop_sig)
+			create f.make (stop_sig)
+			create g.make (stop_sig)
 
 			sep_stop (stop_sig, False)
 			sep_start (a, b, c, d, e, f, g)
@@ -74,9 +71,6 @@ feature {NONE} -- Implementation
 
 	top_leds: separate THYMIO_TOP_LEDS
 			-- RGB LEDs on the top.
-
-	goal_x, goal_y: REAL_64
-			-- Goal position.
 
 	sep_start (a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER)
 			-- Start controllers asynchronously.

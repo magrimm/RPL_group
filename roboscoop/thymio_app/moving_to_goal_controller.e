@@ -13,12 +13,10 @@ create
 
 feature {NONE} -- Initialization
 
-	make (s_sig: separate STOP_SIGNALER; g_x, g_y: REAL_64)
+	make (s_sig: separate STOP_SIGNALER)
 			-- Create current and assign given attributes.
 		do
 			stop_signaler := s_sig
-			goal_x := g_x
-			goal_y := g_y
 
 			create pid_controller.make(0.5, 0.0, 0.0)
 			create tm
@@ -45,10 +43,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				drive.stop
 
 			else
-				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, goal_x, goal_y)
-
+				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, m_sig.goal_point.x, m_sig.goal_point.y)
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
-				vx := 0.04
+				vx := 0.04 -- TODO: CONSTANT SPEED
 
 				m_sig.clear_all_pendings
 				m_sig.set_is_go_pending (True)
@@ -69,7 +66,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			(r_sens.is_obstacle or m_sig.is_wall_following) and
 			not m_sig.is_transiting) or s_sig.is_stop_requested
 		local
-			wall_following_start_point, relative_wall_following_start_point, goal_point, robot_point: POINT_MSG
+			wall_following_start_point, relative_wall_following_start_point, robot_point: POINT_MSG
 			vtheta: REAL_64
 			vx: REAL_64
 			desired_wall_distance: REAL_64
@@ -77,10 +74,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0)
 			create wall_following_start_point.make_with_values (m_sig.wall_following_start_point.x, m_sig.wall_following_start_point.y, 0.0)
-			create goal_point.make_with_values (goal_x, goal_y, 0.0)
 			desired_wall_distance := 0.10
 
-			if(m_sig.previous_time_stamp = 0) then
+			if (m_sig.previous_time_stamp = 0) then
 				m_sig.set_previous_time_stamp (o_sig.timestamp-0.02)		-- To initialize the previous timestamp variable
 			end
 
@@ -143,7 +139,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		do
 			vleave_d_min := 2^2000
 
-			create goal_point.make_with_values (goal_x, goal_y, 0.0)
+			create goal_point.make_from_separate (m_sig.goal_point)
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create vleave_point.make_empty
 			cur_distance := tm.euclidean_distance (goal_point, robot_point)
@@ -245,13 +241,13 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		require
 			o_sig.is_moving or s_sig.is_stop_requested
 		local
-			goal_point, robot_point: POINT_MSG
+			robot_point, goal_point: POINT_MSG
 		do
 			if s_sig.is_stop_requested then
 				drive.stop
 			else
-				create goal_point.make_with_values (goal_x, goal_y, 0.0)
 				create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
+				create goal_point.make_from_separate (m_sig.goal_point)
 
 				if tm.euclidean_distance (goal_point, robot_point) < 0.05 then
 					m_sig.clear_all_pendings
@@ -272,12 +268,11 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		require
 			o_sig.is_moving or s_sig.is_stop_requested
 		local
-			wall_following_start_point_, goal_point_, robot_point_: POINT_MSG
+			wall_following_start_point_, robot_point_: POINT_MSG
 		do
 			if s_sig.is_stop_requested then
 				drive.stop
 			else
-				create goal_point_.make_with_values (goal_x, goal_y, 0.0)
 				create robot_point_.make_with_values (o_sig.x, o_sig.y, 0.0)
 				create wall_following_start_point_.make_from_separate (m_sig.wall_following_start_point)
 
@@ -301,6 +296,5 @@ feature
 	ec: ERROR_CALCULATIONS
 	rsc: RELATIVE_SPACE_CALCULATIONS
 	pid_controller: PID_CONTROLLER
-	goal_x, goal_y: REAL_64
 
 end -- class MOVING_TO_GOAL_CONTROLLER
