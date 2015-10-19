@@ -1,4 +1,4 @@
-goal_x: 1.0
+goal_x: 0.5
 goal_y: 0.0
 
 k_p: 0.5

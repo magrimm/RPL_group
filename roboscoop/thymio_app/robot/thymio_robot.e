@@ -15,7 +15,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (params: separate PARAMETERS)
+	make (params: PARAMETERS)
 			-- Create a robot.
 		do
 			-- Initialize sensors.

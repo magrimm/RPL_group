@@ -15,11 +15,11 @@ feature {NONE} -- Initialization
 
 	make_with_attributes (odom_sig: separate ODOMETRY_SIGNALER; d_drive: separate DIFFERENTIAL_DRIVE;
 						r_sens: separate THYMIO_RANGE_GROUP; t_leds: separate THYMIO_TOP_LEDS;
-						par: separate PARAMETERS)
+						par: PARAMETERS)
 			-- Create current with given attributes.
 		do
 			create stop_sig.make
-			create moving_to_goal_sig.make (params.goal_x, params.goal_y)
+			create moving_to_goal_sig.make (par.goal_x, par.goal_y)
 
 			odometry_sig := odom_sig
 			diff_drive := d_drive
@@ -73,7 +73,7 @@ feature {NONE} -- Implementation
 	top_leds: separate THYMIO_TOP_LEDS
 			-- RGB LEDs on the top.
 
-	params: separate PARAMETERS
+	params: PARAMETERS
 
 	sep_start (a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER)
 			-- Start controllers asynchronously.
