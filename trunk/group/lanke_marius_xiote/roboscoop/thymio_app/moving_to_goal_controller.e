@@ -143,7 +143,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Look for v_leave when in wall_following state
 		require
 			(m_sig.is_wall_following and
-			m_sig.angle_looped_around_obstacle.abs > 1.5 and
+			m_sig.angle_looped_around_obstacle.abs > 0.5 and
 			r_sens.is_obstacle and
 			not m_sig.is_goal_unreachable and
 			not m_sig.is_goal_reached)
