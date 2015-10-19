@@ -34,8 +34,6 @@ feature
 	    		params.set_k_p (string_tokens.at (2).to_real)
 	    		elseif (string_tokens.at (1).is_equal ("k_d")) then
 	    		params.set_k_d (string_tokens.at (2).to_real)
-	    		elseif (string_tokens.at (1).is_equal ("cruising_velocity")) then
-	    		params.set_cruising_velocity (string_tokens.at (2).to_real)
 	    		elseif (string_tokens.at (1).is_equal ("desired_wall_distance")) then
 	    		params.set_desired_wall_distance (string_tokens.at (2).to_real)
 	    		elseif (string_tokens.at (1).is_equal ("obstacle_vanished_time_threshold")) then
