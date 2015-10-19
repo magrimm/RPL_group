@@ -183,6 +183,31 @@ feature -- Access.
 			Result := closest_sensor_index
 		end
 
+	get_second_closest_sensor_index (closest_sensor_index: INTEGER): INTEGER
+			-- Get the index of the sensor that detects the second closest obstacle.
+		require is_obstacle
+		local
+		    i, second_closest_sensor_index: INTEGER
+		    second_closest_sensor_range: REAL_64
+		do
+			second_closest_sensor_range := 2^2000
+			from
+				i := sensors.lower
+			until
+				i > sensors.upper - 2
+			loop
+				if i /= closest_sensor_index and
+					sensors[i].is_valid_range and
+					sensors[i].range < second_closest_sensor_range then
+					second_closest_sensor_range := sensors[i].range
+					second_closest_sensor_index := i
+				end
+				i := i + 1
+			end
+
+			Result := second_closest_sensor_index
+		end
+
 	get_number_detecting_sensors: INTEGER
 			-- Get the number of sensors that detect a obstacle.
 		local
@@ -269,28 +294,20 @@ feature -- Access.
 				prev_closest_sensor_index := closest_sensor_index
 			end
 
-			if (closest_sensor_index > 1 and sensors[closest_sensor_index - 1].is_valid_range)
-				or (closest_sensor_index < 5 and sensors[closest_sensor_index + 1].is_valid_range) then
+			if number_detecting_sensors > 1 then
+				second_closest_sensor_index := get_second_closest_sensor_index (closest_sensor_index)
 				closest_sensor_point := rsc.get_relative_coordinates_with_sensor (sensors[closest_sensor_index].range,
 																					closest_sensor_index)
-				if (closest_sensor_index = 5) or not sensors[closest_sensor_index + 1].is_valid_range  then
-					second_closest_sensor_index := closest_sensor_index - 1
-				else
-					second_closest_sensor_index := closest_sensor_index + 1
-				end
-
 				second_closest_sensor_point := rsc.get_relative_coordinates_with_sensor (sensors[second_closest_sensor_index].range,
-																					second_closest_sensor_index)
+																							second_closest_sensor_index)
 				current_distance := rsc.get_distance_to_line (closest_sensor_point, second_closest_sensor_point)
 				Result := rsc.get_heading_to_follow_line (closest_sensor_point, second_closest_sensor_point, current_distance, desired_distance)
 
 			elseif number_detecting_sensors = 1 then
 				Result := (prev_closest_sensor_index - 3.0) * 0.00008/ desired_distance
-			else
-				if not is_obstacle_vanished then
-					set_obstacle_vanished(true)
-				end
 
+			else
+				set_obstacle_vanished(True)
 				increment_obstacle_vanished_time_steps
 				Result := (3.0 - prev_closest_sensor_index) * 0.07 / desired_distance
 			end
