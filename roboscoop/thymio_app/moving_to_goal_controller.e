@@ -107,25 +107,25 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			(m_sig.is_wall_following and
 			(m_sig.wall_following_start_theta - o_sig.theta).abs > 0.5 and
 			r_sens.is_obstacle and
-
 			not m_sig.is_goal_unreachable and
 			not m_sig.is_goal_reached and
 			not s_sig.is_stop_requested)
 		local
 			goal_point, robot_point, sensor_max_range_rel_point, sensor_max_range_abs_point: POINT_MSG
 			vleave_point: separate POINT_MSG
-			cur_distance: REAL_64
-			vleave_d_min, sensor_max_range_d_min: REAL_64
-			vleave_sensor_index, i: INTEGER
+			cur_distance, vleave_d_min, sensor_max_range_d_min: REAL_64
+			i: INTEGER
 		do
 			vleave_d_min := 2^2000
 
 			create goal_point.make_from_separate (m_sig.goal_point)
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create vleave_point.make_empty
+
 			cur_distance := tm.euclidean_distance (goal_point, robot_point)
 
 			if cur_distance < m_sig.d_min then
+				-- Update d_min.
 				m_sig.set_d_min (cur_distance)
 			end
 
@@ -134,8 +134,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			until
 				i > r_sens.sensors.upper - 2
 			loop
-				if not r_sens.sensors[i].is_valid_range and (i = 1 or not r_sens.sensors[i - 1].is_valid_range)
-					and (i = 5 or not r_sens.sensors[i + 1].is_valid_range) then
+				-- Find the sensor whose max range is reachable and
+				-- whose max range's distance to goal is less than d_min.
+				if r_sens.is_enough_space_for_moving_to_the_max_range (i) then
 					 sensor_max_range_rel_point := rsc.get_relative_coordinates_with_sensor (r_sens.sensors[i].max_range, i)
 					 sensor_max_range_abs_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,
 					 									sensor_max_range_rel_point, o_sig.theta)
@@ -144,14 +145,14 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					 if sensor_max_range_d_min < vleave_d_min and sensor_max_range_d_min < m_sig.d_min then
 
 					 	vleave_d_min := sensor_max_range_d_min
-					 	vleave_sensor_index := i
 					 	vleave_point := sensor_max_range_abs_point
 					 end
 				end
 				i := i + 1
 			end
 
-			if not vleave_d_min.is_positive_infinity and vleave_sensor_index /= 3 then
+			if not vleave_d_min.is_positive_infinity then
+				-- Set vleave_point when one is found.
 				m_sig.set_v_leave (vleave_point)
 				m_sig.set_is_v_leave_found (True)
 			end
