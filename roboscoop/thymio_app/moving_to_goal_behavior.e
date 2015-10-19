@@ -75,19 +75,19 @@ feature {NONE} -- Implementation
 	sep_start (a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER)
 			-- Start controllers asynchronously.
 		do
-			a.repeat_until_stop_requested (
+			a.repeat_until_stop_requested (			-- Perform step 1. going to goal
 				agent a.go (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
-			b.repeat_until_stop_requested (
+			b.repeat_until_stop_requested (			-- Perform step 2. following obstacle
 				agent b.follow_wall (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
-			c.repeat_until_stop_requested (
+			c.repeat_until_stop_requested (			-- Look for transition to step 3.
 				agent c.look_for_vleave (moving_to_goal_sig, odometry_sig, stop_sig, range_sens))
-			d.repeat_until_stop_requested (
+			d.repeat_until_stop_requested (			-- Perform step 3. go towards intermediate point (closer to goal than current minimum)
 				agent d.transit_to_vleave (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
-			e.repeat_until_stop_requested (
+			e.repeat_until_stop_requested (			-- Terminate task at goal
 				agent e.stop_when_goal_reached (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
-			f.repeat_until_stop_requested (
+			f.repeat_until_stop_requested (			-- Terminate when task cannot be achieved
 				agent f.stop_when_goal_unreachable (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
-			g.repeat_until_stop_requested (
+			g.repeat_until_stop_requested (			-- Handle auxilliary events	
 				agent g.change_features (moving_to_goal_sig, stop_sig, top_leds))
 		end
 
