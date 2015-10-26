@@ -7,6 +7,7 @@ class
 
 inherit
 	CANCELLABLE_CONTROL_LOOP
+	TRIGONOMETRY_MATH
 
 create
 	make
@@ -20,7 +21,6 @@ feature {NONE} -- Initialization
 			params := par
 
 			create pid_controller.make(params.k_p, params.k_i, params.k_d)
-			create tm
 			create rsc.make
 			create ec
 
@@ -121,12 +121,12 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			cur_distance, vleave_d_min, sensor_max_range_d_min: REAL_64
 			i: INTEGER
 		do
-			vleave_d_min := 2^2000																				-- Initialize minimum exit to goal to inf
+			vleave_d_min := {REAL_64}.positive_infinity																				-- Initialize minimum exit to goal to inf
 			create goal_point.make_from_separate (m_sig.goal_point)												-- local object for goal location
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)											-- local object for robot position
 			create vleave_point.make_empty																		-- local object for optimal point to leave obstacle
 
-			cur_distance := tm.euclidean_distance (goal_point, robot_point)										-- Set current distance to goal
+			cur_distance := euclidean_distance (goal_point, robot_point)										-- Set current distance to goal
 
 			if cur_distance < m_sig.d_min then																	-- Update current minimum distance to goal if true
 				-- Update d_min.
@@ -144,7 +144,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					 sensor_max_range_rel_point := rsc.get_relative_coordinates_with_sensor (r_sens.sensors[i].max_range, i)
 					 sensor_max_range_abs_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,
 					 									sensor_max_range_rel_point, o_sig.theta)
-					 sensor_max_range_d_min := tm.euclidean_distance (goal_point, sensor_max_range_abs_point)
+					 sensor_max_range_d_min := euclidean_distance (goal_point, sensor_max_range_abs_point)
 
 					 if sensor_max_range_d_min < vleave_d_min and sensor_max_range_d_min < m_sig.d_min then
 
@@ -183,7 +183,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			if s_sig.is_stop_requested then
 				drive.stop
 
-			elseif tm.euclidean_distance (vleave, robot_point) < params.vleave_reached_distance_threshold then
+			elseif euclidean_distance (vleave, robot_point) < params.vleave_reached_distance_threshold then
 				-- Exit transition state when vleave point reached.
 				m_sig.clear_all_pendings
 				m_sig.set_is_v_leave_found (False)
@@ -230,7 +230,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create goal_point.make_from_separate (m_sig.goal_point)
 
-			if tm.euclidean_distance (goal_point, robot_point) < params.goal_reached_distance_threshold then										-- Check if distance to goal is less than tolerance
+			if euclidean_distance (goal_point, robot_point) < params.goal_reached_distance_threshold then										-- Check if distance to goal is less than tolerance
 				m_sig.clear_all_pendings
 				m_sig.set_is_goal_reached (True)
 				s_sig.set_stop_requested (True)
@@ -254,7 +254,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			create wall_following_start_point.make_from_separate (m_sig.wall_following_start_point)
 
 			if ((m_sig.wall_following_start_theta - o_sig.theta).abs > params.angle_looped_around_threshold_unreachable and									-- Check if robot has looped a cycle
-				tm.euclidean_distance (robot_point, wall_following_start_point) < params.goal_unreachable_distance_threshold) then					-- Check if robot is close enough to
+				euclidean_distance (robot_point, wall_following_start_point) < params.goal_unreachable_distance_threshold) then					-- Check if robot is close enough to
 																												-- initial obstacle point
 				m_sig.clear_all_pendings
 				s_sig.set_stop_requested (True)
@@ -269,8 +269,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 
 feature
-
-	tm: TRIGONOMETRY_MATH
 	ec: ERROR_CALCULATIONS
 	rsc: RELATIVE_SPACE_CALCULATIONS
 	pid_controller: PID_CONTROLLER
@@ -290,7 +288,7 @@ feature {NONE}
 			create relative_start_point.make_with_values (														-- Calculate first wall point in
 						(rsc.sensor_distances[closest_sensor_index] +											-- global coordinates
 						r_sens.sensors[closest_sensor_index].range - desired_wall_distance)						-- using sensor return values
-						/ tm.cosine (rsc.sensor_angles[closest_sensor_index]), 0.0, 0.0)						-- and coordinate transformation
+						/ cosine (rsc.sensor_angles[closest_sensor_index]), 0.0, 0.0)						-- and coordinate transformation
 			abs_start_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,			-- functions
 													relative_start_point, o_sig.theta)
 			m_sig.set_wall_following_start_point (abs_start_point)
