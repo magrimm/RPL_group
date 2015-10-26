@@ -19,6 +19,12 @@
 			<cluster name="communication" location=".\communication\"/>
 			<cluster name="robot" location=".\robot\"/>
 			<cluster name="actuator" location=".\actuator\"/>
+			<cluster name="controller" location=".\controller\"/>
+			<cluster name="behavior" location=".\behavior\"/>
+			<cluster name="signaler" location=".\signaler\"/>
+			<cluster name="parameter" location=".\parameter\"/>
+			<cluster name="parser" location=".\parser\"/>
+			<cluster name="util" location=".\util\"/>
 		</cluster>
 	</target>
 </system>
