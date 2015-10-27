@@ -14,17 +14,16 @@ create
 feature {NONE} -- Initialization
 
 	make_with_attributes (odom_sig: separate ODOMETRY_SIGNALER; d_drive: separate DIFFERENTIAL_DRIVE;
-						r_sens: separate THYMIO_RANGE_GROUP; t_leds: separate THYMIO_TOP_LEDS;
-						par: PARAMETERS)
+						r_sens: separate THYMIO_RANGE_GROUP; state_signaler: separate STATE_SIGNALER; par: PARAMETERS)
 			-- Create current with given attributes.
 		do
 			create stop_sig.make
 			create moving_to_goal_sig.make (par.goal_x, par.goal_y)
+			state_sig := state_signaler
 
 			odometry_sig := odom_sig
 			diff_drive := d_drive
 			range_sens := r_sens
-			top_leds := t_leds
 			params := par
 		end
 
@@ -61,6 +60,9 @@ feature {NONE} -- Implementation
 	stop_sig: separate STOP_SIGNALER
 			-- Signaler for stopping the behaviour.
 
+	state_sig: separate STATE_SIGNALER
+			-- Robot current state.
+
 	moving_to_goal_sig: separate MOVING_TO_GOAL_SIGNALER
 			-- Current state of the behavior.
 
@@ -70,28 +72,23 @@ feature {NONE} -- Implementation
 	range_sens: separate THYMIO_RANGE_GROUP
 			-- 5 Range sensors in front of the robot.
 
-	top_leds: separate THYMIO_TOP_LEDS
-			-- RGB LEDs on the top.
-
 	params: PARAMETERS
 
 	sep_start (a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER)
 			-- Start controllers asynchronously.
 		do
 			a.repeat_until_stop_requested (			-- Perform step 1. going to goal
-				agent a.go (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
+				agent a.go (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
 			b.repeat_until_stop_requested (			-- Perform step 2. following obstacle
-				agent b.follow_wall (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
+				agent b.follow_wall (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
 			c.repeat_until_stop_requested (			-- Look for transition to step 3.
-				agent c.look_for_vleave (moving_to_goal_sig, odometry_sig, stop_sig, range_sens))
+				agent c.look_for_vleave (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, range_sens))
 			d.repeat_until_stop_requested (			-- Perform step 3. go towards intermediate point (closer to goal than current minimum)
-				agent d.transit_to_vleave (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
+				agent d.transit_to_vleave (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
 			e.repeat_until_stop_requested (			-- Terminate task at goal
-				agent e.stop_when_goal_reached (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
+				agent e.stop_when_goal_reached (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
 			f.repeat_until_stop_requested (			-- Terminate when task cannot be achieved
-				agent f.stop_when_goal_unreachable (moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
-			g.repeat_until_stop_requested (			-- Handle auxilliary events	
-				agent g.change_features (moving_to_goal_sig, stop_sig, top_leds))
+				agent f.stop_when_goal_unreachable (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
 		end
 
 	sep_stop (s_sig: separate STOP_SIGNALER; val: BOOLEAN)

@@ -1,10 +1,13 @@
 note
-	description: "Calculation class in local frame of the robot."
-	author: "Group lanke_marius_xiaote"
+	description: "Calculation class in local frame."
+	author: "Xiaote Zhu"
 	date: "13.10.2015"
 
 class
 	RELATIVE_SPACE_CALCULATIONS
+
+inherit
+	TRIGONOMETRY_MATH
 
 create
 	make
@@ -14,8 +17,6 @@ feature
 	make
 		do
 			initialize_constants
-			create tm
-			create dm
 		end
 
 	initialize_constants
@@ -41,11 +42,6 @@ feature
 			sensor_angles.put (0.0, 7)  --PLACEHOLDER
 		end
 
-feature
-
-	tm: TRIGONOMETRY_MATH
-	dm: DOUBLE_MATH
-
 feature -- Constants
 
 	sensor_distances: ARRAY[REAL_64]
@@ -66,7 +62,7 @@ feature  -- Access
 		local
 			relative_coord: POINT_MSG
 		do
-			create relative_coord.make_with_values(distance * tm.cosine(angle), distance * tm.sine (angle), 0)		-- Transform using
+			create relative_coord.make_with_values(distance * cosine(angle), distance * sine (angle), 0)		-- Transform using
 			Result := relative_coord																				-- Rotation Matrix Formulation
 		end
 
@@ -76,15 +72,15 @@ feature  -- Access
 		local
 			absolute_coord: POINT_MSG
 		do
-			create absolute_coord.make_with_values (p0.x + p1.x * tm.cosine (theta) - p1.y * tm.sine (theta),
-														p0.y + p1.x * tm.sine (theta) + p1.y * tm.cosine (theta), 0)
+			create absolute_coord.make_with_values (p0.x + p1.x * cosine (theta) - p1.y * sine (theta),
+														p0.y + p1.x * sine (theta) + p1.y * cosine (theta), 0)
 			Result := absolute_coord
 		end
 
 	get_distance_to_line (p1, p2: POINT_MSG): REAL_64
 			-- Calculate the distance from (0,0) to the line represented by the given two points.
 		do
-			Result := (((p2.y - p1.y) * p1.x - (p2.x - p1.x) * p1.y) / tm.sqrt ((p2.x - p1.x).power(2) + (p2.y - p1.y).power(2))).abs
+			Result := (((p2.y - p1.y) * p1.x - (p2.x - p1.x) * p1.y) / sqrt ((p2.x - p1.x).power(2) + (p2.y - p1.y).power(2))).abs
 		end
 
 	get_heading_to_follow_line (p1, p2: POINT_MSG; current_distance, desired_distance: REAL_64): REAL_64
@@ -94,6 +90,6 @@ feature  -- Access
 		do
 			v_theta_x := desired_distance * (p2.x - p1.x) + (current_distance - desired_distance) * (p2.y - p1.y)
 			v_theta_y := desired_distance * (p2.y - p1.y) + (current_distance - desired_distance) * (p1.x - p2.x)
-			Result := tm.atan2 (v_theta_y, v_theta_x)
+			Result := atan2 (v_theta_y, v_theta_x)
 		end
 end -- class RELATIVE_SPACE_CALCULATIONS

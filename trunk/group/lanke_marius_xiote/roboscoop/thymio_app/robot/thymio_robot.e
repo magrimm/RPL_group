@@ -30,9 +30,12 @@ feature {NONE} -- Initialization
 			create buttons_leds.make_with_topic ({THYMIO_TOPICS}.buttons_leds)
 			create circle_leds.make_with_topic ({THYMIO_TOPICS}.circle_leds)
 
+			-- Initialize state.
+			create robot_state.make
+
 			-- Initialize behaviors.
-			create wander_behavior.make_with_attributes (odometry_signaler, range_sensors, ground_sensors, diff_drive, sound_player)
-			create moving_to_goal_behavior.make_with_attributes (odometry_signaler, diff_drive, range_sensors, top_leds, params)
+			create moving_to_goal_behavior.make_with_attributes (odometry_signaler, diff_drive, range_sensors, robot_state, params)
+			create change_feature_behavior.make_with_attributes (top_leds, robot_state)
 		end
 
 feature -- Constants
@@ -45,30 +48,18 @@ feature -- Constants
 
 feature -- Access
 
-	start_discovering
-			-- Start wandering around.
-		do
-			start_behavior (wander_behavior)
-			light_up_leds (top_leds, buttons_leds, circle_leds)
-		end
-
-	stop_discovering
-			-- Stop wandering around.
-		do
-			stop_behavior (wander_behavior)
-			light_down_leds (top_leds, buttons_leds, circle_leds)
-		end
-
 	start_moving_to_goal
 			-- Start moving towards a goal position.
 		do
 			start_behavior (moving_to_goal_behavior)
+			start_behavior (change_feature_behavior)
 		end
 
 	stop_moving_to_goal
 			-- Stop moving towards a goal position.
 		do
 			stop_behavior (moving_to_goal_behavior)
+			stop_behavior (change_feature_behavior)
 		end
 
 feature {NONE} -- Robot parts
@@ -99,11 +90,14 @@ feature {NONE} -- Robot parts
 
 feature {NONE} -- Behaviors
 
-	wander_behavior: separate WANDER_BEHAVIOUR
-			-- Wandering around, avoiding obstacles.
-
 	moving_to_goal_behavior: separate MOVING_TO_GOAL_BEHAVIOR
 			-- Moving towards a goal position.
+
+	change_feature_behavior: separate CHANGE_FEATURE_BEHAVIOR
+			-- Changing features based on current state.
+
+	robot_state: separate STATE_SIGNALER
+			-- Robot current state.
 
 	start_behavior (b: separate BEHAVIOUR)
 			-- Launch `b'.
