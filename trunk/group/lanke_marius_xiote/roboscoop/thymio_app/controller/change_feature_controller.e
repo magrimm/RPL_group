@@ -1,8 +1,6 @@
 note
-	description: "Summary description for {CHANGE_FEATURE_CONTROLLER}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Different controllers for different features."
+	author: "Xiaote Zhu"
 
 class
 	CHANGE_FEATURE_CONTROLLER

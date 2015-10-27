@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {CHANGE_FEATURE_BEHAVIOR}."
-	author: ""
+	description: "Behavior that changes robot's features."
+	author: "Xiaote Zhu"
 
 class
 	CHANGE_FEATURE_BEHAVIOR

@@ -1,5 +1,5 @@
 note
-	description: "Different controllers for different behaviours/ states."
+	description: "Different controllers for different moving_to_goal states."
 	author: "Xiaote Zhu"
 
 class
@@ -156,7 +156,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 	transit_to_vleave (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 						drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
-				-- Transit to v_leave if found
+			-- Transit to v_leave if found
 		require
 			(m_sig.is_v_leave_found or state_sig.is_transiting) or s_sig.is_stop_requested
 		local
@@ -202,6 +202,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			if euclidean_distance (goal_point, robot_point) < params.goal_reached_distance_threshold then
 				-- Check if distance to goal is less than tolerance
 				state_sig.set_is_goal_reached
+				s_sig.set_stop_requested (True)
 				drive.stop
 
 				debug
@@ -226,6 +227,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				euclidean_distance (robot_point, wall_following_start_point) < params.goal_unreachable_distance_threshold) then
 				-- Check if robot is close enough to initial obstacle point.
 				state_sig.set_is_goal_unreachable
+				s_sig.set_stop_requested (True)
 				drive.stop
 
 				debug
@@ -256,7 +258,7 @@ feature {NONE}
 						(rsc.sensor_distances[closest_sensor_index] +
 						r_sens.sensors[closest_sensor_index].range - desired_wall_distance)
 						/ cosine (rsc.sensor_angles[closest_sensor_index]), 0.0, 0.0)
-			abs_start_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,			
+			abs_start_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,
 													relative_start_point, o_sig.theta)
 			-- Calculate first wall point in global coordinates using sensor return values
 			-- and coordinate transformation functions
