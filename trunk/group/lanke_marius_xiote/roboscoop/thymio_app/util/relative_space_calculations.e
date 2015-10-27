@@ -92,4 +92,9 @@ feature  -- Access
 			v_theta_y := desired_distance * (p2.y - p1.y) + (current_distance - desired_distance) * (p1.x - p2.x)
 			Result := atan2 (v_theta_y, v_theta_x)
 		end
+
+	get_distance_corner_turn_point (distance: REAL_64; sensor_i: INTEGER): REAL_64
+		do
+			Result := get_relative_coordinates_with_sensor (distance, sensor_i).x * cosine (sensor_angles[sensor_i])
+		end
 end -- class RELATIVE_SPACE_CALCULATIONS

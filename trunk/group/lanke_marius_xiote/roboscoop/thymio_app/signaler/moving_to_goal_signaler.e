@@ -33,6 +33,9 @@ feature -- Access
 	goal_point: POINT_MSG
 			-- goal position
 
+	timestamp_obstacle_last_seen: REAL_64
+			-- timestamp when obstacle was last seen.
+
 	v_leave: POINT_MSG
 			-- v_leave for transition state.
 
@@ -58,6 +61,14 @@ feature -- Access
 			-- Set d_min value equal to a_val
 		do
 			d_min := a_val
+		end
+
+	set_timestamp_obstacle_last_seen (a_val: BOOLEAN; b_val: REAL_64)
+			-- Set timestamp when obstacle was last seen
+		do
+			if a_val then
+				timestamp_obstacle_last_seen := b_val
+			end
 		end
 
 	set_v_leave (a_val: separate POINT_MSG)
