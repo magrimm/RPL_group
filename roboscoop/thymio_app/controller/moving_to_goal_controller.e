@@ -28,14 +28,11 @@ feature {NONE} -- Initialization
 
 feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
-	go (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+	go (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 		drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
 			-- Move robot if goal not reached yet.
 		require
-			(not m_sig.is_goal_reached and
-			not m_sig.is_goal_unreachable and
-			not m_sig.is_wall_following and
-			not m_sig.is_transiting) or s_sig.is_stop_requested
+			state_sig.is_go or s_sig.is_stop_requested
 		local
 			heading_error: REAL_64
 			vtheta: REAL_64
@@ -45,13 +42,12 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				drive.stop
 
 			else
-				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, params.goal_x, params.goal_y)	-- Find angular deviation
-				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)					-- Calculate control input
+				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, params.goal_x, params.goal_y)
+				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
 				vx := params.vx
 
-				m_sig.clear_all_pendings
-				m_sig.set_is_go_pending (True)
-				drive.set_velocity (vx, vtheta)																	-- Set the calculated control input
+				state_sig.set_is_go
+				drive.set_velocity (vx, vtheta)
 
 				debug
 					io.put_string ("Current state: GO%N")
@@ -59,21 +55,18 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 		end
 
-	follow_wall (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-						drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
+	follow_wall (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER;
+					s_sig: separate STOP_SIGNALER; drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
 				-- Turn and follow the boundary of the obstacle being detected.
 		require
-			(not m_sig.is_goal_reached and
-			not m_sig.is_goal_unreachable and
-			(r_sens.is_obstacle or m_sig.is_wall_following) and
-			not m_sig.is_transiting) or s_sig.is_stop_requested
+			(state_sig.is_go and r_sens.is_obstacle) or state_sig.is_wall_following or s_sig.is_stop_requested
 		local
 			vtheta, vx, desired_wall_distance: REAL_64
 		do
-			desired_wall_distance := params.desired_wall_distance     											-- Set minimum distance to obstacle																			--
+			desired_wall_distance := params.desired_wall_distance     																														--
 
 			if s_sig.is_stop_requested then
-				drive.stop																						-- Stop behavior when needed
+				drive.stop
 			else
 				if not m_sig.is_wall_following_start_set then
 					-- Set wall_following_start_point and wall_following_start_theta
@@ -84,7 +77,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				end
 
 				vtheta := r_sens.follow_wall_orientation (desired_wall_distance)
-
 				if r_sens.is_obstacle_vanished then																	-- Handle situation when the robot
 					if (r_sens.time_steps_obstacle_vanished - params.obstacle_vanished_time_threshold) > 0 then		-- turns a corner
 						vtheta := vtheta * (r_sens.time_steps_obstacle_vanished - params.obstacle_vanished_time_threshold)
@@ -93,11 +85,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					end
 				end
 
-				vx := params.vx																					-- Set velocity
+				vx := params.vx
 
-				m_sig.clear_all_pendings
-				m_sig.set_is_wall_following (True)
-				drive.set_velocity (vx, vtheta)																	-- Set control input
+				state_sig.set_is_wall_following
+				drive.set_velocity (vx, vtheta)
 
 				debug
 					io.put_string ("Current state: FOLLOW WALL%N")
@@ -105,30 +96,27 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 		end
 
-	look_for_vleave (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-						r_sens: separate THYMIO_RANGE_GROUP)
+	look_for_vleave (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER;
+						s_sig: separate STOP_SIGNALER; r_sens: separate THYMIO_RANGE_GROUP)
 				-- Look for v_leave when in wall_following state
 		require
-			(m_sig.is_wall_following and
+			state_sig.is_wall_following and
 			(m_sig.wall_following_start_theta - o_sig.theta).abs > params.angle_looped_around_threshold and
-			r_sens.is_obstacle and
-			not m_sig.is_goal_unreachable and
-			not m_sig.is_goal_reached and
-			not s_sig.is_stop_requested)
+			not s_sig.is_stop_requested
 		local
 			goal_point, robot_point, sensor_max_range_rel_point, sensor_max_range_abs_point: POINT_MSG
 			vleave_point: separate POINT_MSG
 			cur_distance, vleave_d_min, sensor_max_range_d_min: REAL_64
 			i: INTEGER
 		do
-			vleave_d_min := {REAL_64}.positive_infinity																				-- Initialize minimum exit to goal to inf
-			create goal_point.make_from_separate (m_sig.goal_point)												-- local object for goal location
-			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)											-- local object for robot position
-			create vleave_point.make_empty																		-- local object for optimal point to leave obstacle
+			vleave_d_min := {REAL_64}.positive_infinity
+			create goal_point.make_from_separate (m_sig.goal_point)
+			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
+			create vleave_point.make_empty
 
-			cur_distance := euclidean_distance (goal_point, robot_point)										-- Set current distance to goal
+			cur_distance := euclidean_distance (goal_point, robot_point)
 
-			if cur_distance < m_sig.d_min then																	-- Update current minimum distance to goal if true
+			if cur_distance < m_sig.d_min then
 				-- Update d_min.
 				m_sig.set_d_min (cur_distance)
 			end
@@ -166,13 +154,11 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 		end
 
-	transit_to_vleave (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+	transit_to_vleave (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 						drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
 				-- Transit to v_leave if found
 		require
-			(m_sig.is_v_leave_found and
-			not m_sig.is_goal_unreachable and
-			not m_sig.is_goal_reached) or s_sig.is_stop_requested
+			(m_sig.is_v_leave_found or state_sig.is_transiting) or s_sig.is_stop_requested
 		local
 			heading_error, vtheta, vx: REAL_64
 			vleave, robot_point: POINT_MSG
@@ -185,16 +171,15 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 			elseif euclidean_distance (vleave, robot_point) < params.vleave_reached_distance_threshold then
 				-- Exit transition state when vleave point reached.
-				m_sig.clear_all_pendings
+				state_sig.set_is_go
 				m_sig.set_is_v_leave_found (False)
 
 			else
-				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)      	-- Set control input
-				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)					--
-				vx := params.vx																					--
-																												--
-				m_sig.clear_all_pendings
-				m_sig.set_is_transiting (True)
+				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)
+				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
+				vx := params.vx
+
+				state_sig.set_is_transiting
 				drive.set_velocity (vx, vtheta)
 			end
 
@@ -203,38 +188,21 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 		end
 
-	change_features (m_sig: separate MOVING_TO_GOAL_SIGNALER; s_sig: separate STOP_SIGNALER; top_leds: separate THYMIO_TOP_LEDS)
-			-- Change features including light color based on current state.
-		do
-			if m_sig.is_go_pending then
-				top_leds.set_to_yellow
-			elseif m_sig.is_wall_following then
-				top_leds.set_to_red
-			elseif m_sig.is_transiting then
-				top_leds.set_to_blue
-			elseif m_sig.is_goal_reached then
-				top_leds.set_to_green
-			elseif m_sig.is_goal_unreachable then
-				top_leds.set_to_magenta
-			end
-		end
-
-	stop_when_goal_reached (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+	stop_when_goal_reached (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 							drive: separate DIFFERENTIAL_DRIVE)
 			-- Stop if goal reached.
 		require
-			o_sig.is_moving or s_sig.is_stop_requested
+			o_sig.is_moving
 		local
 			robot_point, goal_point: POINT_MSG
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create goal_point.make_from_separate (m_sig.goal_point)
 
-			if euclidean_distance (goal_point, robot_point) < params.goal_reached_distance_threshold then										-- Check if distance to goal is less than tolerance
-				m_sig.clear_all_pendings
-				m_sig.set_is_goal_reached (True)
-				s_sig.set_stop_requested (True)
-				drive.stop																						-- Stop moving
+			if euclidean_distance (goal_point, robot_point) < params.goal_reached_distance_threshold then
+				-- Check if distance to goal is less than tolerance
+				state_sig.set_is_goal_reached
+				drive.stop
 
 				debug
 					io.put_string ("Current state: STOP - GOAL REACHED%N")
@@ -242,23 +210,22 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 		end
 
-	stop_when_goal_unreachable (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+	stop_when_goal_unreachable (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 								drive: separate DIFFERENTIAL_DRIVE)
 			-- Stop if goal unreachable.
 		require
-			o_sig.is_moving or s_sig.is_stop_requested
+			o_sig.is_moving
 		local
 			wall_following_start_point, robot_point: POINT_MSG
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create wall_following_start_point.make_from_separate (m_sig.wall_following_start_point)
 
-			if ((m_sig.wall_following_start_theta - o_sig.theta).abs > params.angle_looped_around_threshold_unreachable and									-- Check if robot has looped a cycle
-				euclidean_distance (robot_point, wall_following_start_point) < params.goal_unreachable_distance_threshold) then					-- Check if robot is close enough to
-																												-- initial obstacle point
-				m_sig.clear_all_pendings
-				s_sig.set_stop_requested (True)
-				m_sig.set_is_goal_unreachable (True)
+			if ((m_sig.wall_following_start_theta - o_sig.theta).abs > params.angle_looped_around_threshold_unreachable and
+				-- Check if robot has looped a cycle.
+				euclidean_distance (robot_point, wall_following_start_point) < params.goal_unreachable_distance_threshold) then
+				-- Check if robot is close enough to initial obstacle point.
+				state_sig.set_is_goal_unreachable
 				drive.stop
 
 				debug
@@ -285,12 +252,14 @@ feature {NONE}
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0)
 			closest_sensor_index := r_sens.get_closest_sensor_index
-			create relative_start_point.make_with_values (														-- Calculate first wall point in
-						(rsc.sensor_distances[closest_sensor_index] +											-- global coordinates
-						r_sens.sensors[closest_sensor_index].range - desired_wall_distance)						-- using sensor return values
-						/ cosine (rsc.sensor_angles[closest_sensor_index]), 0.0, 0.0)						-- and coordinate transformation
-			abs_start_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,			-- functions
+			create relative_start_point.make_with_values (
+						(rsc.sensor_distances[closest_sensor_index] +
+						r_sens.sensors[closest_sensor_index].range - desired_wall_distance)
+						/ cosine (rsc.sensor_angles[closest_sensor_index]), 0.0, 0.0)
+			abs_start_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,			
 													relative_start_point, o_sig.theta)
+			-- Calculate first wall point in global coordinates using sensor return values
+			-- and coordinate transformation functions
 			m_sig.set_wall_following_start_point (abs_start_point)
 		end
 

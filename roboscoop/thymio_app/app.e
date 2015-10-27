@@ -19,6 +19,7 @@ feature {NONE} -- Initialization
 			robo_node: separate ROBOSCOOP_NODE
 			ros_spinner: separate ROS_SPINNER
 			thymio: separate THYMIO_ROBOT
+
 		do
 			-- Initialize this application as a ROS node.
 			robo_node := (create {ROS_NODE_STARTER}).roboscoop_node
