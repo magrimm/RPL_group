@@ -63,7 +63,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		local
 			vtheta, vx, desired_wall_distance: REAL_64
 		do
-			desired_wall_distance := params.desired_wall_distance     																														--
+			desired_wall_distance := params.desired_wall_distance
+			m_sig.set_timestamp_obstacle_last_seen (r_sens.is_obstacle, o_sig.timestamp)     																														--
 
 			if s_sig.is_stop_requested then
 				drive.stop
@@ -76,15 +77,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					m_sig.set_is_wall_following_start_set (True)
 				end
 
-				vtheta := r_sens.follow_wall_orientation (desired_wall_distance)
-				if r_sens.is_obstacle_vanished then																	-- Handle situation when the robot
-					if (r_sens.time_steps_obstacle_vanished - params.obstacle_vanished_time_threshold) > 0 then		-- turns a corner
-						vtheta := vtheta * (r_sens.time_steps_obstacle_vanished - params.obstacle_vanished_time_threshold)
-					else
-						vtheta := 0
-					end
-				end
-
+				vtheta := r_sens.follow_wall_orientation (desired_wall_distance, o_sig.timestamp, m_sig.timestamp_obstacle_last_seen, params.vx)
 				vx := params.vx
 
 				state_sig.set_is_wall_following

@@ -89,8 +89,8 @@ feature -- Access
 		deferred
 		end
 
-	follow_wall_orientation (a_desired_distance_from_wall: REAL_64): REAL_64
-			-- Orientation which the robot should take in order to follow the current wall obstacle.
-		deferred
-		end
+--	follow_wall_orientation (a_desired_distance_from_wall: REAL_64): REAL_64
+--			-- Orientation which the robot should take in order to follow the current wall obstacle.
+--		deferred
+--		end
 end

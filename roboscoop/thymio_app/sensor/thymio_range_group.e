@@ -43,6 +43,8 @@ feature -- Access.
 
 	prev_closest_sensor_index: INTEGER
 
+	prev_closest_sensor_range: REAL_64
+
 	is_obstacle_vanished: BOOLEAN
 			-- Whether a wall obstacle disappeared or not?
 
@@ -272,7 +274,7 @@ feature -- Access.
 			Result := create {VECTOR_3D_MSG}.make_empty
 		end
 
-	follow_wall_orientation (desired_distance: REAL_64): REAL_64
+	follow_wall_orientation (desired_distance, timestamp, timestamp_obstacle_last_seen, vx: REAL_64): REAL_64
 			-- Calculate the heading for wall following to maintain a desired_distance from the wall.
 		local
 			i: INTEGER
@@ -281,6 +283,8 @@ feature -- Access.
 		   	closest_sensor_point, second_closest_sensor_point: POINT_MSG
 		   	closest_sensor_index, second_closest_sensor_index: INTEGER
 		   	current_distance: REAL_64
+		   	corner_radius: REAL_64
+		   	d_desired, k_p_wall_following: REAL_64
 		do
 			create rsc.make
 			create closest_sensor_point.make_empty
@@ -292,6 +296,7 @@ feature -- Access.
 				set_obstacle_vanished (False)
 				closest_sensor_index := get_closest_sensor_index
 				prev_closest_sensor_index := closest_sensor_index
+				prev_closest_sensor_range := sensors[prev_closest_sensor_index].range
 			end
 
 			if number_detecting_sensors > 1 then
@@ -310,12 +315,32 @@ feature -- Access.
 															desired_distance)
 
 			elseif number_detecting_sensors = 1 then
-				set_obstacle_vanished(False)
-				Result := (prev_closest_sensor_index - 3.0) * 0.00008/ desired_distance
-			else
-				set_obstacle_vanished(True)
-				increment_obstacle_vanished_time_steps
-				Result := (3.0 - prev_closest_sensor_index) * 0.07 / desired_distance
+				d_desired := 0.12
+				k_p_wall_following := 8
+				if sensors[prev_closest_sensor_index].range > 0.101 and is_obstacle_mostly_at_left
+					and sensors[1].is_valid_range and not sensors[2].is_valid_range then
+					-- This if statement only has to be there, since the sensor emitter is always on the right and the detector on the left!
+					Result := 0.0
+				else
+					Result := k_p_wall_following * (sensors[prev_closest_sensor_index].range - d_desired) * (3.0 - prev_closest_sensor_index).sign
+				end
+
+			elseif number_detecting_sensors = 0 then
+				if timestamp < timestamp_obstacle_last_seen + (distance_corner_turn_point/vx) then 
+					Result := 0.0
+
+				else
+					corner_radius := 0.11 -- (d_desired + sensor_distance (=0.08))*sin(sensor_angle[1](=39°)) + wall_thickness/2
+					Result := vx/corner_radius * ((3.0 - prev_closest_sensor_index).sign)
+				end
 			end
+		end
+
+	distance_corner_turn_point: REAL_64
+		local
+			rsc: RELATIVE_SPACE_CALCULATIONS
+		do
+			create rsc.make
+			Result := rsc.get_distance_corner_turn_point (prev_closest_sensor_range, prev_closest_sensor_index)
 		end
 end
