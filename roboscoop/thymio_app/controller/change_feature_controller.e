@@ -19,7 +19,6 @@ feature {NONE} -- Initialization
 			stop_signaler := s_sig
 		end
 
-
 feature -- Access
 
 	change_light_feature (state_sig: separate STATE_SIGNALER; s_sig: separate STOP_SIGNALER; top_leds: separate THYMIO_TOP_LEDS)
