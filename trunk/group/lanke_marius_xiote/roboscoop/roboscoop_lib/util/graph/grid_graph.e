@@ -16,7 +16,7 @@ feature {NONE} -- Initialization
 
 	make_3d (width, height, depth: INTEGER;
 				min_x, max_x, min_y, max_y, min_z, max_z: REAL_64;
-				conn_strategy: GRID_CONNECTIVITY_STRATEGY)
+				conn_strategy: separate GRID_CONNECTIVITY_STRATEGY)
 			-- Create Current with nodes on the 3D grid.
 		require
 			width > 0
@@ -94,13 +94,13 @@ feature {NONE} -- Initialization
 			conn_strategy.connect (Current)
 		end
 
-	make_2d (width, height: INTEGER; min_x, max_x, min_y, max_y: REAL_64; conn_strategy: GRID_CONNECTIVITY_STRATEGY)
+	make_2d (width, height: INTEGER; min_x, max_x, min_y, max_y: REAL_64; conn_strategy: separate GRID_CONNECTIVITY_STRATEGY)
 			-- Create Current with nodes on the 2D grid.
 		do
 			make_3d (width, height, 1, min_x, max_x, min_y, max_y, 0.0, 0.0, conn_strategy)
 		end
 
-	make_1d (width: INTEGER; min_x, max_x: REAL_64; conn_strategy: GRID_CONNECTIVITY_STRATEGY)
+	make_1d (width: INTEGER; min_x, max_x: REAL_64; conn_strategy: separate GRID_CONNECTIVITY_STRATEGY)
 			-- Create Current with nodes on the 1D grid (chain).
 		do
 			make_3d (width, 1, 1, min_x, max_x, 0.0, 0.0, 0.0, 0.0, conn_strategy)
