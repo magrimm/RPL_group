@@ -16,10 +16,10 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_coords (coords: POINT_MSG)
+	make_with_coords (coords: separate POINT_MSG)
 			-- Create Current with given position.
 		do
-			position := coords
+			create position.make_from_separate (coords)
 			make
 		end
 

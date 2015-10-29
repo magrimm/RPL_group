@@ -31,13 +31,13 @@ feature -- Access
 			Result := (dx * dx) + (dy * dy)
 		end
 
-	euclidean_distance (a, b: POINT_MSG): REAL_64
+	euclidean_distance (a, b: separate POINT_MSG): REAL_64
 			-- Euclidean distance between `a' and `b'.
 		do
 			Result := sqrt ((a.x - b.x).power(2) + (a.y - b.y).power(2) + (a.z - b.z).power(2))
 		end
 
-	manhattan_distance (a, b: POINT_MSG): REAL_64
+	manhattan_distance (a, b: separate POINT_MSG): REAL_64
 			-- Manhattan distance between `a' and `b'.
 		do
 			Result := dabs (a.x - b.x) + dabs (a.y - b.y) + dabs (a.z - b.z)
