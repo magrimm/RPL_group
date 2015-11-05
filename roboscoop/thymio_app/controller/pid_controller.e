@@ -8,13 +8,7 @@ class
 create
 	make
 
-feature
-
-	cur_error, prev_error, acc_error: REAL_64
-	cur_time, prev_time: REAL_64
-	k_p, k_i, k_d: REAL_64
-
-feature -- Initialization
+feature {NONE} -- Initialization
 
 	make (k_proportional, k_integral, k_derivative: REAL_64)
 			-- Create current with given attributes.
@@ -24,7 +18,7 @@ feature -- Initialization
 			k_d := k_derivative
 		end
 
-feature
+feature -- Access
 
 	get_control_output (current_error, current_time: REAL_64): REAL_64
 			-- Return new v_theta.
@@ -52,4 +46,11 @@ feature
 			cur_error := current_error
 			acc_error := acc_error + cur_error * (cur_time - prev_time)
 		end
-end
+
+feature {NONE}
+
+	cur_error, prev_error, acc_error: REAL_64
+	cur_time, prev_time: REAL_64
+	k_p, k_i, k_d: REAL_64
+
+end -- class
