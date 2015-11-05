@@ -317,7 +317,7 @@ feature -- Access.
 															second_closest_sensor_point,
 															current_distance,
 															desired_distance)
-
+															
 			elseif number_detecting_sensors = 1 then
 				-- Obstacle only detected by one sensor
 				-- Eg. when parallel to the wall
