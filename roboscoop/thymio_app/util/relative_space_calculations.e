@@ -94,6 +94,7 @@ feature -- Access
 		end
 
 	get_distance_corner_turn_point (distance: REAL_64; sensor_i: INTEGER): REAL_64
+		-- Calculate the distance to the end of the obstacle
 		do
 			Result := get_relative_coordinates_with_sensor (distance, sensor_i).x * cosine (sensor_angles[sensor_i])
 		end
