@@ -42,7 +42,8 @@ feature {NONE} -- Initialization
 				t.start_moving_to_goal
 			end
 		end
-feature
+
+feature {NONE}
 
 	parser: PARSER
 			-- Parser class for paramteters from text file.
@@ -52,4 +53,4 @@ feature
 
 	params_path: separate STRING
 
-end
+end -- class
