@@ -64,4 +64,5 @@ feature {NONE} -- Implementation
 		do
 			s_sig.set_stop_requested (val)
 		end
-end
+
+end -- class
