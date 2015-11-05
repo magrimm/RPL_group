@@ -12,7 +12,7 @@ inherit
 create
 	make
 
-feature
+feature {NONE}
 
 	make
 		do
@@ -49,7 +49,7 @@ feature -- Constants
 	sensor_angles: ARRAY[REAL_64]
 			-- Each sensor's angle to the positive x-axis.
 
-feature  -- Access
+feature -- Access
 
 	get_relative_coordinates_with_sensor (distance: REAL_64; sensor_i: INTEGER): POINT_MSG
 			-- Calculate the relative coordinate of a point given its distance to a sensor and the sensor's index.
@@ -97,4 +97,5 @@ feature  -- Access
 		do
 			Result := get_relative_coordinates_with_sensor (distance, sensor_i).x * cosine (sensor_angles[sensor_i])
 		end
-end -- class RELATIVE_SPACE_CALCULATIONS
+		
+end -- class
