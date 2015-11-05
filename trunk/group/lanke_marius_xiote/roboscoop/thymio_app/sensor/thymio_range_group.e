@@ -42,8 +42,10 @@ feature {NONE} -- Initialization.
 feature -- Access.
 
 	prev_closest_sensor_index: INTEGER
+			-- Keeps track of sensor which detected the obstacle the very last.
 
 	prev_closest_sensor_range: REAL_64
+			-- Keeps track of distance with which prev_closest_sensor detected the obstacle.
 
 	is_obstacle_vanished: BOOLEAN
 			-- Whether a wall obstacle disappeared or not?
@@ -53,7 +55,6 @@ feature -- Access.
 
 	is_obstacle: BOOLEAN
 			-- Whether an obstacle is observed by any sensor in valid range?
-
 		local
 			i: INTEGER
 		do
@@ -293,6 +294,7 @@ feature -- Access.
 			number_detecting_sensors := get_number_detecting_sensors
 
 			if number_detecting_sensors > 0 then
+				-- Obstacle detected
 				set_obstacle_vanished (False)
 				closest_sensor_index := get_closest_sensor_index
 				prev_closest_sensor_index := closest_sensor_index
@@ -300,6 +302,8 @@ feature -- Access.
 			end
 
 			if number_detecting_sensors > 1 then
+				-- Obstacle detected with at least two sensors
+				-- Able to calculate orientation of wall
 				set_obstacle_vanished(False)
 				second_closest_sensor_index := get_second_closest_sensor_index (closest_sensor_index)
 				closest_sensor_point := rsc.get_relative_coordinates_with_sensor (sensors[closest_sensor_index].range,
@@ -315,6 +319,8 @@ feature -- Access.
 															desired_distance)
 
 			elseif number_detecting_sensors = 1 then
+				-- Obstacle only detected by one sensor
+				-- Eg. when parallel to the wall
 				d_desired := 0.12
 				k_p_wall_following := 8
 				if sensors[prev_closest_sensor_index].range > 0.101 and is_obstacle_mostly_at_left
@@ -326,22 +332,26 @@ feature -- Access.
 				end
 
 			elseif number_detecting_sensors = 0 then
+				-- Obstacle not detected anymore
+				-- Initiate turn at the end of the corner
 				if timestamp < timestamp_obstacle_last_seen + (distance_corner_turn_point/vx) then
+					-- Continue parallel to the obstacle until the end of the obstacle is reached.
 					Result := 0.0
-
 				else
-					corner_radius := 0.11 -- (d_desired + sensor_distance (=0.08))*sin(sensor_angle[1](=39°)) + wall_thickness/2
+					-- Go with constant angular velocity around the corner.
+					corner_radius := 0.11
 					Result := vx/corner_radius * ((3.0 - prev_closest_sensor_index).sign)
 				end
 			end
 		end
 
 	distance_corner_turn_point: REAL_64
+		-- Caculate the distance to the end of the obstacle when obstacle not detected anymore.
 		local
 			rsc: RELATIVE_SPACE_CALCULATIONS
 		do
 			create rsc.make
 			Result := rsc.get_distance_corner_turn_point (prev_closest_sensor_range, prev_closest_sensor_index)
 		end
-		
+
 end -- class
