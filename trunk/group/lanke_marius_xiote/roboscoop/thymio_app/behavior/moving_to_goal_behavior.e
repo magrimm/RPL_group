@@ -13,17 +13,16 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_attributes (odom_sig: separate ODOMETRY_SIGNALER; d_drive: separate DIFFERENTIAL_DRIVE;
-						r_sens: separate THYMIO_RANGE_GROUP; state_signaler: separate STATE_SIGNALER; par: PARAMETERS)
+	make_with_attributes (robot: separate THYMIO_ROBOT; par: PARAMETERS)
 			-- Create current with given attributes.
 		do
 			create stop_sig.make
 			create moving_to_goal_sig.make (par.goal_x, par.goal_y)
-			state_sig := state_signaler
+			state_sig := robot.robot_state
 
-			odometry_sig := odom_sig
-			diff_drive := d_drive
-			range_sens := r_sens
+			odometry_sig := robot.odometry_signaler
+			diff_drive := robot.diff_drive
+			range_sens := robot.range_sensors
 			params := par
 		end
 

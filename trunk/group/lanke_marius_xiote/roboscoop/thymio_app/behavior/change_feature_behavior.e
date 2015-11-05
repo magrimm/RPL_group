@@ -13,12 +13,12 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_attributes (t_leds: separate THYMIO_TOP_LEDS; state_signaler: separate STATE_SIGNALER)
+	make_with_attributes (robot: separate THYMIO_ROBOT)
 			-- Create current with given attributes.
 		do
 			create stop_sig.make
-			state_sig := state_signaler
-			top_leds := t_leds
+			state_sig := robot.robot_state
+			top_leds := robot.top_leds
 		end
 
 
