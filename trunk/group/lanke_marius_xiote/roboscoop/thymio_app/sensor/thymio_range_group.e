@@ -326,7 +326,7 @@ feature -- Access.
 				end
 
 			elseif number_detecting_sensors = 0 then
-				if timestamp < timestamp_obstacle_last_seen + (distance_corner_turn_point/vx) then 
+				if timestamp < timestamp_obstacle_last_seen + (distance_corner_turn_point/vx) then
 					Result := 0.0
 
 				else
@@ -343,4 +343,5 @@ feature -- Access.
 			create rsc.make
 			Result := rsc.get_distance_corner_turn_point (prev_closest_sensor_range, prev_closest_sensor_index)
 		end
-end
+		
+end -- class
