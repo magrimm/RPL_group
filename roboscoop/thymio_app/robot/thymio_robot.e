@@ -15,7 +15,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make (params: PARAMETERS)
+	make
 			-- Create a robot.
 		do
 			-- Initialize sensors.
@@ -32,10 +32,6 @@ feature {NONE} -- Initialization
 
 			-- Initialize state.
 			create robot_state.make
-
-			-- Initialize behaviors.
-			create moving_to_goal_behavior.make_with_attributes (odometry_signaler, diff_drive, range_sensors, robot_state, params)
-			create change_feature_behavior.make_with_attributes (top_leds, robot_state)
 		end
 
 feature -- Constants
@@ -46,23 +42,7 @@ feature -- Constants
 	default_linear_speed: REAL_64 = 0.08
 			-- Default linear speed of the robot.
 
-feature -- Access
-
-	start_moving_to_goal
-			-- Start moving towards a goal position.
-		do
-			start_behavior (moving_to_goal_behavior)
-			start_behavior (change_feature_behavior)
-		end
-
-	stop_moving_to_goal
-			-- Stop moving towards a goal position.
-		do
-			stop_behavior (moving_to_goal_behavior)
-			stop_behavior (change_feature_behavior)
-		end
-
-feature {NONE} -- Robot parts
+feature {BEHAVIOUR} -- Robot parts
 
 	range_sensors: separate THYMIO_RANGE_GROUP
 			-- Horizontal range sensors.
@@ -88,16 +68,10 @@ feature {NONE} -- Robot parts
 	circle_leds: separate THYMIO_CIRCLE_LEDS
 			-- 8 Orange LEDS around the buttons.
 
-feature {NONE} -- Behaviors
-
-	moving_to_goal_behavior: separate MOVING_TO_GOAL_BEHAVIOR
-			-- Moving towards a goal position.
-
-	change_feature_behavior: separate CHANGE_FEATURE_BEHAVIOR
-			-- Changing features based on current state.
-
 	robot_state: separate STATE_SIGNALER
 			-- Robot current state.
+
+feature {NONE} -- Behaviors
 
 	start_behavior (b: separate BEHAVIOUR)
 			-- Launch `b'.
@@ -133,5 +107,5 @@ feature {NONE} -- Behaviors
 			buttons.set_leds_brightness (<<32,0,32,0>>)
 			circle.set_leds_brightness (<<32,0,32,0,32,0,32,0>>)
 		end
-		
+
 end -- class
