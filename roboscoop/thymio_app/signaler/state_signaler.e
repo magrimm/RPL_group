@@ -77,4 +77,5 @@ feature -- Access
 			is_goal_reached := False
 			is_goal_unreachable := False
 		end
-end
+		
+end -- class

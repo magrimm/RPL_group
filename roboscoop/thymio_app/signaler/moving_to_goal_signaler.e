@@ -8,7 +8,7 @@ class
 create
 	make
 
-feature -- Initialization
+feature {NONE} -- Initialization
 
 	make (goal_x, goal_y : REAL_64)
 		do
@@ -88,4 +88,5 @@ feature -- Access
 		do
 			wall_following_start_theta := a_val
 		end
-end
+		
+end -- class
