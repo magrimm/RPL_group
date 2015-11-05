@@ -58,4 +58,5 @@ feature
 	    	end
 	    	Result := params
 	  	end
+	  	
 end -- class PARSING

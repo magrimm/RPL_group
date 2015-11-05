@@ -31,4 +31,5 @@ feature -- Constants
 
 	path: STRING_8 = "/path_planner/path"
 	pose: STRING_8 = "/path_planner/pose"
-end
+
+end -- class

@@ -133,4 +133,5 @@ feature {NONE} -- Behaviors
 			buttons.set_leds_brightness (<<32,0,32,0>>)
 			circle.set_leds_brightness (<<32,0,32,0,32,0,32,0>>)
 		end
-end
+		
+end -- class
