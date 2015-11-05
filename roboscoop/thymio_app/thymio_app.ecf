@@ -25,6 +25,11 @@
 			<cluster name="parameter" location=".\parameter\"/>
 			<cluster name="parser" location=".\parser\"/>
 			<cluster name="util" location=".\util\"/>
+			<cluster name="heuristic_strategy" location="\home\xiaote\catkin_group_ws\src\lanke_marius_xiote\roboscoop\thymio_app\heuristic_strategy\"/>
+			<cluster name="grid_connectivity_strategy" location="\home\xiaote\catkin_group_ws\src\lanke_marius_xiote\roboscoop\thymio_app\grid_connectivity_strategy\"/>
+			<cluster name="graph" location="\home\xiaote\catkin_group_ws\src\lanke_marius_xiote\roboscoop\thymio_app\graph\"/>
+			<cluster name="planner" location="\home\xiaote\catkin_group_ws\src\lanke_marius_xiote\roboscoop\thymio_app\planner\"/>
+			<cluster name="search_strategy" location="\home\xiaote\catkin_group_ws\src\lanke_marius_xiote\roboscoop\thymio_app\search_strategy\"/>
 		</cluster>
 	</target>
 </system>
