@@ -229,13 +229,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 		end
 
-
-feature
-	ec: ERROR_CALCULATIONS
-	rsc: RELATIVE_SPACE_CALCULATIONS
-	pid_controller: PID_CONTROLLER
-	params: PARAMETERS
-
 feature {NONE}
 
 	set_wall_following_start_point (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER;
@@ -258,4 +251,11 @@ feature {NONE}
 			m_sig.set_wall_following_start_point (abs_start_point)
 		end
 
-end -- class MOVING_TO_GOAL_CONTROLLER
+feature
+
+	ec: ERROR_CALCULATIONS
+	rsc: RELATIVE_SPACE_CALCULATIONS
+	pid_controller: PID_CONTROLLER
+	params: PARAMETERS
+
+end -- class
