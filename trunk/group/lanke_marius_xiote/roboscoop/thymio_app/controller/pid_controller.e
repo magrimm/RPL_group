@@ -47,6 +47,16 @@ feature -- Access
 			acc_error := acc_error + cur_error * (cur_time - prev_time)
 		end
 
+	reset
+		-- Reset error and time
+		do
+			cur_error := 0
+			prev_error := 0
+			acc_error := 0
+			cur_time := 0
+			prev_time := 0
+		end
+
 feature {NONE}
 
 	cur_error, prev_error, acc_error: REAL_64

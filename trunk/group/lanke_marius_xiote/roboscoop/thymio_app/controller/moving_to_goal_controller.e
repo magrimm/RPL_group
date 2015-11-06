@@ -29,7 +29,7 @@ feature {NONE} -- Initialization
 feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 	go (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-		drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
+		drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP; path_planner: separate PATH_PLANNER)
 			-- Move robot if goal not reached yet.
 		require
 			state_sig.is_go or s_sig.is_stop_requested
@@ -37,12 +37,26 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			heading_error: REAL_64
 			vtheta: REAL_64
 			vx: REAL_64
+			robot_point, cur_goal_point: POINT_MSG
 		do
+			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
+			create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
 			if s_sig.is_stop_requested then
 				drive.stop
 
+			if not m_sig.is_path_planned then
+				path_planner.set_start_node (o_sig.x, o_sig.y, o_sig.z)
+				path_planner.search_path
+				m_sig.set_is_path_planned (True)
+			end
+
+			if euclidean_distance (cur_goal_point, robot_point) < 0.01 then
+				path_planner.move_to_next_goal -- TODO - WHAT IF WE RUN OUT OF PATH BUT HAVEN'T REACHED GOAL YET
+				pid_controller.reset
+			end
+
 			else
-				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, params.goal_x, params.goal_y)
+				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, cur_goal_point.x, cur_goal_point.y)
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
 				vx := params.vx
 
@@ -166,6 +180,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Exit transition state when vleave point reached.
 				state_sig.set_is_go
 				m_sig.set_is_v_leave_found (False)
+				m_sig.set_is_path_planned (False)
 
 			else
 				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)
