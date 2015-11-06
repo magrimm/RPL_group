@@ -60,7 +60,7 @@ feature {NONE} -- Initialization
 			create path_planner.make (conn_strategy, search_strategy, path_planner_parameter)
 
 			-- Initialize behaviors.
-			create moving_to_goal_behavior.make_with_attributes (thymio, params)
+			create moving_to_goal_behavior.make_with_attributes (thymio, path_planner, params)
 			create change_feature_behavior.make_with_attributes (thymio)
 
 			-- Launch Thymio.

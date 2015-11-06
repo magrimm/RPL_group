@@ -23,7 +23,7 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	search_path (graph: SPATIAL_GRAPH;
-					start_node, goal_node: SPATIAL_GRAPH_NODE) : LINKED_LIST [SPATIAL_GRAPH_NODE]
+					start_node, goal_node: SPATIAL_GRAPH_NODE) : LINKED_LIST [POINT_MSG]
 		-- Search a shortest path from start node to goal node.
 		local
 			queue: LINKED_PRIORITY_QUEUE [A_STAR_GRAPH_NODE]
@@ -33,7 +33,7 @@ feature -- Access
 			new_node, cur_node, existing_node : A_STAR_GRAPH_NODE
 			cur_neighbor : SPATIAL_GRAPH_NODE
 			goal_reached : BOOLEAN
-			path : LINKED_LIST [SPATIAL_GRAPH_NODE]
+			path : LINKED_LIST [POINT_MSG]
 		do
 			create queue.make
 			create node_to_index_mapping.make (graph.nodes.count)
@@ -100,12 +100,12 @@ feature -- Access
 				-- Trace back to create a valid path.
 				from
 					cur_node := a_star_nodes.at (node_to_index_mapping.item ((goal_node)))
-					path.put_front (cur_node.graph_node)
+					path.put_front (cur_node.graph_node.position)
 				until
 					cur_node.prev_node_index <= 0
 				loop
 					cur_node := a_star_nodes.at (cur_node.prev_node_index)
-					path.put_front (cur_node.graph_node)
+					path.put_front (cur_node.graph_node.position)
 				end
 
 				Result := path

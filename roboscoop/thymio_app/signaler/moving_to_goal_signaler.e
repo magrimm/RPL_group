@@ -27,11 +27,14 @@ feature -- Access
 	is_v_leave_found: BOOLEAN
 			-- Is v_leave found yet?
 
+	is_path_planned: BOOLEAN
+			-- Is path planned yet?
+
 	d_min: REAL_64
 			-- Minimum distance between robot and the goal so far.
 
 	goal_point: POINT_MSG
-			-- goal position
+			-- goal position.
 
 	timestamp_obstacle_last_seen: REAL_64
 			-- timestamp when obstacle was last seen.
@@ -55,6 +58,12 @@ feature -- Access
 			-- Set is_v_leave_found value to a_val
 		do
 			is_v_leave_found := a_val
+		end
+
+	set_is_path_planned (a_val: BOOLEAN)
+			-- Set is_path_planned value to a_val
+		do
+			is_path_planned := a_val
 		end
 
 	set_d_min (a_val: REAL_64)
@@ -88,5 +97,5 @@ feature -- Access
 		do
 			wall_following_start_theta := a_val
 		end
-		
+
 end -- class

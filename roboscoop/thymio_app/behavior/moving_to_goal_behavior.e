@@ -13,7 +13,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_attributes (robot: separate THYMIO_ROBOT; par: PARAMETERS)
+	make_with_attributes (robot: separate THYMIO_ROBOT; planner: PATH_PLANNER; par: PARAMETERS)
 			-- Create current with given attributes.
 		do
 			create stop_sig.make
@@ -23,6 +23,8 @@ feature {NONE} -- Initialization
 			odometry_sig := robot.odometry_signaler
 			diff_drive := robot.diff_drive
 			range_sens := robot.range_sensors
+
+			path_planner := planner
 			params := par
 		end
 
@@ -71,13 +73,15 @@ feature {NONE} -- Implementation
 	range_sens: separate THYMIO_RANGE_GROUP
 			-- 5 Range sensors in front of the robot.
 
+	path_planner: separate PATH_PLANNER
+
 	params: PARAMETERS
 
 	sep_start (a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER)
 			-- Start controllers asynchronously.
 		do
 			a.repeat_until_stop_requested (			-- Perform step 1. going to goal
-				agent a.go (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
+				agent a.go (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens, path_planner))
 			b.repeat_until_stop_requested (			-- Perform step 2. following obstacle
 				agent b.follow_wall (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
 			c.repeat_until_stop_requested (			-- Look for transition to step 3.

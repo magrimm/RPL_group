@@ -58,4 +58,10 @@ feature {NONE}
 		do
 			Result := ((y_coord - occupancy_grid_sig.state.info.origin.position.y) / occupancy_grid_sig.state.info.resolution).rounded + 1
 		end
+
+	convert_z_coord_to_z_index (occupancy_grid_sig: separate OCCUPANCY_GRID_SIGNALER; z_coord: REAL_64) : INTEGER
+			-- Convert an y coordinate to the cooresponding z index on the grid graph.
+		do
+			Result := ((z_coord - occupancy_grid_sig.state.info.origin.position.z) / occupancy_grid_sig.state.info.resolution).rounded + 1
+		end
 end

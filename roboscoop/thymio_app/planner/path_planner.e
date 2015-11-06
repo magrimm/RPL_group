@@ -25,9 +25,7 @@ feature {NONE} -- Initialization
 
 			grid_graph := make_grid_graph (occupancy_grid_signaler, c_strategy, params.inflate_radius)
 
-			start_i := convert_x_coord_to_x_index (occupancy_grid_signaler, params.start_x)
-			start_j := convert_y_coord_to_y_index (occupancy_grid_signaler, params.start_y)
-			start_node := grid_graph.node_at (start_i, start_j, 1)
+			set_start_node (params.goal_x, params.goal_y, 0)
 
 			goal_i := convert_x_coord_to_x_index (occupancy_grid_signaler, params.goal_x)
 			goal_j := convert_y_coord_to_y_index (occupancy_grid_signaler, params.goal_y)
@@ -39,39 +37,61 @@ feature {NONE} -- Initialization
 			end
 
 			search_strategy := s_strategy
+			create planned_path.make
 		end
 
 feature -- Access
 
+	set_start_node (x, y, z: REAL_64)
+			-- Reset start node given coordinates of start position
+		local
+			i, j, k : INTEGER_32
+		do
+			i := convert_x_coord_to_x_index (occupancy_grid_signaler, x)
+			j := convert_y_coord_to_y_index (occupancy_grid_signaler, y)
+			k := convert_z_coord_to_z_index (occupancy_grid_signaler, z)
+
+			start_node := grid_graph.node_at (i, j, k)
+		end
+
+	get_cur_goal : POINT_MSG
+		do
+			Result := planned_path.item
+		end
+
+	move_to_next_goal
+		do
+			planned_path.forth
+		end
+
 	search_path
 			-- Search path.
 		local
-			path : LINKED_LIST [SPATIAL_GRAPH_NODE]
 			poses : ARRAY[POSE_STAMPED_MSG]
 			header: HEADER_MSG
 			pose: POSE_MSG
 			pose_stamped_msg : POSE_STAMPED_MSG
 			i : INTEGER
 		do
-			path := search_strategy.search_path (grid_graph, start_node, goal_node)
-			create poses.make_filled (create {POSE_STAMPED_MSG}.make_empty, 1, path.count)
+			planned_path := search_strategy.search_path (grid_graph, start_node, goal_node)
+			create poses.make_filled (create {POSE_STAMPED_MSG}.make_empty, 1, planned_path.count)
 
-			if path.count = 0 then
+			if planned_path.count = 0 then
 				io.put_string ("NO PATH EXISTS.")
 				io.put_new_line
 			end
 
 			from
-				path.start
+				planned_path.start
 			until
-				path.exhausted
+				planned_path.exhausted
 			loop
 				i := i + 1
 				header := create {HEADER_MSG}.make_now ("/map")
-				pose := create {POSE_MSG}.make_with_values (path.item.position, create {QUATERNION_MSG}.make_empty)
+				pose := create {POSE_MSG}.make_with_values (planned_path.item, create {QUATERNION_MSG}.make_empty)
 				pose_stamped_msg := create {POSE_STAMPED_MSG}.make_with_values (header, pose)
 				poses.put (pose_stamped_msg, i)
-				path.forth
+				planned_path.forth
 			end
 			path_publisher.publish (create {PATH_MSG}.make_with_values (create {HEADER_MSG}.make_now ("/map"), poses))
 		end
@@ -86,6 +106,9 @@ feature {NONE}
 
 	path_publisher: ROS_PUBLISHER [PATH_MSG]
 			-- Publisher object.
+
+	planned_path : LINKED_LIST [POINT_MSG]
+			-- Planned path.
 
 	start_node, goal_node : SPATIAL_GRAPH_NODE
 			-- Graph nodes of the start position and the goal position
