@@ -42,4 +42,5 @@ feature -- Access
 	    	input_file.close
 	    	Result := params
 	  	end
-end
+
+end -- class

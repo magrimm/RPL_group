@@ -16,4 +16,4 @@ feature -- Access
 			Result := a.euclidean_distance (a.position, b.position)
 		end
 
-end
+end -- class

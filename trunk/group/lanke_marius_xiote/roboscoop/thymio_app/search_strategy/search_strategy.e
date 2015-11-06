@@ -12,4 +12,5 @@ feature -- Access
 		-- Search a shortest path from start node to goal node.
 		deferred
 		end
-end
+
+end -- class

@@ -64,4 +64,5 @@ feature {NONE}
 		do
 			Result := ((z_coord - occupancy_grid_sig.state.info.origin.position.z) / occupancy_grid_sig.state.info.resolution).rounded + 1
 		end
-end
+
+end -- class

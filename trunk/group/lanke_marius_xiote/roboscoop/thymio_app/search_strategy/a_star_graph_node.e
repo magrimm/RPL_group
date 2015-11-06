@@ -61,4 +61,5 @@ feature -- Access
 		do
 			prev_node_index := i
 		end
-end
+
+end -- class

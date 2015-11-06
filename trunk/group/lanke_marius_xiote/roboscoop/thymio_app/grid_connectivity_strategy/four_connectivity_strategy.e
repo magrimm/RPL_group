@@ -35,4 +35,4 @@ feature -- Access
 			end
 		end
 
-end
+end -- class
