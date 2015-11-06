@@ -55,11 +55,13 @@ feature -- Access
 		end
 
 	get_cur_goal : POINT_MSG
+		-- TODO: consider adding contract here
 		do
 			Result := planned_path.item
 		end
 
 	move_to_next_goal
+		-- TODO: consider adding contract here
 		do
 			planned_path.forth
 		end

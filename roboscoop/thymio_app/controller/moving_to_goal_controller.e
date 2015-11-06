@@ -51,7 +51,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 
 			if euclidean_distance (cur_goal_point, robot_point) < 0.01 then
-				path_planner.move_to_next_goal -- TODO - WHAT IF WE RUN OUT OF PATH BUT HAVEN'T REACHED GOAL YET
+				path_planner.move_to_next_goal -- TODO: WHAT IF WE RUN OUT OF PATH BUT HAVEN'T REACHED GOAL YET
 				pid_controller.reset
 			end
 
