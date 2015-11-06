@@ -132,4 +132,5 @@ feature {NONE} -- Implementation
 		do
 			Result := path_cost (parent_node, child_node.graph_node) < child_node.path_cost
 		end
-end
+
+end -- class

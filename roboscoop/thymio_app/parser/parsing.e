@@ -6,9 +6,10 @@ note
 class
 	PARSER
 
-feature
+feature -- Access
 
 	read_parameters (file_path: STRING): PARAMETERS
+		-- Read parameters from file.
 		local
 			input_file: PLAIN_TEXT_FILE
 			string_tokens: LIST[STRING]
@@ -58,5 +59,5 @@ feature
 	    	end
 	    	Result := params
 	  	end
-	  	
-end -- class PARSING
+
+end -- class

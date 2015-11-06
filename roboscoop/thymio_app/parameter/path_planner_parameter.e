@@ -46,4 +46,5 @@ feature -- Access
 		do
 			goal_y := a_val
 		end
-end
+
+end -- class

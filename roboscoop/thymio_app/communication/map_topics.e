@@ -11,4 +11,4 @@ feature -- Constants
 	map: STRING_8 = "/map"
 	path: STRING_8 = "/path"
 
-end
+end -- class

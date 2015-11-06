@@ -15,4 +15,5 @@ feature -- Access
 		do
 			Result := a.manhattan_distance (a.position, b.position)
 		end
-end
+
+end -- class
