@@ -19,22 +19,24 @@ feature {NONE} -- Initialization
 			count : INTEGER_32
 			start_i, start_j, goal_i, goal_j : INTEGER_32
 		do
+
 			create occupancy_grid_signaler.make_with_topic ({MAP_TOPICS}.map)
 			create path_publisher.make_with_topic ({MAP_TOPICS}.path)
 			path_publisher.advertize (1, False)
 
 			grid_graph := make_grid_graph (occupancy_grid_signaler, c_strategy, params.inflate_radius)
-
-			set_start_node (params.goal_x, params.goal_y, 0)
+			set_start_node (params.start_x, params.start_y, 0)
 
 			goal_i := convert_x_coord_to_x_index (occupancy_grid_signaler, params.goal_x)
 			goal_j := convert_y_coord_to_y_index (occupancy_grid_signaler, params.goal_y)
 			goal_node := grid_graph.node_at (goal_i, goal_j, 1)
 
+
 			debug
 				io.put_string ("start_i: " + start_i.out + " start_j: " + start_j.out + "%N")
 				io.put_string ("goal_i: " + goal_i.out + " goal_j: " + goal_j.out + "%N")
 			end
+
 
 			search_strategy := s_strategy
 			create planned_path.make
@@ -82,7 +84,9 @@ feature -- Access
 				io.put_string ("NO PATH EXISTS.")
 				io.put_new_line
 			end
-
+			debug
+				io.putstring ("The path length is: " + planned_path.count.out + "%N")
+			end
 			from
 				planned_path.start
 			until
