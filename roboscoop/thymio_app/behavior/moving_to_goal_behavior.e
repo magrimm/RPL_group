@@ -13,19 +13,24 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_attributes (robot: separate THYMIO_ROBOT; planner: PATH_PLANNER; par: PARAMETERS)
+	make_with_attributes (robot: separate THYMIO_ROBOT; planner: PATH_PLANNER; beh_par: BEHAVIOR_PARAMETERS)
 			-- Create current with given attributes.
 		do
 			create stop_sig.make
-			create moving_to_goal_sig.make (par.goal_x, par.goal_y)
+
+			behaviour_param := beh_par
+
+			create moving_to_goal_sig.make (beh_par.goal_x,beh_par.goal_y)
 			state_sig := robot.robot_state
+
+--			io.putstring (robot_par.behavior_file_name + " got here" + "%N")
 
 			odometry_sig := robot.odometry_signaler
 			diff_drive := robot.diff_drive
 			range_sens := robot.range_sensors
 
 			path_planner := planner
-			params := par
+--			robot_params := robot_par
 		end
 
 feature -- Access
@@ -35,13 +40,13 @@ feature -- Access
 		local
 			a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER
 		do
-			create a.make (stop_sig, params)
-			create b.make (stop_sig, params)
-			create c.make (stop_sig, params)
-			create d.make (stop_sig, params)
-			create e.make (stop_sig, params)
-			create f.make (stop_sig, params)
-			create g.make (stop_sig, params)
+			create a.make (stop_sig, behaviour_param)
+			create b.make (stop_sig, behaviour_param)
+			create c.make (stop_sig, behaviour_param)
+			create d.make (stop_sig, behaviour_param)
+			create e.make (stop_sig, behaviour_param)
+			create f.make (stop_sig, behaviour_param)
+			create g.make (stop_sig, behaviour_param)
 
 			sep_stop (stop_sig, False)
 			sep_start (a, b, c, d, e, f, g)
@@ -67,6 +72,7 @@ feature {NONE} -- Implementation
 	moving_to_goal_sig: separate MOVING_TO_GOAL_SIGNALER
 			-- Current state of the behavior.
 
+
 	diff_drive: separate DIFFERENTIAL_DRIVE
 			-- Object to control robot's speed.
 
@@ -75,7 +81,9 @@ feature {NONE} -- Implementation
 
 	path_planner: separate PATH_PLANNER
 
-	params: PARAMETERS
+	behaviour_param : separate BEHAVIOR_PARAMETERS
+
+--	robot_params: ROBOT_PARAMETERS
 
 	sep_start (a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER)
 			-- Start controllers asynchronously.

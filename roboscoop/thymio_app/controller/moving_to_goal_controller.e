@@ -1,6 +1,6 @@
-note
-	description: "Different controllers for different moving_to_goal states."
-	author: "Xiaote Zhu"
+--note
+--	description: "Different controllers for different moving_to_goal states."
+--	author: "Xiaote Zhu"
 
 class
 	MOVING_TO_GOAL_CONTROLLER
@@ -14,13 +14,22 @@ create
 
 feature {NONE} -- Initialization
 
-	make (s_sig: separate STOP_SIGNALER; par: PARAMETERS)
+	make (s_sig: separate STOP_SIGNALER; par:  separate BEHAVIOR_PARAMETERS)
 			-- Create current and assign given attributes.
+		local
+			algorithm_name : STRING
 		do
 			stop_signaler := s_sig
-			params := par
-
-			create pid_controller.make(params.k_p, params.k_i, params.k_d)
+--			params := par
+--			algorithm_name := par.variable_name_getter_map.at ("ALGORITHM_NAME")
+			algorithm_name := create {STRING}.make_from_separate (par.algorithm_file_name)
+			create algorithm_params.make
+			create algorithm_parser
+			create controller_params.make
+			create controller_parser
+			algorithm_params := algorithm_parser.parse_file (algorithm_name, algorithm_params)
+			controller_params := controller_parser.parse_file (algorithm_params.controller_file_name, controller_params)
+			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
 			create rsc.make
 			create ec
 
@@ -58,7 +67,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			else
 				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, cur_goal_point.x, cur_goal_point.y)
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
-				vx := params.vx
+				vx := controller_params.vx
 
 				state_sig.set_is_go
 				drive.set_velocity (vx, vtheta)
@@ -77,7 +86,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		local
 			vtheta, vx, desired_wall_distance: REAL_64
 		do
-			desired_wall_distance := params.desired_wall_distance
+			desired_wall_distance := algorithm_params.desired_wall_distance
 			m_sig.set_timestamp_obstacle_last_seen (r_sens.is_obstacle, o_sig.timestamp)     																														--
 
 			if s_sig.is_stop_requested then
@@ -91,8 +100,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					m_sig.set_is_wall_following_start_set (True)
 				end
 
-				vtheta := r_sens.follow_wall_orientation (desired_wall_distance, o_sig.timestamp, m_sig.timestamp_obstacle_last_seen, params.vx)
-				vx := params.vx
+				vtheta := r_sens.follow_wall_orientation (desired_wall_distance, o_sig.timestamp, m_sig.timestamp_obstacle_last_seen, controller_params.vx)
+				vx := controller_params.vx
 
 				state_sig.set_is_wall_following
 				drive.set_velocity (vx, vtheta)
@@ -108,7 +117,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Look for v_leave when in wall_following state
 		require
 			state_sig.is_wall_following and
-			(m_sig.wall_following_start_theta - o_sig.theta).abs > params.angle_looped_around_threshold and
+			(m_sig.wall_following_start_theta - o_sig.theta).abs > algorithm_params.angle_looped_around_threshold and
 			not s_sig.is_stop_requested
 		local
 			goal_point, robot_point, sensor_max_range_rel_point, sensor_max_range_abs_point: POINT_MSG
@@ -176,7 +185,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			if s_sig.is_stop_requested then
 				drive.stop
 
-			elseif euclidean_distance (vleave, robot_point) < params.vleave_reached_distance_threshold then
+			elseif euclidean_distance (vleave, robot_point) < algorithm_params.vleave_reached_distance_threshold then
 				-- Exit transition state when vleave point reached.
 				state_sig.set_is_go
 				m_sig.set_is_v_leave_found (False)
@@ -185,7 +194,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			else
 				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
-				vx := params.vx
+				vx := controller_params.vx
 
 				state_sig.set_is_transiting
 				drive.set_velocity (vx, vtheta)
@@ -207,7 +216,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create goal_point.make_from_separate (m_sig.goal_point)
 
-			if euclidean_distance (goal_point, robot_point) < params.goal_reached_distance_threshold then
+			if euclidean_distance (goal_point, robot_point) < algorithm_params.goal_reached_distance_threshold then
 				-- Check if distance to goal is less than tolerance
 				state_sig.set_is_goal_reached
 				s_sig.set_stop_requested (True)
@@ -230,9 +239,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create wall_following_start_point.make_from_separate (m_sig.wall_following_start_point)
 
-			if ((m_sig.wall_following_start_theta - o_sig.theta).abs > params.angle_looped_around_threshold_unreachable and
+			if ((m_sig.wall_following_start_theta - o_sig.theta).abs > algorithm_params.angle_looped_around_threshold_unreachable and
 				-- Check if robot has looped a cycle.
-				euclidean_distance (robot_point, wall_following_start_point) < params.goal_unreachable_distance_threshold) then
+				euclidean_distance (robot_point, wall_following_start_point) < algorithm_params.goal_unreachable_distance_threshold) then
 				-- Check if robot is close enough to initial obstacle point.
 				state_sig.set_is_goal_unreachable
 				s_sig.set_stop_requested (True)
@@ -271,6 +280,11 @@ feature
 	ec: ERROR_CALCULATIONS
 	rsc: RELATIVE_SPACE_CALCULATIONS
 	pid_controller: PID_CONTROLLER
-	params: PARAMETERS
+--	params: BEHAVIOR_PARAMETERS
+	controller_params : CONTROLLER_PARAMETERS
+	controller_parser : PARSER[CONTROLLER_PARAMETERS]
+	algorithm_params : TANGENT_BUG_PARAMETERS
+	algorithm_parser : PARSER[TANGENT_BUG_PARAMETERS]
+
 
 end -- class
