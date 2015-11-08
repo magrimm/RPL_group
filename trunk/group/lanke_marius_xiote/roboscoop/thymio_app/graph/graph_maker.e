@@ -22,9 +22,11 @@ feature {NONE}
 			create grid_graph.make_2d (occupancy_grid_signaler.state.info.width.as_integer_32,
 										occupancy_grid_signaler.state.info.height.as_integer_32,
 										occupancy_grid_signaler.state.info.origin.position.x,
-										occupancy_grid_signaler.state.info.origin.position.x + occupancy_grid_signaler.state.info.width * occupancy_grid_signaler.state.info.resolution,
+										occupancy_grid_signaler.state.info.origin.position.x
+											+ occupancy_grid_signaler.state.info.width * occupancy_grid_signaler.state.info.resolution,
 										occupancy_grid_signaler.state.info.origin.position.y,
-										occupancy_grid_signaler.state.info.origin.position.y + occupancy_grid_signaler.state.info.height * occupancy_grid_signaler.state.info.resolution,
+										occupancy_grid_signaler.state.info.origin.position.y
+											+ occupancy_grid_signaler.state.info.height * occupancy_grid_signaler.state.info.resolution,
 										conn_strategy)
 			from
 				i := 1

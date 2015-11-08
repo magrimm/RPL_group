@@ -20,8 +20,6 @@ feature {NONE} -- Initialization
 			algorithm_name : STRING
 		do
 			stop_signaler := s_sig
---			params := par
---			algorithm_name := par.variable_name_getter_map.at ("ALGORITHM_NAME")
 			algorithm_name := create {STRING}.make_from_separate (par.algorithm_file_name)
 			create algorithm_params.make
 			create algorithm_parser
@@ -32,6 +30,7 @@ feature {NONE} -- Initialization
 			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
 			create rsc.make
 			create ec
+			create cur_goal_point.make_empty
 
 		end
 
@@ -46,36 +45,53 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			heading_error: REAL_64
 			vtheta: REAL_64
 			vx: REAL_64
-			robot_point, cur_goal_point: POINT_MSG
+			robot_point: POINT_MSG
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
-			create cur_goal_point.make_with_values (1.0, 1.0, 1.0)
+
 			if s_sig.is_stop_requested then
 				drive.stop
 
-			if not m_sig.is_path_planned then
-				path_planner.set_start_node (o_sig.x, o_sig.y, o_sig.z)
-				path_planner.search_path
-				m_sig.set_is_path_planned (True)
-				create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
-			end
-
-			if euclidean_distance (cur_goal_point, robot_point) < 0.01 then
-				path_planner.move_to_next_goal -- TODO: WHAT IF WE RUN OUT OF PATH BUT HAVEN'T REACHED GOAL YET
-				pid_controller.reset
-			end
-
 			else
-				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, cur_goal_point.x, cur_goal_point.y)
-				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
-				vx := controller_params.vx
+				if not m_sig.is_path_planned then
+					path_planner.set_start_node_with_odometry (o_sig.x, o_sig.y, o_sig.z)
+					path_planner.search_path
+					m_sig.set_is_path_planned (True)
+					create cur_goal_point.make_from_separate (path_planner.get_cur_goal(o_sig))
 
-				state_sig.set_is_go
-				drive.set_velocity (vx, vtheta)
-
-				debug
-					io.put_string ("Current state: GO%N")
+					debug
+						io.put_string ("POS_1%N")
+					end
 				end
+
+				if euclidean_distance (cur_goal_point, robot_point) < 0.15 then
+					create cur_goal_point.make_from_separate (path_planner.move_to_next_goal)
+					debug
+						io.put_string ("odo: " + o_sig.x.out + " | " + o_sig.y.out + "%N"
+										+ "cur_goal_point: " + cur_goal_point.x.out + " | " + cur_goal_point.y.out + "%N"
+										+ "robot_point: " + robot_point.x.out + " | " + robot_point.y.out + "%N")
+					end
+					 -- TODO: WHAT IF WE RUN OUT OF PATH BUT HAVEN'T REACHED GOAL YET
+					pid_controller.reset
+					debug
+						io.put_string ("POS_2%N")
+					end
+
+				else
+					heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, cur_goal_point.x, cur_goal_point.y)
+					vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
+					vx := controller_params.vx
+
+					state_sig.set_is_go
+					drive.set_velocity (vx, vtheta)
+					debug
+						io.put_string ("POS_3%N")
+					end
+				end
+			end
+
+			debug
+				io.put_string ("Current state: GO%N")
 			end
 		end
 
@@ -281,11 +297,11 @@ feature
 	ec: ERROR_CALCULATIONS
 	rsc: RELATIVE_SPACE_CALCULATIONS
 	pid_controller: PID_CONTROLLER
---	params: BEHAVIOR_PARAMETERS
 	controller_params : CONTROLLER_PARAMETERS
 	controller_parser : PARSER[CONTROLLER_PARAMETERS]
 	algorithm_params : TANGENT_BUG_PARAMETERS
 	algorithm_parser : PARSER[TANGENT_BUG_PARAMETERS]
+	cur_goal_point: POINT_MSG
 
 
 end -- class
