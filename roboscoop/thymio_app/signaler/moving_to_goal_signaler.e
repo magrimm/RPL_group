@@ -30,6 +30,9 @@ feature -- Access
 	is_path_planned: BOOLEAN
 			-- Is path planned yet?
 
+	need_to_reset_cur_goal: BOOLEAN
+			-- Do we need to reset cur_goal?
+
 	d_min: REAL_64
 			-- Minimum distance between robot and the goal so far.
 
@@ -64,6 +67,12 @@ feature -- Access
 			-- Set is_path_planned value to a_val
 		do
 			is_path_planned := a_val
+		end
+
+	set_need_to_reset_cur_goal (a_val: BOOLEAN)
+			-- Set need_to_reset_cur_goal to a_val
+		do
+			need_to_reset_cur_goal := a_val
 		end
 
 	set_d_min (a_val: REAL_64)

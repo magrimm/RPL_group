@@ -8,6 +8,7 @@ class
 
 inherit
 	GRAPH_MAKER
+	TRIGONOMETRY_MATH
 
 create
 	make
@@ -37,17 +38,14 @@ feature {NONE} -- Initialization
 
 --			start_node := grid_graph.node_at (start_i, start_j, 1)
 			goal_node := grid_graph.node_at (goal_i, goal_j, 1)
-			robot_node := start_node
 
 			debug
 				io.put_string ("start_i: " + start_i.out + " start_j: " + start_j.out + "%N")
 				io.put_string ("goal_i: " + goal_i.out + " goal_j: " + goal_j.out + "%N")
 			end
 
-
 			search_strategy := s_strategy
 			create planned_path.make
-			create tm
 		end
 
 feature -- Access
@@ -75,60 +73,44 @@ feature -- Access
 			end
 		end
 
-	get_cur_goal (odom: separate ODOMETRY_SIGNALER; robot_point: separate POINT_MSG) : POINT_MSG
+	get_cur_goal : POINT_MSG
 		-- TODO: consider adding contract here
-		local
-			i, j, k: INTEGER_32
-			index_of_closest_node_in_planned_path: INTEGER
 		do
-			i := convert_x_coord_to_x_index (occupancy_grid_signaler, odom.x)
-			j := convert_y_coord_to_y_index (occupancy_grid_signaler, odom.y)
-			k := convert_z_coord_to_z_index (occupancy_grid_signaler, odom.z)
+			Result := planned_path.item
+		end
 
-			robot_node := grid_graph.node_at (i, j, k)
 
-			if planned_path.has (robot_node.position) then
-				-- If current robot_node position is in planned_path
-				planned_path.go_i_th (planned_path.index_of (robot_node.position, 1) + 1)
-			else
-				-- If current position is not in planned path
-				-- Set cur_goal to closest node in planned_path
-				from
-					planned_path.start
-				until
-					planned_path.exhausted
-				loop
-					if tm.euclidean_distance (planned_path.item, robot_point) < tm.euclidean_distance (planned_path.i_th (index_of_closest_node_in_planned_path), robot_point) then
-						index_of_closest_node_in_planned_path := planned_path.index
+	jump_to_next_closest_goal (cur_position: separate POINT_MSG)
+		local
+			closest_goal_index: INTEGER
+			closest_goal_found: BOOLEAN
+		do
+			from
+			until
+				planned_path.exhausted
+			loop
+				if euclidean_distance (planned_path.item, goal_node.position) < euclidean_distance (cur_position, goal_node.position) then
+					if not closest_goal_found then
+						closest_goal_index := planned_path.index
+						closest_goal_found := True
+					elseif euclidean_distance (planned_path.item, cur_position) < euclidean_distance (planned_path.i_th (closest_goal_index), cur_position) then
+						closest_goal_index := planned_path.index
 					end
 					planned_path.forth
 				end
-				-- Go to next element in planned_path
-				planned_path.go_i_th (index_of_closest_node_in_planned_path)
 			end
-
-			Result := planned_path.item
-
-			debug
-				io.put_string ("odom: " + odom.x.out + " | " + odom.y.out + "%N"
-								+ "robot_node: " + robot_node.position.x.out + " | " + robot_node.position.y.out + "%N"
-								+ "p_p.index: " + planned_path.index.out + " | count: " + planned_path.count.out + "%N"
-								+ "planned_path.index_of (robot_node.position, 1): " + planned_path.index_of (robot_node.position, 1).out
-								+ "%N")
-			end
+			planned_path.go_i_th (closest_goal_index)
 		end
 
-	move_to_next_goal: POINT_MSG
+	move_to_next_goal
 		-- TODO: consider adding contract here
 		require
 
 		do
 			planned_path.forth
-			Result := planned_path.item
 			debug
 				io.put_string ("p_p.index: " + planned_path.index.out + "%N"
-								+ "item.pos: " + planned_path.item.out + "%N"
-								+ "robot_node: " + robot_node.position.x.out + " | " + robot_node.position.y.out + "%N")
+								+ "item.pos: " + planned_path.item.out + "%N")
 			end
 		end
 
@@ -188,14 +170,12 @@ feature {NONE}
 	planned_path : LINKED_LIST [POINT_MSG]
 			-- Planned path.
 
-	start_node, goal_node, robot_node : SPATIAL_GRAPH_NODE
+	start_node, goal_node : SPATIAL_GRAPH_NODE
 			-- Graph nodes of the start position and the goal position
 
 	search_strategy: SEARCH_STRATEGY
 			-- Strategy used for searching a path.
 
 	path_params: PATH_PLANNER_PARAMETER
-
-	tm: TRIGONOMETRY_MATH
 
 end -- class
