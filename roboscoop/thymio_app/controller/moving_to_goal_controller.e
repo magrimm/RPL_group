@@ -49,7 +49,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			robot_point, cur_goal_point: POINT_MSG
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
-			create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
+			create cur_goal_point.make_with_values (1.0, 1.0, 1.0)
 			if s_sig.is_stop_requested then
 				drive.stop
 
@@ -57,6 +57,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				path_planner.set_start_node (o_sig.x, o_sig.y, o_sig.z)
 				path_planner.search_path
 				m_sig.set_is_path_planned (True)
+				create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
 			end
 
 			if euclidean_distance (cur_goal_point, robot_point) < 0.01 then
