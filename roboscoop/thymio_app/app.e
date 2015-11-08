@@ -20,11 +20,10 @@ feature {NONE} -- Initialization
 			ros_spinner: separate ROS_SPINNER
 			thymio: separate THYMIO_ROBOT
 
---			path_planning_parser: PATH_PLANNER_PARSER
 			path_planner_param_path: STRING
 			path_planner_parameter: PATH_PLANNER_PARAMETER
 
-			conn_strategy: separate EIGHT_CONNECTIVITY_STRATEGY
+			conn_strategy: GRID_CONNECTIVITY_STRATEGY
 			heur_cost_strategy: EUCLIDEAN_DISTANCE_HEURISTIC
 			path_cost_strategy: EUCLIDEAN_DISTANCE_HEURISTIC
 			search_strategy: A_STAR_SEARCH
@@ -43,13 +42,6 @@ feature {NONE} -- Initialization
 			start_spinning (ros_spinner)
 
 			-- Parse parameter text file
---			create parser
---			params_path := Arguments.argument (1).to_string_8
---			params := parser.read_parameters (create {STRING}.make_from_separate (params_path))
---			create path_planner_parser
---			path_planner_param_path := Arguments.argument (1).to_string_8
---			path_planner_parameter := path_planner_parser.read_parameters (path_planner_param_path)
-
 			create app_parser
 			create robot_parser
 			create app_params.make
@@ -70,7 +62,6 @@ feature {NONE} -- Initialization
 			create thymio.make
 
 			-- Create a path_planner.
-			create conn_strategy
 			create heur_cost_strategy
 			create path_cost_strategy
 			create search_strategy.make (heur_cost_strategy, path_cost_strategy)
@@ -90,14 +81,6 @@ feature {NONE} -- Initialization
 		end
 
 feature {NONE}
-
---	parser: PARSER
---			-- Parser class for paramteters from text file.
-
---	params: PARAMETERS
---			-- All Parameters needed.
-
---	params_path: separate STRING
 
 	app_parser: PARSER[APP_PARAMETERS]
 			-- Parser class for app_parameters from text file.
