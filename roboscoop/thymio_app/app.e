@@ -71,7 +71,6 @@ feature {NONE} -- Initialization
 			-- Initialize behaviors.
 			create moving_to_goal_behavior.make_with_attributes (thymio, path_planner, behaviour_param)
 			create change_feature_behavior.make_with_attributes (thymio)
-			path_planner.search_path
 
 			-- Launch Thymio.
 			separate thymio as t do

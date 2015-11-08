@@ -34,7 +34,7 @@ feature {NONE} -- Initialization
 
 		end
 
-feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
+feature {MOVING_TO_GOAL_BEHAVIOR} -- Control	
 
 	go (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 		drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP; path_planner: separate PATH_PLANNER)
@@ -57,14 +57,14 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					path_planner.set_start_node_with_odometry (o_sig.x, o_sig.y, o_sig.z)
 					path_planner.search_path
 					m_sig.set_is_path_planned (True)
-					create cur_goal_point.make_from_separate (path_planner.get_cur_goal(o_sig))
-
+					
 					debug
 						io.put_string ("POS_1%N")
 					end
 				end
 
-				if euclidean_distance (cur_goal_point, robot_point) < 0.15 then
+				create cur_goal_point.make_from_separate (path_planner.get_cur_goal(o_sig, robot_point))
+				if euclidean_distance (cur_goal_point, robot_point) < 0.05 then
 					create cur_goal_point.make_from_separate (path_planner.move_to_next_goal)
 					debug
 						io.put_string ("odo: " + o_sig.x.out + " | " + o_sig.y.out + "%N"
@@ -188,7 +188,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		end
 
 	transit_to_vleave (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-						drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
+						drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP; path_planner: separate PATH_PLANNER)
 			-- Transit to v_leave if found
 		require
 			(m_sig.is_v_leave_found or state_sig.is_transiting) or s_sig.is_stop_requested
@@ -213,6 +213,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
 				vx := controller_params.vx
 
+				create cur_goal_point.make_from_separate (path_planner.get_cur_goal(o_sig, robot_point))
 				state_sig.set_is_transiting
 				drive.set_velocity (vx, vtheta)
 			end

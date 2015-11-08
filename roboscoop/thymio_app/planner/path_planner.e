@@ -47,6 +47,7 @@ feature {NONE} -- Initialization
 
 			search_strategy := s_strategy
 			create planned_path.make
+			create tm
 		end
 
 feature -- Access
@@ -74,10 +75,11 @@ feature -- Access
 			end
 		end
 
-	get_cur_goal (odom: separate ODOMETRY_SIGNALER) : POINT_MSG
+	get_cur_goal (odom: separate ODOMETRY_SIGNALER; robot_point: separate POINT_MSG) : POINT_MSG
 		-- TODO: consider adding contract here
 		local
 			i, j, k: INTEGER_32
+			index_of_closest_node_in_planned_path: INTEGER
 		do
 			i := convert_x_coord_to_x_index (occupancy_grid_signaler, odom.x)
 			j := convert_y_coord_to_y_index (occupancy_grid_signaler, odom.y)
@@ -85,7 +87,25 @@ feature -- Access
 
 			robot_node := grid_graph.node_at (i, j, k)
 
-			planned_path.go_i_th (planned_path.index_of (robot_node.position, 1) + 1)
+			if planned_path.has (robot_node.position) then
+				-- If current robot_node position is in planned_path
+				planned_path.go_i_th (planned_path.index_of (robot_node.position, 1) + 1)
+			else
+				-- If current position is not in planned path
+				-- Set cur_goal to closest node in planned_path
+				from
+					planned_path.start
+				until
+					planned_path.exhausted
+				loop
+					if tm.euclidean_distance (planned_path.item, robot_point) < tm.euclidean_distance (planned_path.i_th (index_of_closest_node_in_planned_path), robot_point) then
+						index_of_closest_node_in_planned_path := planned_path.index
+					end
+					planned_path.forth
+				end
+				-- Go to next element in planned_path
+				planned_path.go_i_th (index_of_closest_node_in_planned_path)
+			end
 
 			Result := planned_path.item
 
@@ -125,7 +145,7 @@ feature -- Access
 			header_frame := "/map"
 			planned_path := search_strategy.search_path (grid_graph, start_node, goal_node)
 			debug
-				io.put_string ("planned_path" + planned_path.count.out
+				io.put_string ("planned_path " + planned_path.count.out
 								+ "%Nstart_n: " + start_node.position.out
 								+ "goal_n: " + goal_node.position.out
 								+ "%N")
@@ -175,5 +195,7 @@ feature {NONE}
 			-- Strategy used for searching a path.
 
 	path_params: PATH_PLANNER_PARAMETER
+
+	tm: TRIGONOMETRY_MATH
 
 end -- class
