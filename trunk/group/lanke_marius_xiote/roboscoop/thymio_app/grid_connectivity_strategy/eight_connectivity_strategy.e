@@ -12,10 +12,14 @@ inherit
 feature -- Access
 
 	connect (g: GRID_GRAPH)
+
 			-- Create connections based on eight connectivity strategy.
 		local
 			i, j: INTEGER
 		do
+			debug
+				io.putstring ("Using 8 connect %N")
+			end
 			from
 				i := 1
 			until

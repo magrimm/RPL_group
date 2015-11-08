@@ -75,7 +75,7 @@ feature {NONE} -- Initialization
 			create path_cost_strategy
 			create search_strategy.make (heur_cost_strategy, path_cost_strategy)
 
-			create path_planner.make (conn_strategy, search_strategy, path_planner_params)
+			create path_planner.make (path_planner_params.get_connectivity_strategy, search_strategy, path_planner_params)
 
 			-- Initialize behaviors.
 			create moving_to_goal_behavior.make_with_attributes (thymio, path_planner, behaviour_param)
@@ -113,6 +113,7 @@ feature {NONE}
 
 	behaviour_param : BEHAVIOR_PARAMETERS
 	behaviour_parser : PARSER[BEHAVIOR_PARAMETERS]
+
 
 	app_params: APP_PARAMETERS
 			-- App Parameters needed.
