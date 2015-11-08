@@ -45,7 +45,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			heading_error: REAL_64
 			vtheta: REAL_64
 			vx: REAL_64
-			robot_point: POINT_MSG
+			robot_point: separate POINT_MSG
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
 
@@ -57,36 +57,37 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					path_planner.set_start_node_with_odometry (o_sig.x, o_sig.y, o_sig.z)
 					path_planner.search_path
 					m_sig.set_is_path_planned (True)
-					
+
 					debug
 						io.put_string ("POS_1%N")
 					end
 				end
 
-				create cur_goal_point.make_from_separate (path_planner.get_cur_goal(o_sig, robot_point))
+				if m_sig.need_to_reset_cur_goal then
+					path_planner.jump_to_next_closest_goal (robot_point)
+					m_sig.set_need_to_reset_cur_goal (False)
+				end
+
+				create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
+
 				if euclidean_distance (cur_goal_point, robot_point) < 0.05 then
-					create cur_goal_point.make_from_separate (path_planner.move_to_next_goal)
-					debug
-						io.put_string ("odo: " + o_sig.x.out + " | " + o_sig.y.out + "%N"
-										+ "cur_goal_point: " + cur_goal_point.x.out + " | " + cur_goal_point.y.out + "%N"
-										+ "robot_point: " + robot_point.x.out + " | " + robot_point.y.out + "%N")
-					end
+					path_planner.move_to_next_goal
+					create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
 					 -- TODO: WHAT IF WE RUN OUT OF PATH BUT HAVEN'T REACHED GOAL YET
 					pid_controller.reset
 					debug
 						io.put_string ("POS_2%N")
 					end
+				end
 
-				else
-					heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, cur_goal_point.x, cur_goal_point.y)
-					vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
-					vx := controller_params.vx
+				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, cur_goal_point.x, cur_goal_point.y)
+				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
+				vx := controller_params.vx
 
-					state_sig.set_is_go
-					drive.set_velocity (vx, vtheta)
-					debug
-						io.put_string ("POS_3%N")
-					end
+				state_sig.set_is_go
+				drive.set_velocity (vx, vtheta)
+				debug
+					io.put_string ("POS_3%N")
 				end
 			end
 
@@ -206,14 +207,13 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Exit transition state when vleave point reached.
 				state_sig.set_is_go
 				m_sig.set_is_v_leave_found (False)
-				m_sig.set_is_path_planned (False)
+				m_sig.set_need_to_reset_cur_goal (True)
 
 			else
 				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
 				vx := controller_params.vx
 
-				create cur_goal_point.make_from_separate (path_planner.get_cur_goal(o_sig, robot_point))
 				state_sig.set_is_transiting
 				drive.set_velocity (vx, vtheta)
 			end
