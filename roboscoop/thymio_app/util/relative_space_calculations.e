@@ -10,11 +10,11 @@ inherit
 	TRIGONOMETRY_MATH
 
 create
-	make
+	make--_with_attributes
 
 feature {NONE}
 
-	make
+	make--_with_attributes (robot_params: ROBOT_PARAMETERS)
 		do
 			initialize_constants
 		end

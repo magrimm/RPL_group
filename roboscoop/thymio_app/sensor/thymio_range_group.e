@@ -279,17 +279,17 @@ feature -- Access.
 			-- Calculate the heading for wall following to maintain a desired_distance from the wall.
 		local
 			i: INTEGER
-		    rsc: RELATIVE_SPACE_CALCULATIONS
 		   	number_detecting_sensors: INTEGER
 		   	closest_sensor_point, second_closest_sensor_point: POINT_MSG
 		   	closest_sensor_index, second_closest_sensor_index: INTEGER
 		   	current_distance: REAL_64
 		   	corner_radius: REAL_64
 		   	d_desired, k_p_wall_following: REAL_64
+		   	rsc : RELATIVE_SPACE_CALCULATIONS
 		do
-			create rsc.make
 			create closest_sensor_point.make_empty
 			create second_closest_sensor_point.make_empty
+			create rsc.make
 
 			number_detecting_sensors := get_number_detecting_sensors
 
@@ -317,7 +317,7 @@ feature -- Access.
 															second_closest_sensor_point,
 															current_distance,
 															desired_distance)
-															
+
 			elseif number_detecting_sensors = 1 then
 				-- Obstacle only detected by one sensor
 				-- Eg. when parallel to the wall
@@ -348,7 +348,7 @@ feature -- Access.
 	distance_corner_turn_point: REAL_64
 		-- Caculate the distance to the end of the obstacle when obstacle not detected anymore.
 		local
-			rsc: RELATIVE_SPACE_CALCULATIONS
+			rsc : RELATIVE_SPACE_CALCULATIONS
 		do
 			create rsc.make
 			Result := rsc.get_distance_corner_turn_point (prev_closest_sensor_range, prev_closest_sensor_index)

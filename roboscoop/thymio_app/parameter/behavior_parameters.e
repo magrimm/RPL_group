@@ -13,7 +13,7 @@ inherit PARAMETERS
 create
 	make
 
-feature  -- Initialization
+feature {NONE} -- Initialization
 
 	make
 		do
@@ -21,6 +21,7 @@ feature  -- Initialization
 			BEHAVIOR_NAME := "NULL"
 			ALGORITHM_FILE_NAME := "NULL"
 			ALGORITHM_NAME := "NULL"
+			ROBOT_FILE_NAME := "NULL"
 
 			create variable_name_setter_map.make(6)
 			create variable_name_getter_map.make(12)
@@ -28,7 +29,7 @@ feature  -- Initialization
 			variable_name_setter_map.put(agent set_behavior_name() , "BEHAVIOR_NAME")
 			variable_name_setter_map.put(agent set_algorithm_name() , "ALGORITHM_NAME")
 			variable_name_setter_map.put(agent set_algorithm_filename() , "ALGORITHM_FILE_NAME")
-
+			variable_name_setter_map.put(agent set_robot_file_name() , "ROBOT_FILE_NAME")
 
 			variable_name_setter_map.put (agent set_goal_x(), "goal_x")
 			variable_name_setter_map.put (agent set_goal_y(), "goal_y")
@@ -44,6 +45,8 @@ feature -- Access
 	ALGORITHM_FILE_NAME : STRING 			-- File names of the parameters to be parsed
 
 	ALGORITHM_NAME : STRING
+
+	ROBOT_FILE_NAME: STRING
 
 	goal_x: REAL_64
 
@@ -65,12 +68,17 @@ feature -- Access
 			ALGORITHM_FILE_NAME := file
 		end
 
+	set_robot_file_name (file : STRING)
+
+		do
+			ROBOT_FILE_NAME := file
+		end
+
 	set_algorithm_name (alg : STRING)
 
 		do
 			ALGORITHM_NAME := alg
 		end
-
 
 	set_goal_x (a_val: STRING)
 		do
@@ -82,12 +90,9 @@ feature -- Access
 			goal_y := a_val.to_real_64
 		end
 
-
-
 	set_vx (a_val: STRING)
 		do
 			vx := a_val.to_real_64
 		end
 
-
-end
+end -- class

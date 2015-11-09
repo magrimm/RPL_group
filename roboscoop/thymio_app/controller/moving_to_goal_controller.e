@@ -18,17 +18,23 @@ feature {NONE} -- Initialization
 			-- Create current and assign given attributes.
 		local
 			algorithm_name : STRING
+			robot_file_name : STRING
 		do
 			stop_signaler := s_sig
 			algorithm_name := create {STRING}.make_from_separate (par.algorithm_file_name)
+			robot_file_name := create {STRING}.make_from_separate (par.robot_file_name)
 			create algorithm_params.make
 			create algorithm_parser
 			create controller_params.make
 			create controller_parser
+			create robot_params.make
+			create robot_parser
+
 			algorithm_params := algorithm_parser.parse_file (algorithm_name, algorithm_params)
 			controller_params := controller_parser.parse_file (algorithm_params.controller_file_name, controller_params)
 			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
-			create rsc.make
+			robot_params:= robot_parser.parse_file (robot_file_name, robot_params)
+			create rsc.make--_with_attributes (robot_params)
 			create ec
 			create cur_goal_point.make_empty
 
@@ -297,6 +303,8 @@ feature
 	pid_controller: PID_CONTROLLER
 	controller_params : CONTROLLER_PARAMETERS
 	controller_parser : PARSER[CONTROLLER_PARAMETERS]
+	robot_params      :ROBOT_PARAMETERS
+	robot_parser      : PARSER[ROBOT_PARAMETERS]
 	algorithm_params : TANGENT_BUG_PARAMETERS
 	algorithm_parser : PARSER[TANGENT_BUG_PARAMETERS]
 	cur_goal_point: POINT_MSG
