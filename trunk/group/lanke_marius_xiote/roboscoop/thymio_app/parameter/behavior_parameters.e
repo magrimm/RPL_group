@@ -17,7 +17,6 @@ feature {NONE} -- Initialization
 
 	make
 		do
-
 			BEHAVIOR_NAME := "NULL"
 			ALGORITHM_FILE_NAME := "NULL"
 			ALGORITHM_NAME := "NULL"
@@ -40,9 +39,10 @@ feature {NONE} -- Initialization
 
 feature -- Access	
 
+		-- File names of the parameters to be parsed
 	BEHAVIOR_NAME : STRING
 
-	ALGORITHM_FILE_NAME : STRING 			-- File names of the parameters to be parsed
+	ALGORITHM_FILE_NAME : STRING
 
 	ALGORITHM_NAME : STRING
 
@@ -55,7 +55,6 @@ feature -- Access
 	vx: REAL_64
 
 		-- SETTERS
-
 	set_behavior_name (beh : STRING)
 
 		do
