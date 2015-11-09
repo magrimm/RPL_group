@@ -1,3 +1,4 @@
+
 note
 	description: "The main class of the application."
 	author: "Xiaote Zhu"
@@ -72,11 +73,9 @@ feature {NONE} -- Initialization
 			create moving_to_goal_behavior.make_with_attributes (thymio, path_planner, behaviour_param)
 			create change_feature_behavior.make_with_attributes (thymio)
 
-			-- Launch Thymio.
-			separate thymio as t do
-				moving_to_goal_behavior.start
-				change_feature_behavior.start
-			end
+			-- Launch behaviors.
+			moving_to_goal_behavior.start
+			change_feature_behavior.start
 		end
 
 feature {NONE}
