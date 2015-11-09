@@ -35,7 +35,6 @@ feature {NONE} -- Initialization
 			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
 			robot_params:= robot_parser.parse_file (robot_file_name, robot_params)
 			create rsc.make
-			create ec
 			create cur_goal_point.make_empty
 		end
 
@@ -77,11 +76,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				if euclidean_distance (cur_goal_point, robot_point) < algorithm_params.move_to_next_goal_threshold then
 					path_planner.move_to_next_goal
 					create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
-					 -- TODO: WHAT IF WE RUN OUT OF PATH BUT HAVEN'T REACHED GOAL YET
 					pid_controller.reset
 				end
 
-				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, cur_goal_point.x, cur_goal_point.y)
+				heading_error := get_heading_error (o_sig.x, o_sig.y, o_sig.theta, cur_goal_point.x, cur_goal_point.y)
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
 
 				state_sig.set_is_go
@@ -208,7 +206,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				m_sig.set_need_to_reset_cur_goal (True)
 
 			else
-				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)
+				heading_error := get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
 
 				state_sig.set_is_transiting
@@ -290,9 +288,19 @@ feature {NONE}
 			m_sig.set_wall_following_start_point (abs_start_point)
 		end
 
+	get_heading_error (cur_x, cur_y, cur_theta, goal_x, goal_y: REAL_64): REAL_64
+		-- Calculating heading error
+		local
+			x_diff: REAL_64
+			y_diff: REAL_64
+		do
+			x_diff := goal_x - cur_x
+			y_diff := goal_y - cur_y
+			Result := atan2 (y_diff, x_diff) - cur_theta
+		end
+
 feature
 
-	ec: ERROR_CALCULATIONS
 	rsc: RELATIVE_SPACE_CALCULATIONS
 	pid_controller: PID_CONTROLLER
 	controller_params : CONTROLLER_PARAMETERS
