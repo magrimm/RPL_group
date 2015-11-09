@@ -130,6 +130,7 @@ feature -- Access
 			point_publisher.publish
 			io.putstring (planned_path.count.out + " Path length%N")
 			path_publisher.publish
+			planned_path.start
 		end
 
 feature {NONE}
