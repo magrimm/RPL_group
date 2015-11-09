@@ -16,6 +16,9 @@ feature -- Access
 		local
 			i, j, k: INTEGER
 		do
+			debug
+				io.putstring ("Using 4 connect... %N")
+			end
 			from
 				i := 1
 			until
