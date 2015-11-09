@@ -10,6 +10,8 @@ vleave_reached_distance_threshold: 0.02
 goal_reached_distance_threshold: 0.05
 angle_looped_around_threshold_unreachable: 3.14
 goal_unreachable_distance_threshold: 0.15
-move_to_next_goal_threshold: 0.05
+move_to_next_goal_threshold: 0.02
+
+vx: 0.05
 
 

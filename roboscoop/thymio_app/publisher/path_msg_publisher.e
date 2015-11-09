@@ -30,7 +30,7 @@ feature
 		i : INTEGER
 		header_frame: STRING
 	do
-		header_frame := "/map"
+		header_frame := "odometry_link"
 		create poses.make_filled (create {POSE_STAMPED_MSG}.make_empty, 1, path.count)
 		if path.count = 0 then
 			io.put_string ("NO PATH EXISTS.")

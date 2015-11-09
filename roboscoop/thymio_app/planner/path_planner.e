@@ -117,10 +117,12 @@ feature -- Access
 		require
 
 		do
-			planned_path.forth
-			planned_path.forth
-			planned_path.forth
-			planned_path.forth
+			if (planned_path.index + path_params.jump_in_number_of_nodes) < planned_path.count then
+				planned_path.go_i_th (planned_path.index + path_params.jump_in_number_of_nodes)
+			else
+				planned_path.finish
+			end
+
 			debug
 				io.put_string ("p_p.index: " + planned_path.index.out + "%N"
 								+ "item.pos: " + planned_path.item.out + "%N")
