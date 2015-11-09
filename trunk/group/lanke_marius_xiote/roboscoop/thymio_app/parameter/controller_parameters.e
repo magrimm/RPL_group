@@ -20,7 +20,6 @@ feature  -- Initialization
 			CONTROLLER_NAME := "NULL"
 
 			create variable_name_setter_map.make(5)
-			create variable_name_getter_map.make(12)
 
 			variable_name_setter_map.put(agent set_controller_name() , "CONTROLLER_NAME")
 

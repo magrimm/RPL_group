@@ -23,8 +23,7 @@ feature {NONE} -- Initialization
 			ROBOT_FILE_NAME := "NULL"
 
 			create variable_name_setter_map.make(6)
-			create variable_name_getter_map.make(12)
-
+			
 			variable_name_setter_map.put(agent set_behavior_name() , "BEHAVIOR_NAME")
 			variable_name_setter_map.put(agent set_algorithm_name() , "ALGORITHM_NAME")
 			variable_name_setter_map.put(agent set_algorithm_filename() , "ALGORITHM_FILE_NAME")

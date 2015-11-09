@@ -15,7 +15,6 @@ feature  -- Initialization
 	make
 		do
 			create variable_name_setter_map.make(5)
-			create variable_name_getter_map.make(5)
 
 			variable_name_setter_map.put (agent set_inflate_radius(), "inflate_radius")
 			variable_name_setter_map.put (agent set_start_x(), "start_x")
@@ -28,14 +27,6 @@ feature  -- Initialization
 			variable_name_setter_map.put (agent set_four_connect(), "FOUR_CONNECTIVITY_STRATEGY")
 			variable_name_setter_map.put (agent set_eight_connect(), "EIGHT_CONNECTIVITY_STRATEGY")
 			variable_name_setter_map.put (agent set_jump_in_number_of_nodes(), "jump_in_number_of_nodes")
-
-			variable_name_getter_map.put (agent get_inflate_radius(), "inflate_radius")
-			variable_name_getter_map.put (agent get_start_x(), "start_x")
-			variable_name_getter_map.put (agent get_start_y(), "start_y")
-			variable_name_getter_map.put (agent get_goal_x(), "goal_x")
-			variable_name_getter_map.put (agent get_goal_y(), "goal_y")
-			variable_name_getter_map.put (agent get_goal_y(), "goal_y")
-
 		end
 
 feature -- Access
@@ -133,31 +124,6 @@ feature -- Access
 	set_jump_in_number_of_nodes (number: STRING)
 		do
 			jump_in_number_of_nodes := number.to_integer
-		end
-
-	get_inflate_radius : REAL_64
-		do
-			result := inflate_radius
-		end
-
-	get_start_x : REAL_64
-		do
-			result := start_x
-		end
-
-	get_start_y : REAL_64
-		do
-			result := start_y
-		end
-
-	get_goal_x : REAL_64
-		do
-			result := goal_x
-		end
-
-	get_goal_y : REAL_64
-		do
-			result := goal_y
 		end
 
 end -- class

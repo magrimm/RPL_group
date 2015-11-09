@@ -17,30 +17,39 @@ feature  -- Initialization
 
 	make
 		do
-			create variable_name_setter_map.make(5)
-			create variable_name_getter_map.make(12)
+			create variable_name_setter_map.make(6)
 
 			APP_NAME := "NULL"
 			ROBOT_FILE_NAME := "NULL"
 			ROBOT_NAME := "NULL"
+			BEHAVIOR_FILE_NAME := "NULL"
+			BEHAVIOR_NAME := "NULL"
 			PATH_PLANNER_FILE_NAME := "NULL"
 
 			variable_name_setter_map.put(agent set_app_name() , "APP_NAME")
 			variable_name_setter_map.put(agent set_robot_name() , "ROBOT_NAME")
 			variable_name_setter_map.put(agent set_robot_filename() , "ROBOT_FILE_NAME")
+			variable_name_setter_map.put(agent set_behavior_name() , "BEHAVIOR_NAME")
+			variable_name_setter_map.put(agent set_behavior_filename() , "BEHAVIOR_FILE_NAME")
 			variable_name_setter_map.put(agent set_path_planner_file_name() , "PATH_PLANNER_FILE_NAME")
 		end
 
 feature	 -- Access
 
-		-- File names of the parameters to be parsed
 	APP_NAME : STRING
 
 	ROBOT_FILE_NAME : STRING
+		-- File names of the parameters to be parsed
 
 	ROBOT_NAME : STRING
 
+	BEHAVIOR_FILE_NAME : STRING
+		-- File names of the parameters to be parsed 			
+
+	BEHAVIOR_NAME : STRING
+
 	PATH_PLANNER_FILE_NAME : STRING
+		-- File names of the parameters to be parsed
 
 	set_app_name (the_app : STRING)
 
@@ -58,6 +67,18 @@ feature	 -- Access
 
 		do
 			ROBOT_NAME := robot
+		end
+
+	set_behavior_filename (file : STRING)
+
+		do
+			BEHAVIOR_FILE_NAME := file
+		end
+
+	set_behavior_name (behavior : STRING)
+
+		do
+			BEHAVIOR_NAME := behavior
 		end
 
 	set_path_planner_file_name (file : STRING)
