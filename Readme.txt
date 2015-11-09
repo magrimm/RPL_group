@@ -86,7 +86,7 @@ Communication between the processing unit and the robot is carried out through R
 /Initialization
 At running of the cluster "App" a command line prompt is displayed which requests the parameters file with all the task and system parameters. For this implementation, PID and lag controller specific parameters are loaded. These values determine the heading control as well as the corner steering behaviors of the robot.
 
-For an example file used for THYMIO_BOT ANNA_AKHMATOVA from the XML group please refer to "parameters.txt"
+For an example file used for THYMIO_BOT ANNA_AKHMATOVA from the XML group please refer to "app_parameters.txt"
 
 
 == Frequently Asked Questions ==
