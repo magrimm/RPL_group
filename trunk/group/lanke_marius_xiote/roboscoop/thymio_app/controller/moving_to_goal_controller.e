@@ -7,7 +7,7 @@ class
 
 inherit
 	CANCELLABLE_CONTROL_LOOP
-	TRIGONOMETRY_MATH
+	RELATIVE_SPACE_CALCULATIONS
 
 create
 	make
@@ -35,16 +35,14 @@ feature {NONE} -- Initialization
 			robot_params:= robot_parser.parse_file (robot_file_name, robot_params)
 
 			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
-			create rsc.make
 			create cur_goal_point.make_empty
 		end
 
 feature {MOVING_TO_GOAL_BEHAVIOR} -- Control	
 
 	go (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
-		 o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-		 drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP;
-		 path_planner: separate PATH_PLANNER)
+		o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+		drive: separate DIFFERENTIAL_DRIVE; path_planner: separate PATH_PLANNER)
 			-- Move robot if goal not reached yet.
 		require
 			state_sig.is_go or s_sig.is_stop_requested
@@ -114,8 +112,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		end
 
 	follow_wall (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
-				  o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-				  drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
+					o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+					drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP;
+					r_sens_wrapper: separate THYMIO_RANGE_GROUP_WRAPPER)
 				-- Turn and follow the boundary of the obstacle being detected.
 		require
 			(state_sig.is_go and
@@ -132,12 +131,12 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				if not m_sig.is_wall_following_start_set then
 					-- Set wall_following_start_point and wall_following_start_theta
 					-- when enter into wall following state the first time.
-					set_wall_following_start_point (m_sig, o_sig, r_sens, algorithm_params.desired_wall_distance)
+					set_wall_following_start_point (m_sig, o_sig, r_sens, r_sens_wrapper, algorithm_params.desired_wall_distance)
 					m_sig.set_wall_following_start_theta (o_sig.theta)
 					m_sig.set_is_wall_following_start_set (True)
 				end
 
-				vtheta := r_sens.follow_wall_orientation (algorithm_params.desired_wall_distance, o_sig.timestamp, m_sig.timestamp_obstacle_last_seen, algorithm_params.vx)
+				vtheta := r_sens_wrapper.follow_wall_orientation (r_sens, algorithm_params.desired_wall_distance, o_sig.timestamp, m_sig.timestamp_obstacle_last_seen, algorithm_params.vx)
 
 				state_sig.set_is_wall_following
 				drive.set_velocity (algorithm_params.vx, vtheta)
@@ -149,8 +148,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		end
 
 	look_for_vleave (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
-					  o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-					  r_sens: separate THYMIO_RANGE_GROUP)
+						o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+						r_sens: separate THYMIO_RANGE_GROUP; r_sens_wrapper: separate THYMIO_RANGE_GROUP_WRAPPER)
 				-- Look for v_leave when in wall_following state
 		require
 			state_sig.is_wall_following and
@@ -183,9 +182,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Find the sensor whose max range is reachable and
 				-- whose max range's distance to goal is less than d_min.
 				if r_sens.is_enough_space_for_moving_to_the_max_range (i) then
-					 sensor_max_range_rel_point := rsc.get_relative_coordinates_with_sensor (r_sens.sensors[i].max_range,
-					 																		  i)
-					 sensor_max_range_abs_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,
+					 create sensor_max_range_rel_point.make_from_separate (r_sens_wrapper.get_relative_coordinates_with_sensor (r_sens.sensors[i].max_range, i))
+					 sensor_max_range_abs_point := convert_relative_coordinates_to_absolute_coordinates (robot_point,
 					 															sensor_max_range_rel_point,
 					 															o_sig.theta)
 					 sensor_max_range_d_min := euclidean_distance (goal_point,
@@ -223,7 +221,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 	transit_to_vleave (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
 						o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-						drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
+						drive: separate DIFFERENTIAL_DRIVE)
 			-- Transit to v_leave if found
 		require
 			(m_sig.is_v_leave_found or state_sig.is_transiting) or s_sig.is_stop_requested
@@ -316,8 +314,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 feature {NONE}
 
-	set_wall_following_start_point (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER;
-										r_sens: separate THYMIO_RANGE_GROUP; desired_wall_distance: REAL_64)
+	set_wall_following_start_point (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; r_sens: separate THYMIO_RANGE_GROUP;
+										r_sens_wrapper: separate THYMIO_RANGE_GROUP_WRAPPER; desired_wall_distance: REAL_64)
 			-- Set the start point of the wall following state
 		local
 			closest_sensor_index : INTEGER
@@ -326,10 +324,10 @@ feature {NONE}
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0)
 			closest_sensor_index := r_sens.get_closest_sensor_index
 			create relative_start_point.make_with_values (
-						(rsc.sensor_distances[closest_sensor_index] +
+						(r_sens_wrapper.sensor_distances[closest_sensor_index] +
 						r_sens.sensors[closest_sensor_index].range - desired_wall_distance)
-						/ cosine (rsc.sensor_angles[closest_sensor_index]), 0.0, 0.0)
-			abs_start_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,
+						/ cosine (r_sens_wrapper.sensor_angles[closest_sensor_index]), 0.0, 0.0)
+			abs_start_point := convert_relative_coordinates_to_absolute_coordinates (robot_point,
 													relative_start_point, o_sig.theta)
 			-- Calculate first wall point in global coordinates using sensor return values
 			-- and coordinate transformation functions
@@ -359,7 +357,6 @@ feature {NONE}
 
 feature
 
-	rsc: RELATIVE_SPACE_CALCULATIONS
 	pid_controller: PID_CONTROLLER
 	controller_params: CONTROLLER_PARAMETERS
 	controller_parser: PARSER[CONTROLLER_PARAMETERS]
