@@ -73,6 +73,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 				create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
 
+				debug
+					io.put_string ("robot_point: " + robot_point.out + "%N")
+				end
+
 				if euclidean_distance (cur_goal_point, robot_point) < algorithm_params.move_to_next_goal_threshold then
 					path_planner.move_to_next_goal
 					create cur_goal_point.make_from_separate (path_planner.get_cur_goal)

@@ -80,6 +80,9 @@ feature -- Access
 		-- TODO: consider adding contract here
 		do
 			Result := planned_path.item
+			debug
+				io.put_string ("cur_goal_pos: " + planned_path.item.out + "%N")
+			end
 		end
 
 
@@ -104,6 +107,9 @@ feature -- Access
 				planned_path.forth
 			end
 			planned_path.go_i_th (closest_goal_index + 1)
+			debug
+				io.put_string ("POS_JUMP%N")
+			end
 		end
 
 	move_to_next_goal
@@ -112,9 +118,15 @@ feature -- Access
 
 		do
 			planned_path.forth
+			planned_path.forth
+			planned_path.forth
+			planned_path.forth
 			debug
 				io.put_string ("p_p.index: " + planned_path.index.out + "%N"
 								+ "item.pos: " + planned_path.item.out + "%N")
+			end
+			debug
+				io.put_string ("POS_NEXT%N")
 			end
 		end
 
