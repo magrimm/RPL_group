@@ -78,7 +78,6 @@ feature -- Access
 			Result := planned_path.item
 		end
 
-
 	jump_to_next_closest_goal (cur_position: separate POINT_MSG)
 		-- Given not on a path, find closest point on path to track back to
 		local
@@ -88,17 +87,14 @@ feature -- Access
 				-- Is there even a closest point?
 		do
 			from
-				planned_path.start
 			until
 				planned_path.exhausted
 			loop
-				if euclidean_distance (planned_path.item, goal_node.position) < euclidean_distance (cur_position, goal_node.position) then
-					if not closest_goal_found then
-						closest_goal_index := planned_path.index
-						closest_goal_found := True
-					elseif euclidean_distance (planned_path.item, cur_position) < euclidean_distance (planned_path.i_th (closest_goal_index), cur_position) then
-						closest_goal_index := planned_path.index
-					end
+				if not closest_goal_found then
+					closest_goal_index := planned_path.index
+					closest_goal_found := True
+				elseif euclidean_distance (planned_path.item, cur_position) < euclidean_distance (planned_path.i_th (closest_goal_index), cur_position) then
+					closest_goal_index := planned_path.index
 				end
 				planned_path.forth
 			end

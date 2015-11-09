@@ -55,12 +55,12 @@ feature {NONE} -- Initialization
 			app_params_path := Arguments.argument (1).to_string_8
 
 			app_params := app_parser.parse_file (create {STRING}.make_from_separate (app_params_path), app_params)
-			robot_params := robot_parser.parse_file(app_params.robot_file_name,robot_params)
-			behaviour_param := behaviour_parser.parse_file (robot_params.behavior_file_name, behaviour_param)
-			path_planner_params := path_planning_parser.parse_file(app_params.path_planner_file_name,path_planner_params)
+			robot_params := robot_parser.parse_file(app_params.robot_file_name, robot_params)
+			behaviour_param := behaviour_parser.parse_file (app_params.behavior_file_name, behaviour_param)
+			path_planner_params := path_planning_parser.parse_file(app_params.path_planner_file_name, path_planner_params)
 
 			-- Create a robot object.
-			create thymio.make
+			create thymio.make (robot_params)
 
 			-- Create a path_planner.
 			create heur_cost_strategy
@@ -86,7 +86,7 @@ feature {NONE}
 	robot_parser: PARSER[ROBOT_PARAMETERS]
 			-- Parser class for robot_paramteters from text file.
 
-	robot_params:  ROBOT_PARAMETERS
+	robot_params: ROBOT_PARAMETERS
 			-- Robot Parameters needed.
 
 	path_planner_params: PATH_PLANNER_PARAMETER

@@ -1,10 +1,9 @@
 note
 	description: "[
 						This class parses files given filename and a params from parameter class 
-						with a HASH_TABLE mapping parameter names to setter function agents {PARSER}. 
+						with a HASH_TABLE mapping parameter names to setter function agents {PARSER}.
 					]"
 	author: "Lanke Frank Tarimo Fu"
-	date: "09.11.15"
 
 class
 	PARSER[P ->  PARAMETERS]
@@ -41,7 +40,7 @@ feature
 							-- Check if procedure was properly set						
 							string_tokens.at (2).adjust
 							run_it.call (string_tokens.at (2))
-							
+
 							debug
 								-- Set the parameter with its correponding value	
 								io.put_string ("Scanning parameter : " +
