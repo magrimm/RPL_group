@@ -95,7 +95,7 @@ feature {NONE} -- Implementation
 			c.repeat_until_stop_requested (			-- Look for transition to step 3.
 				agent c.look_for_vleave (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, range_sens))
 			d.repeat_until_stop_requested (			-- Perform step 3. go towards intermediate point (closer to goal than current minimum)
-				agent d.transit_to_vleave (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens, path_planner))
+				agent d.transit_to_vleave (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
 			e.repeat_until_stop_requested (			-- Terminate task at goal
 				agent e.stop_when_goal_reached (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
 			f.repeat_until_stop_requested (			-- Terminate when task cannot be achieved
