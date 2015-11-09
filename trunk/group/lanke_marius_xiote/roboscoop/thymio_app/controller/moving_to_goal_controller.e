@@ -55,6 +55,18 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
 
+			separate o_sig as odom do
+			odom.update_odometry (create{ODOMETRY_MSG}.make_with_values
+			(create{HEADER_MSG}.make_now ("/odometry_link"),
+			"/base_link",
+			create{POSE_WITH_COVARIANCE_MSG}.make_with_values
+			(create{POSE_MSG}.make_with_values
+			(create{POINT_MSG}.make_with_values (1, 1, 1),
+			create{QUATERNION_MSG}.make_empty), create{ARRAY[REAL_64]}.make_filled (0.0, 1, 36)),
+			create{TWIST_WITH_COVARIANCE_MSG}.make_empty))
+			io.putstring (odom.x.out + " We at this x %N")
+			end
+
 			if s_sig.is_stop_requested then
 				drive.stop
 

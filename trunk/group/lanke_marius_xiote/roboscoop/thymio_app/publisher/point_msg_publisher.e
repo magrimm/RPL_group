@@ -31,11 +31,11 @@ feature			-- Access
 	update_msg(position :  POINT_MSG)
 				-- Update the message to be sent
 	do
-		message_2_send := create {MARKER_MSG}.make_with_values (create {HEADER_MSG}.make_with_values (0, 0, "odometry_link"),
+		message_2_send := create {MARKER_MSG}.make_with_values (create {HEADER_MSG}.make_with_values (0, 0, {MAP_TOPICS}.odometry_frame),
 		create {POSE_MSG}.make_with_values (
 		create{POINT_MSG}.make_with_values (position.x, position.y, position.z)
 		, create {QUATERNION_MSG}.make_empty),size,
-		point_color," "," ",
+		point_color,"","",
 		 1, 1 ,1 , life_time)
 	end
 

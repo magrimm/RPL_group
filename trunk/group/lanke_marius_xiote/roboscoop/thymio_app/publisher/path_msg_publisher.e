@@ -33,14 +33,16 @@ feature -- Access
 				-- One single pose
 			pose_stamped_msg : POSE_STAMPED_MSG
 
-			i : INTEGER
-				-- Iterator to go through the lists
-			header_frame: STRING
-				-- A critical value to have frames conform to each other on visualization
-				-- interfaces such as R_VIZ
-		do
-			header_frame := "odometry_link"
-			create poses.make_filled (create {POSE_STAMPED_MSG}.make_empty, 1, path.count)
+
+		i : INTEGER
+								-- Iterator to go through the lists
+		header_frame: STRING
+								-- A critical value to have frames conform to each other on visualization
+								-- interfaces such as R_VIZ
+	do
+		header_frame := {MAP_TOPICS}.odometry_frame
+		create poses.make_filled (create {POSE_STAMPED_MSG}.make_empty, 1, path.count)
+
 
 			if path.count = 0 then
 				io.put_string ("NO PATH EXISTS.%N")

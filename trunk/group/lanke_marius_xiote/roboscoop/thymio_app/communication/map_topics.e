@@ -10,5 +10,10 @@ feature -- Constants
 	-- Used topics.
 	map: STRING_8 = "/map"
 	path: STRING_8 = "/path"
+	goal: STRING = "/goal"
+	current_goal: STRING = "/cur_goal"
+	odometry_frame: STRING = "odometry_link"
+
+
 
 end -- class

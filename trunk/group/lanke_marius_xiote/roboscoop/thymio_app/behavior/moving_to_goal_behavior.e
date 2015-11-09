@@ -24,6 +24,8 @@ feature {NONE} -- Initialization
 			diff_drive := robot.diff_drive
 			range_sens := robot.range_sensors
 
+
+
 			create stop_sig.make
 			create moving_to_goal_sig.make (beh_par.goal_x,beh_par.goal_y)
 		end
