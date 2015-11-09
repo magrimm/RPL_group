@@ -33,8 +33,6 @@ feature {NONE} -- Initialization
 			algorithm_params := algorithm_parser.parse_file (algorithm_name, algorithm_params)
 			controller_params := controller_parser.parse_file (algorithm_params.controller_file_name, controller_params)
 			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
---			controller_params := controller_parser.parse_file (algorithm_params.wall_follow_controller_file_name, controller_params)
---			create wall_follow_pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
 			robot_params:= robot_parser.parse_file (robot_file_name, robot_params)
 			create rsc.make
 			create cur_goal_point.make_empty
@@ -42,8 +40,10 @@ feature {NONE} -- Initialization
 
 feature {MOVING_TO_GOAL_BEHAVIOR} -- Control	
 
-	go (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-		drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP; path_planner: separate PATH_PLANNER)
+	go (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
+		 o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+		 drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP;
+		 path_planner: separate PATH_PLANNER)
 			-- Move robot if goal not reached yet.
 		require
 			state_sig.is_go or s_sig.is_stop_requested
@@ -61,54 +61,51 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 			else
 				if not m_sig.is_path_planned then
+					-- Don't execute when path alread parsed.
 					path_planner.set_start_node_with_odometry (o_sig.x, o_sig.y, o_sig.z)
 					path_planner.search_path
 					m_sig.set_is_path_planned (True)
-
-					debug
-						io.put_string ("POS_1%N")
-					end
 				end
 
 				if m_sig.need_to_reset_cur_goal then
+					-- Move cursor to clostest position in array.
 					path_planner.jump_to_next_closest_goal (robot_point)
 					m_sig.set_need_to_reset_cur_goal (False)
 				end
 
 				create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
 
-				debug
-					io.put_string ("robot_point: " + robot_point.out + "%N")
-				end
-
 				if euclidean_distance (cur_goal_point, robot_point) < algorithm_params.move_to_next_goal_threshold then
+					-- If cur_goal_point is within threshold, move cursor to next position planned path.
 					path_planner.move_to_next_goal
 					create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
 					pid_controller.reset
 				end
+				-- Publish cur_goal_point.
 				point_pub.update_msg (cur_goal_point)
 				point_pub.publish
 
+				-- Calculate angular velocity.
 				heading_error := get_heading_error (o_sig.x, o_sig.y, o_sig.theta, cur_goal_point.x, cur_goal_point.y)
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
 
 				state_sig.set_is_go
 				drive.set_velocity (controller_params.vx, vtheta)
-				debug
-					io.put_string ("POS_3%N")
-				end
 			end
 
-			debug
+			debug ("STATE")
 				io.put_string ("Current state: GO%N")
 			end
 		end
 
-	follow_wall (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER;
-					s_sig: separate STOP_SIGNALER; drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
+	follow_wall (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
+				  o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+				  drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
 				-- Turn and follow the boundary of the obstacle being detected.
 		require
-			(state_sig.is_go and r_sens.is_obstacle) or state_sig.is_wall_following or s_sig.is_stop_requested
+			(state_sig.is_go and
+				r_sens.is_obstacle) or
+				state_sig.is_wall_following or s_sig.is_stop_requested
 		local
 			vtheta: REAL_64
 		do
@@ -130,14 +127,15 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				state_sig.set_is_wall_following
 				drive.set_velocity (algorithm_params.vx, vtheta)
 
-				debug
+				debug ("STATE")
 					io.put_string ("Current state: FOLLOW WALL%N")
 				end
 			end
 		end
 
-	look_for_vleave (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER;
-						s_sig: separate STOP_SIGNALER; r_sens: separate THYMIO_RANGE_GROUP)
+	look_for_vleave (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
+					  o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+					  r_sens: separate THYMIO_RANGE_GROUP)
 				-- Look for v_leave when in wall_following state
 		require
 			state_sig.is_wall_following and
@@ -154,7 +152,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			create goal_point.make_from_separate (m_sig.goal_point)
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create vleave_point.make_empty
-			create point_pub.make_with_attributes ("Vleave_POint")
 
 			cur_distance := euclidean_distance (goal_point, robot_point)
 
@@ -171,12 +168,16 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Find the sensor whose max range is reachable and
 				-- whose max range's distance to goal is less than d_min.
 				if r_sens.is_enough_space_for_moving_to_the_max_range (i) then
-					 sensor_max_range_rel_point := rsc.get_relative_coordinates_with_sensor (r_sens.sensors[i].max_range, i)
+					 sensor_max_range_rel_point := rsc.get_relative_coordinates_with_sensor (r_sens.sensors[i].max_range,
+					 																		  i)
 					 sensor_max_range_abs_point := rsc.convert_relative_coordinates_to_absolute_coordinates (robot_point,
-					 									sensor_max_range_rel_point, o_sig.theta)
-					 sensor_max_range_d_min := euclidean_distance (goal_point, sensor_max_range_abs_point)
+					 															sensor_max_range_rel_point,
+					 															o_sig.theta)
+					 sensor_max_range_d_min := euclidean_distance (goal_point,
+					 												sensor_max_range_abs_point)
 
-					 if sensor_max_range_d_min < vleave_d_min and sensor_max_range_d_min < m_sig.d_min then
+					 if (sensor_max_range_d_min < vleave_d_min) and
+					 	(sensor_max_range_d_min < m_sig.d_min) then
 
 					 	vleave_d_min := sensor_max_range_d_min
 					 	vleave_point := sensor_max_range_abs_point
@@ -189,21 +190,24 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Set vleave_point when one is found.
 				m_sig.set_v_leave (vleave_point)
 				m_sig.set_is_v_leave_found (True)
-				point_pub.set_color (create{COLOR_RGBA_MSG}.make_black)
-				point_pub.set_duration (10000)
 
-				point_pub.update_msg (create{POINT_MSG}.make_from_separate (vleave_point))
-				point_pub.publish
+				debug ("PUB_LOOK_FOR_V_LEAVE")
+					create point_pub.make_with_attributes ("Vleave_Point")
+					point_pub.set_color (create{COLOR_RGBA_MSG}.make_black)
+					point_pub.set_duration (10000)
 
-
+					point_pub.update_msg (create{POINT_MSG}.make_from_separate (vleave_point))
+					point_pub.publish
+				end
 			end
 
-			debug
+			debug ("STATE")
 				io.put_string ("Current state: LOOK FOR VLEAVE%N")
 			end
 		end
 
-	transit_to_vleave (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+	transit_to_vleave (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
+						o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 						drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP)
 			-- Transit to v_leave if found
 		require
@@ -215,14 +219,17 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		do
 			create vleave.make_from_separate (m_sig.v_leave)
 			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
-			create vleave_pub.make_with_attributes ("vleave_current")
 
 			if s_sig.is_stop_requested then
 				drive.stop
-			vleave_pub.set_color (create {COLOR_RGBA_MSG}.make_black)
-			vleave_pub.set_duration (1000)
-			vleave_pub.update_msg (create {POINT_MSG}.make_from_separate (vleave))
-			vleave_pub.publish
+
+				debug ("PUBLISH_V_LEAVE")
+					create vleave_pub.make_with_attributes ("vleave_current")
+					vleave_pub.set_color (create {COLOR_RGBA_MSG}.make_black)
+					vleave_pub.set_duration (1000)
+					vleave_pub.update_msg (create {POINT_MSG}.make_from_separate (vleave))
+					vleave_pub.publish
+				end
 
 			elseif euclidean_distance (vleave, robot_point) < algorithm_params.vleave_reached_distance_threshold then
 				-- Exit transition state when vleave point reached.
@@ -230,23 +237,22 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				m_sig.set_is_v_leave_found (False)
 				m_sig.set_need_to_reset_cur_goal (True)
 
-
 			else
 				heading_error := get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
 
 				state_sig.set_is_transiting
-				drive.set_velocity (0.02, vtheta)
---				drive.set_velocity (controller_params.vx, vtheta)
+				drive.set_velocity (controller_params.vx, vtheta)
 			end
 
-			debug
+			debug ("STATE")
 				io.put_string ("Current state: TRANSIT%N")
 			end
 		end
 
-	stop_when_goal_reached (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-							drive: separate DIFFERENTIAL_DRIVE)
+	stop_when_goal_reached (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
+							 o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+						   	 drive: separate DIFFERENTIAL_DRIVE)
 			-- Stop if goal reached.
 		require
 			o_sig.is_moving
@@ -262,7 +268,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				s_sig.set_stop_requested (True)
 				drive.stop
 
-				debug
+				debug ("STATE")
 					io.put_string ("Current state: STOP - GOAL REACHED%N")
 				end
 			end
@@ -287,7 +293,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				s_sig.set_stop_requested (True)
 				drive.stop
 
-				debug
+				debug ("STATE")
 					io.put_string ("Current state: GOAL UNREACHABLE%N")
 				end
 			end
@@ -318,10 +324,9 @@ feature {NONE}
 	get_heading_error (cur_x, cur_y, cur_theta, goal_x, goal_y: REAL_64): REAL_64
 		-- Calculating heading error
 		local
-			x_diff: REAL_64
-			y_diff: REAL_64
-			x_heading,y_heading,diff_norm,theta_out,direction : REAL_64
---			theta_goal: REAL_64
+			x_diff, y_diff: REAL_64
+			x_heading, y_heading: REAL_64
+			diff_norm, theta_out, direction : REAL_64
 		do
 			x_diff := goal_x - cur_x
 			y_diff := goal_y - cur_y
@@ -335,35 +340,18 @@ feature {NONE}
 
 			theta_out := (x_diff*x_heading+y_diff*y_heading)
 			Result := arc_cosine(theta_out)*-direction/(direction.abs)
-
---			theta_goal := atan2 (y_diff, x_diff)
---			if (theta_goal - prev_theta) > 1 then
---				counter := counter + 1
---				found := True
---			elseif (theta_goal - prev_theta) < -1 then
---				counter := counter - 1
---				found := True
---			end
---			prev_theta := theta_goal
---			theta_goal := (theta-goal) - (2*pi*counter)
---			
---			theta_error := theta_goal - theta_robot
---			found := False
-
---			Result := atan2 (y_diff, x_diff)
 		end
 
 feature
 
 	rsc: RELATIVE_SPACE_CALCULATIONS
 	pid_controller: PID_CONTROLLER
-	controller_params : CONTROLLER_PARAMETERS
-	controller_parser : PARSER[CONTROLLER_PARAMETERS]
---	wall_follow_pid_controller : PID_CONTROLLER
-	robot_params      :ROBOT_PARAMETERS
-	robot_parser      : PARSER[ROBOT_PARAMETERS]
-	algorithm_params : TANGENT_BUG_PARAMETERS
-	algorithm_parser : PARSER[TANGENT_BUG_PARAMETERS]
+	controller_params: CONTROLLER_PARAMETERS
+	controller_parser: PARSER[CONTROLLER_PARAMETERS]
+	robot_params:ROBOT_PARAMETERS
+	robot_parser: PARSER[ROBOT_PARAMETERS]
+	algorithm_params: TANGENT_BUG_PARAMETERS
+	algorithm_parser: PARSER[TANGENT_BUG_PARAMETERS]
 	cur_goal_point: POINT_MSG
 
 end -- class
