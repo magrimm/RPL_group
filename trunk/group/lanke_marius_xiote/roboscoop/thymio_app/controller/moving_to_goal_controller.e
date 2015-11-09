@@ -49,8 +49,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			heading_error: REAL_64
 			vtheta: REAL_64
 			robot_point: POINT_MSG
+			point_pub: POINT_MSG_PUBLISHER
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
+			create point_pub.make_with_attributes ("cur_goal")
 
 			if s_sig.is_stop_requested then
 				drive.stop
@@ -82,6 +84,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
 					pid_controller.reset
 				end
+				point_pub.update_msg (cur_goal_point)
+				point_pub.publish
 
 				heading_error := get_heading_error (o_sig.x, o_sig.y, o_sig.theta, cur_goal_point.x, cur_goal_point.y)
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
@@ -122,7 +126,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				vtheta := r_sens.follow_wall_orientation (algorithm_params.desired_wall_distance, o_sig.timestamp, m_sig.timestamp_obstacle_last_seen, controller_params.vx)
 
 				state_sig.set_is_wall_following
-				drive.set_velocity (controller_params.vx, vtheta)
+				drive.set_velocity (algorithm_params.vx, vtheta)
 
 				debug
 					io.put_string ("Current state: FOLLOW WALL%N")
@@ -297,10 +301,37 @@ feature {NONE}
 		local
 			x_diff: REAL_64
 			y_diff: REAL_64
+			x_heading,y_heading,diff_norm,theta_out,direction : REAL_64
+--			theta_goal: REAL_64
 		do
 			x_diff := goal_x - cur_x
 			y_diff := goal_y - cur_y
-			Result := atan2 (y_diff, x_diff) - cur_theta
+			diff_norm := sqrt(x_diff*x_diff+y_diff*y_diff)
+			x_diff := x_diff/diff_norm
+			y_diff := y_diff/diff_norm
+
+			x_heading := cosine(cur_theta)
+			y_heading := sine(cur_theta)
+			direction := -y_diff*x_heading+x_diff*y_heading
+
+			theta_out := (x_diff*x_heading+y_diff*y_heading)
+			Result := arc_cosine(theta_out)*-direction/(direction.abs)
+
+--			theta_goal := atan2 (y_diff, x_diff)
+--			if (theta_goal - prev_theta) > 1 then
+--				counter := counter + 1
+--				found := True
+--			elseif (theta_goal - prev_theta) < -1 then
+--				counter := counter - 1
+--				found := True
+--			end
+--			prev_theta := theta_goal
+--			theta_goal := (theta-goal) - (2*pi*counter)
+--			
+--			theta_error := theta_goal - theta_robot
+--			found := False
+
+--			Result := atan2 (y_diff, x_diff)
 		end
 
 feature
