@@ -1,7 +1,7 @@
-inflate_radius: 0.20
+inflate_radius: 0.25
 
-start_x: 0.7
-start_y: 0.7
+start_x: 0.3
+start_y: 0.3
 start_z: 0.0
 
 goal_x: 0.6
