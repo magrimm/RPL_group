@@ -13,7 +13,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_attributes (robot: separate THYMIO_ROBOT; planner: PATH_PLANNER; beh_par: BEHAVIOR_PARAMETERS)
+	make_with_attributes (robot: separate THYMIO_ROBOT; planner: separate PATH_PLANNER; beh_par: separate BEHAVIOR_PARAMETERS)
 			-- Create current with given attributes.
 		do
 			behaviour_param := beh_par
@@ -91,6 +91,7 @@ feature {NONE} -- Implementation
 							 diff_drive,
 							 range_sens,
 							 path_planner))
+
 			b.repeat_until_stop_requested (
 					-- Perform step 2. following obstacle.
 				agent b.follow_wall (state_sig,
@@ -99,6 +100,7 @@ feature {NONE} -- Implementation
 									  stop_sig,
 									  diff_drive,
 									  range_sens))
+
 			c.repeat_until_stop_requested (
 					-- Look for transition to step 3.
 				agent c.look_for_vleave (state_sig,
@@ -106,6 +108,7 @@ feature {NONE} -- Implementation
 										  odometry_sig,
 										  stop_sig,
 										  range_sens))
+
 			d.repeat_until_stop_requested (
 					-- Perform step 3. go towards intermediate point
 					-- (closer to goal than current minimum).
@@ -115,6 +118,7 @@ feature {NONE} -- Implementation
 											stop_sig,
 											diff_drive,
 											range_sens))
+
 			e.repeat_until_stop_requested (
 					-- Terminate task at goal.
 				agent e.stop_when_goal_reached (state_sig,
@@ -122,6 +126,7 @@ feature {NONE} -- Implementation
 												 odometry_sig,
 												 stop_sig,
 												 diff_drive))
+												 
 			f.repeat_until_stop_requested (
 					-- Terminate when task cannot be achieved.
 				agent f.stop_when_goal_unreachable (state_sig,

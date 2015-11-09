@@ -21,7 +21,6 @@ feature {NONE} -- Initialization
 			top_leds := robot.top_leds
 		end
 
-
 feature -- Access
 
 	start
@@ -56,7 +55,9 @@ feature {NONE} -- Implementation
 			-- Start controllers asynchronously.
 		do
 			a.repeat_until_stop_requested (
-				agent a.change_light_feature (state_sig, stop_sig, top_leds))
+				agent a.change_light_feature (state_sig,
+											   stop_sig,
+											   top_leds))
 		end
 
 	sep_stop (s_sig: separate STOP_SIGNALER; val: BOOLEAN)
