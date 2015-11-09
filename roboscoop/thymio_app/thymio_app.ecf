@@ -30,7 +30,6 @@
 			<cluster name="graph" location=".\graph\"/>
 			<cluster name="planner" location=".\planner\"/>
 			<cluster name="search_strategy" location=".\search_strategy\"/>
-			<cluster name="publisher" location="\home\frank\catkin_group_workspace\src\lanke_marius_xiote\roboscoop\thymio_app\publisher\"/>
 		</cluster>
 	</target>
 </system>
