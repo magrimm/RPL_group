@@ -59,7 +59,9 @@ feature
 			path.forth
 		end
 		message_2_send := create {PATH_MSG}.make_with_values (create {HEADER_MSG}.make_now (header_frame), poses)
-								-- Update the path message being sent 
+								-- Update the path message being sent 	
+		path.start
+								-- Bring cursor back to the start
 	end
 
 
