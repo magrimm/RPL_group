@@ -148,11 +148,13 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			vleave_point: separate POINT_MSG
 			cur_distance, vleave_d_min, sensor_max_range_d_min: REAL_64
 			i: INTEGER
+			point_pub : POINT_MSG_PUBLISHER
 		do
 			vleave_d_min := {REAL_64}.positive_infinity
 			create goal_point.make_from_separate (m_sig.goal_point)
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create vleave_point.make_empty
+			create point_pub.make_with_attributes ("Vleave_POint")
 
 			cur_distance := euclidean_distance (goal_point, robot_point)
 
@@ -187,6 +189,13 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Set vleave_point when one is found.
 				m_sig.set_v_leave (vleave_point)
 				m_sig.set_is_v_leave_found (True)
+				point_pub.set_color (create{COLOR_RGBA_MSG}.make_black)
+				point_pub.set_duration (10000)
+
+				point_pub.update_msg (create{POINT_MSG}.make_from_separate (vleave_point))
+				point_pub.publish
+
+
 			end
 
 			debug
