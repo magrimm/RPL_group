@@ -22,7 +22,8 @@ feature {NONE} -- Initialization
 
 			odometry_sig := robot.odometry_signaler
 			diff_drive := robot.diff_drive
-			range_sens := robot.range_sensors
+			r_sens := robot.range_sensors
+			r_sens_wrapper := robot.range_group_wrapper
 
 
 
@@ -72,7 +73,9 @@ feature {NONE} -- Implementation
 	diff_drive: separate DIFFERENTIAL_DRIVE
 			-- Object to control robot's speed.
 
-	range_sens: separate THYMIO_RANGE_GROUP
+	r_sens: separate THYMIO_RANGE_GROUP
+
+	r_sens_wrapper: separate THYMIO_RANGE_GROUP_WRAPPER
 			-- 5 Range sensors in front of the robot.
 
 	path_planner: separate PATH_PLANNER
@@ -91,7 +94,6 @@ feature {NONE} -- Implementation
 							 odometry_sig,
 							 stop_sig,
 							 diff_drive,
-							 range_sens,
 							 path_planner))
 
 			b.repeat_until_stop_requested (
@@ -101,7 +103,8 @@ feature {NONE} -- Implementation
 									  odometry_sig,
 									  stop_sig,
 									  diff_drive,
-									  range_sens))
+									  r_sens,
+									  r_sens_wrapper))
 
 			c.repeat_until_stop_requested (
 					-- Look for transition to step 3.
@@ -109,7 +112,8 @@ feature {NONE} -- Implementation
 										  moving_to_goal_sig,
 										  odometry_sig,
 										  stop_sig,
-										  range_sens))
+										  r_sens,
+										  r_sens_wrapper))
 
 			d.repeat_until_stop_requested (
 					-- Perform step 3. go towards intermediate point
@@ -118,8 +122,7 @@ feature {NONE} -- Implementation
 											moving_to_goal_sig,
 											odometry_sig,
 											stop_sig,
-											diff_drive,
-											range_sens))
+											diff_drive))
 
 			e.repeat_until_stop_requested (
 					-- Terminate task at goal.
