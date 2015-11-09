@@ -34,10 +34,9 @@ feature {NONE} -- Initialization
 			controller_params := controller_parser.parse_file (algorithm_params.controller_file_name, controller_params)
 			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
 			robot_params:= robot_parser.parse_file (robot_file_name, robot_params)
-			create rsc.make--_with_attributes (robot_params)
+			create rsc.make
 			create ec
 			create cur_goal_point.make_empty
-
 		end
 
 feature {MOVING_TO_GOAL_BEHAVIOR} -- Control	
@@ -50,7 +49,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		local
 			heading_error: REAL_64
 			vtheta: REAL_64
-			vx: REAL_64
 			robot_point: POINT_MSG
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
@@ -76,7 +74,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 				create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
 
-				if euclidean_distance (cur_goal_point, robot_point) < 0.05 then
+				if euclidean_distance (cur_goal_point, robot_point) < algorithm_params.move_to_next_goal_threshold then
 					path_planner.move_to_next_goal
 					create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
 					 -- TODO: WHAT IF WE RUN OUT OF PATH BUT HAVEN'T REACHED GOAL YET
@@ -85,10 +83,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, cur_goal_point.x, cur_goal_point.y)
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
-				vx := controller_params.vx
 
 				state_sig.set_is_go
-				drive.set_velocity (vx, vtheta)
+				drive.set_velocity (controller_params.vx, vtheta)
 				debug
 					io.put_string ("POS_3%N")
 				end
@@ -105,9 +102,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		require
 			(state_sig.is_go and r_sens.is_obstacle) or state_sig.is_wall_following or s_sig.is_stop_requested
 		local
-			vtheta, vx, desired_wall_distance: REAL_64
+			vtheta: REAL_64
 		do
-			desired_wall_distance := algorithm_params.desired_wall_distance
 			m_sig.set_timestamp_obstacle_last_seen (r_sens.is_obstacle, o_sig.timestamp)     																														--
 
 			if s_sig.is_stop_requested then
@@ -116,16 +112,15 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				if not m_sig.is_wall_following_start_set then
 					-- Set wall_following_start_point and wall_following_start_theta
 					-- when enter into wall following state the first time.
-					set_wall_following_start_point (m_sig, o_sig, r_sens, desired_wall_distance)
+					set_wall_following_start_point (m_sig, o_sig, r_sens, algorithm_params.desired_wall_distance)
 					m_sig.set_wall_following_start_theta (o_sig.theta)
 					m_sig.set_is_wall_following_start_set (True)
 				end
 
-				vtheta := r_sens.follow_wall_orientation (desired_wall_distance, o_sig.timestamp, m_sig.timestamp_obstacle_last_seen, controller_params.vx)
-				vx := controller_params.vx
+				vtheta := r_sens.follow_wall_orientation (algorithm_params.desired_wall_distance, o_sig.timestamp, m_sig.timestamp_obstacle_last_seen, controller_params.vx)
 
 				state_sig.set_is_wall_following
-				drive.set_velocity (vx, vtheta)
+				drive.set_velocity (controller_params.vx, vtheta)
 
 				debug
 					io.put_string ("Current state: FOLLOW WALL%N")
@@ -161,7 +156,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			from
 				i := r_sens.sensors.lower
 			until
-				i > r_sens.sensors.upper - 2
+				i > robot_params.number_of_front_sensors
 			loop
 				-- Find the sensor whose max range is reachable and
 				-- whose max range's distance to goal is less than d_min.
@@ -197,7 +192,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		require
 			(m_sig.is_v_leave_found or state_sig.is_transiting) or s_sig.is_stop_requested
 		local
-			heading_error, vtheta, vx: REAL_64
+			heading_error, vtheta: REAL_64
 			vleave, robot_point: POINT_MSG
 		do
 			create vleave.make_from_separate (m_sig.v_leave)
@@ -215,10 +210,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			else
 				heading_error := ec.get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
-				vx := controller_params.vx
 
 				state_sig.set_is_transiting
-				drive.set_velocity (vx, vtheta)
+				drive.set_velocity (controller_params.vx, vtheta)
 			end
 
 			debug
@@ -296,7 +290,7 @@ feature {NONE}
 			m_sig.set_wall_following_start_point (abs_start_point)
 		end
 
-feature
+feature 
 
 	ec: ERROR_CALCULATIONS
 	rsc: RELATIVE_SPACE_CALCULATIONS
@@ -308,6 +302,5 @@ feature
 	algorithm_params : TANGENT_BUG_PARAMETERS
 	algorithm_parser : PARSER[TANGENT_BUG_PARAMETERS]
 	cur_goal_point: POINT_MSG
-
 
 end -- class
