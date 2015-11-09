@@ -16,7 +16,7 @@ feature {NONE}
 			-- Ensure that the map has been loaded
 		local
 			grid_graph: GRID_GRAPH
-			i,j: INTEGER_32
+			i, j, k: INTEGER_32
 		do
 			occupancy_grid_signaler.inflate (inflate_radius)
 			create grid_graph.make_2d (occupancy_grid_signaler.state.info.width.as_integer_32,
@@ -38,8 +38,15 @@ feature {NONE}
 				until
 					j > grid_graph.count_y
 				loop
-					if occupancy_grid_signaler.occupancy (i, j) > occupancy_grid_signaler.occupancy_threshold then
-						grid_graph.add_obstacle_by_index (i, j, 1)
+					from
+						k := 1
+					until
+						k > grid_graph.count_z
+					loop
+						if occupancy_grid_signaler.occupancy (i, j) > occupancy_grid_signaler.occupancy_threshold then
+							grid_graph.add_obstacle_by_index (i, j, k)
+						end
+						k := k + 1
 					end
 					j := j + 1
 				end

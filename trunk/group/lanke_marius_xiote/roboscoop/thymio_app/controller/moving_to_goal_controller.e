@@ -32,8 +32,9 @@ feature {NONE} -- Initialization
 
 			algorithm_params := algorithm_parser.parse_file (algorithm_name, algorithm_params)
 			controller_params := controller_parser.parse_file (algorithm_params.controller_file_name, controller_params)
-			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
 			robot_params:= robot_parser.parse_file (robot_file_name, robot_params)
+
+			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
 			create rsc.make
 			create cur_goal_point.make_empty
 		end
@@ -48,13 +49,11 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		require
 			state_sig.is_go or s_sig.is_stop_requested
 		local
-			heading_error: REAL_64
-			vtheta: REAL_64
+			vtheta, heading_error: REAL_64
 			robot_point: POINT_MSG
 			point_pub: POINT_MSG_PUBLISHER
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
-			create point_pub.make_with_attributes ("cur_goal")
 
 			if s_sig.is_stop_requested then
 				drive.stop
@@ -81,9 +80,13 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
 					pid_controller.reset
 				end
-				-- Publish cur_goal_point.
-				point_pub.update_msg (cur_goal_point)
-				point_pub.publish
+
+				debug ("PUB_CUR_GOAL_POINT")
+					-- Publish cur_goal_point.
+					create point_pub.make_with_attributes ("cur_goal")
+					point_pub.update_msg (cur_goal_point)
+					point_pub.publish
+				end
 
 				-- Calculate angular velocity.
 				heading_error := get_heading_error (o_sig.x, o_sig.y, o_sig.theta, cur_goal_point.x, cur_goal_point.y)
