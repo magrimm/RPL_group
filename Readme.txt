@@ -1,20 +1,26 @@
-=== XML Tangent Bug  ===
+=== XML Tangent Bug + Path Planning ===
 Contributors: Xiaote, Marius, Lanke
 SVN link: https://svn.inf.ethz.ch/svn/meyer/rpl2015/trunk/group/lanke_marius_xiote/
-Tags: Obstacle Avoidance, PID CONTROL
+Tags: Obstacle Avoidance, PID CONTROL, Path Planning A-STAR
 
 
-This Tangent Bug algorithm implementation maneuvers a robot from an initial position to final goal while avoiding obstacles.
+This Tangent Bug algorithm implementation along with an ASTAR algorithm maneuvers a robot from an initial position to final goal while avoiding obstacles.
 
 == Description ==
 
 In general, the task of approaching a wall while avoiding obstacles is a complex task. The algorithm implemented here is capable of reaching feasible goal points i.e. points to which an aperture exists, bigger than the size of the robot such that the robot can drive to the goal. It achieves so by running task "go_to_call" and "track_obstacles" simultaneuosly. Once an obstacle is found, the robot tracks it until a new point is available from which the distance to goal is minimal, out of the points seen so far.
 
+The ASTAR algorithm implemented uses a grid_occupancy graph which can be parsed through a map png file using ros map publisher. The incorporation of obstacles can be done by inflating the grids for which the pixel count is over a threshold value (set in the grid graph properties).
+
 The Algorithm works through the following states:
 
-1. Go to goal. If obstacle encountered, record current minimum distance to goal. go to step 2.
-2. Follow obstacle. If there exists a free point such that its distance to the goal is lower than the current recorded minimum distance, go to step 3. If looped a cycle around obstacle: State goal not reachable
-3. Head towards the free direction until the distance to the goal is less than currently recorded minimum distance to goal. Switch to state 1.
+1. Find path using ASTAR
+2. Go to goal
+3. if unknown obstacle discovered go to 4
+4.	I. Go to goal. If obstacle encountered, record current minimum distance to goal. go to step 		    II.
+	II. Follow obstacle. If there exists a free point such that its distance to the goal is lower 			than the current recorded minimum distance, go to step III. If looped a cycle around 			obstacle: 		State 	goal not reachable
+	II. Head towards the free direction until the distance to the goal is less than currently 			recorded minimum distance to goal. Switch to state II.
+
 
 == Structure ==
     Hierachy
@@ -26,17 +32,26 @@ The Algorithm works through the following states:
 						     |
 						     | 
 						     \/
+						|----------|	
+					     |  TANGENT_BUG |
+						|----------|
+						     |
+						     |
+						     | 
+						     \/
                                              |--------------|
                                              |  CONTROLLER  |
                                              |--------------|
-                     			        ^        ^ 
+                     			        ^       ^ 
 					       /          \                             
                   			      /            \                            
                                              /              \
                   			    /                \  										
       			    |----------------------|       |------------|
-          	            |  FEATURE_CONTROLLER  |       |   ERROR    |
+          	            |   	PID	   |       |   ERROR    |
              	            |----------------------|       |------------|
+	Fig 1: Hierarchy of this implementation
+
 
 == Implementation ==
 
@@ -58,6 +73,12 @@ The number references refer to the steps mentioned in the = Description = sectio
 	Perform task in 2. that states task is impossible.
 
 == Usage ==
+
+/Parameters
+The parameters play a huge role of defining the properties of the tasks as well as the algorithms which are used to achieve them. The files used to access the parameters can be found in the parameter_files_folder. Figure one shows the order in which these parameters are parsed. The access of a lower level file is achieved by entering its filename in the properties file of its parent. For example, the controller parameters file's name has to be placed in the parameters file of the planner. The parsing here is done using a hash table in which a string is associated to a corresponding setter that assigns a value to a parameter classes' variables once a certain string is encountered. 
+
+/PUblishers
+A deferred publishing class has been created which allows for communication of task behaviors through the ROS framework. For instance, it is possible to view the results of the path planned through RVIZ by simply creating a publisher specific to the form that the message is represented in.
 
 /Setup
 Communication between the processing unit and the robot is carried out through ROS nodes and messages. Online computation is also possible by augmenting a processing unit to the robot which communicates through the micro USB port. The remote node can then be accessed through the use of a wireless router.
