@@ -1,8 +1,6 @@
 note
 	description: "Summary description for {TANGENT_BUG_PARAMETERS}."
 	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
 
 class
 	TANGENT_BUG_PARAMETERS
@@ -23,7 +21,6 @@ feature  -- Initialization
 			WALL_FOLLOW_CONTROLLER_FILE_NAME := "NULL"
 
 			create variable_name_setter_map.make(12)
-			create variable_name_getter_map.make(12)
 
 			variable_name_setter_map.put(agent set_algorithm_name() , "ALGORITHM_NAME")
 			variable_name_setter_map.put(agent set_controller_name() , "CONTROLLER_NAME")
@@ -50,7 +47,6 @@ feature -- Access
 	ALGORITHM_NAME : STRING
 	CONTROLLER_NAME : STRING
 	CONTROLLER_FILE_NAME,WALL_FOLLOW_CONTROLLER_FILE_NAME : STRING
-
 
 	goal_x: REAL_64
 	goal_y: REAL_64
