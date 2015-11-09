@@ -1,4 +1,4 @@
-inflate_radius: 0.14
+inflate_radius: 0.20
 
 start_x: 0.7
 start_y: 0.7
