@@ -63,7 +63,7 @@ feature -- Access.
 			until
 				i > sensors.upper - 2 or Result
 			loop
-				Result := Result or sensors[i].is_valid_range
+				Result := Result or sensors[i].range < 0.03 --.is_valid_range --range < 0.10
 				i := i + 1
 			end
 		end

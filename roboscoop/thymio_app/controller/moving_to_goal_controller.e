@@ -33,8 +33,8 @@ feature {NONE} -- Initialization
 			algorithm_params := algorithm_parser.parse_file (algorithm_name, algorithm_params)
 			controller_params := controller_parser.parse_file (algorithm_params.controller_file_name, controller_params)
 			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
-			controller_params := controller_parser.parse_file (algorithm_params.wall_follow_controller_file_name, controller_params)
-			create wall_follow_pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
+--			controller_params := controller_parser.parse_file (algorithm_params.wall_follow_controller_file_name, controller_params)
+--			create wall_follow_pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
 			robot_params:= robot_parser.parse_file (robot_file_name, robot_params)
 			create rsc.make
 			create cur_goal_point.make_empty
@@ -211,12 +211,18 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		local
 			heading_error, vtheta: REAL_64
 			vleave, robot_point: POINT_MSG
+			vleave_pub : POINT_MSG_PUBLISHER
 		do
 			create vleave.make_from_separate (m_sig.v_leave)
 			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
+			create vleave_pub.make_with_attributes ("vleave_current")
 
 			if s_sig.is_stop_requested then
 				drive.stop
+			vleave_pub.set_color (create {COLOR_RGBA_MSG}.make_black)
+			vleave_pub.set_duration (1000)
+			vleave_pub.update_msg (create {POINT_MSG}.make_from_separate (vleave))
+			vleave_pub.publish
 
 			elseif euclidean_distance (vleave, robot_point) < algorithm_params.vleave_reached_distance_threshold then
 				-- Exit transition state when vleave point reached.
@@ -224,12 +230,14 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				m_sig.set_is_v_leave_found (False)
 				m_sig.set_need_to_reset_cur_goal (True)
 
+
 			else
 				heading_error := get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
 
 				state_sig.set_is_transiting
-				drive.set_velocity (controller_params.vx, vtheta)
+				drive.set_velocity (0.02, vtheta)
+--				drive.set_velocity (controller_params.vx, vtheta)
 			end
 
 			debug
@@ -351,7 +359,7 @@ feature
 	pid_controller: PID_CONTROLLER
 	controller_params : CONTROLLER_PARAMETERS
 	controller_parser : PARSER[CONTROLLER_PARAMETERS]
-	wall_follow_pid_controller : PID_CONTROLLER
+--	wall_follow_pid_controller : PID_CONTROLLER
 	robot_params      :ROBOT_PARAMETERS
 	robot_parser      : PARSER[ROBOT_PARAMETERS]
 	algorithm_params : TANGENT_BUG_PARAMETERS
