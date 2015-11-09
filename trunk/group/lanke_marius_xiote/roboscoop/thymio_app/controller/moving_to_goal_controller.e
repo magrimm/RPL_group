@@ -33,6 +33,8 @@ feature {NONE} -- Initialization
 			algorithm_params := algorithm_parser.parse_file (algorithm_name, algorithm_params)
 			controller_params := controller_parser.parse_file (algorithm_params.controller_file_name, controller_params)
 			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
+			controller_params := controller_parser.parse_file (algorithm_params.wall_follow_controller_file_name, controller_params)
+			create wall_follow_pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
 			robot_params:= robot_parser.parse_file (robot_file_name, robot_params)
 			create rsc.make
 			create cur_goal_point.make_empty
@@ -123,7 +125,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					m_sig.set_is_wall_following_start_set (True)
 				end
 
-				vtheta := r_sens.follow_wall_orientation (algorithm_params.desired_wall_distance, o_sig.timestamp, m_sig.timestamp_obstacle_last_seen, controller_params.vx)
+				vtheta := r_sens.follow_wall_orientation (algorithm_params.desired_wall_distance, o_sig.timestamp, m_sig.timestamp_obstacle_last_seen, algorithm_params.vx)
 
 				state_sig.set_is_wall_following
 				drive.set_velocity (algorithm_params.vx, vtheta)
@@ -340,6 +342,7 @@ feature
 	pid_controller: PID_CONTROLLER
 	controller_params : CONTROLLER_PARAMETERS
 	controller_parser : PARSER[CONTROLLER_PARAMETERS]
+	wall_follow_pid_controller : PID_CONTROLLER
 	robot_params      :ROBOT_PARAMETERS
 	robot_parser      : PARSER[ROBOT_PARAMETERS]
 	algorithm_params : TANGENT_BUG_PARAMETERS

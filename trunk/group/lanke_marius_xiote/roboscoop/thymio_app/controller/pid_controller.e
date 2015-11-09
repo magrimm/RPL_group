@@ -29,6 +29,7 @@ feature -- Access
 
 			if  cur_time = prev_time then
 				deri_term := 0.0
+				
 			else
 				deri_term := (cur_error - prev_error) / (cur_time - prev_time)
 			end
