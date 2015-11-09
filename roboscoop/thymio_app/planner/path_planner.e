@@ -1,6 +1,6 @@
 
 note
-	description: "Main class of path planning."
+	description: "Main class of path planning"
 	author: "Xiaote Zhu"
 
 class
@@ -24,20 +24,26 @@ feature {NONE} -- Initialization
 			path_params := params
 
 			create occupancy_grid_signaler.make_with_topic ({MAP_TOPICS}.map)
+														-- Create an occupancy grid
 			create path_publisher.make_with_attributes ({MAP_TOPICS}.path)
-			create point_publisher.make_with_attributes("Goal")
+														-- Create the path publisher object
 
 			grid_graph := make_grid_graph (occupancy_grid_signaler, c_strategy, params.inflate_radius)
+														-- Set the grid graph with given constraints and connectivities
 			set_start_node (params.start_x, params.start_y, 0)
+														-- Set the node to start path searching from
 
 			start_i := convert_x_coord_to_x_index (occupancy_grid_signaler, params.start_x)
 			start_j := convert_x_coord_to_x_index (occupancy_grid_signaler, params.start_y)
 
 			goal_i := convert_x_coord_to_x_index (occupancy_grid_signaler, params.goal_x)
 			goal_j := convert_y_coord_to_y_index (occupancy_grid_signaler, params.goal_y)
+														-- Goal indices
+
 
 --			start_node := grid_graph.node_at (start_i, start_j, 1)
 			goal_node := grid_graph.node_at (goal_i, goal_j, 1)
+														-- Set goal node
 
 			debug
 				io.put_string ("start_i: " + start_i.out + " start_j: " + start_j.out + "%N")
@@ -45,9 +51,9 @@ feature {NONE} -- Initialization
 			end
 
 			search_strategy := s_strategy
+														-- Declare how the graph should be search, with what algorithm?
 			create planned_path.make
-
-
+														-- Object to hold the path planned
 
 		end
 
@@ -77,6 +83,7 @@ feature -- Access
 		end
 
 	get_cur_goal : POINT_MSG
+		-- Find the current position to go to, given a path in a list of points format
 		-- TODO: consider adding contract here
 		do
 			Result := planned_path.item
@@ -87,9 +94,12 @@ feature -- Access
 
 
 	jump_to_next_closest_goal (cur_position: separate POINT_MSG)
+		-- Given not on a path, find closest point on path to track back to
 		local
 			closest_goal_index: INTEGER
+								-- The closest point's index
 			closest_goal_found: BOOLEAN
+								-- Is there even a closest point?
 		do
 			from
 				planned_path.start
@@ -113,6 +123,7 @@ feature -- Access
 		end
 
 	move_to_next_goal
+		-- Advances the cursor which points to the item that corresponds to the next point the robot should head to
 		-- TODO: consider adding contract here
 		require
 
@@ -137,14 +148,11 @@ feature -- Access
 		do
 
 			planned_path := search_strategy.search_path (grid_graph, start_node, goal_node)
+												-- Use prescribed strategy to search for a path
 			path_publisher.update_msg (planned_path)
-			point_publisher.update_msg (create{POINT_MSG}.make_with_values (start_node.position.x, start_node.position.y, start_node.position.z))
-			point_publisher.set_duration (1000)
-			point_publisher.set_color (create{COLOR_RGBA_MSG}.make_red)
-			point_publisher.publish
-			io.putstring (planned_path.count.out + " Path length%N")
+												-- Update the publisher with a path, if found
 			path_publisher.publish
-			planned_path.start
+												-- Publish with the new values
 		end
 
 feature {NONE}
@@ -158,9 +166,6 @@ feature {NONE}
 	path_publisher: PATH_MSG_PUBLISHER
 			-- Publisher object for paths.
 
-	point_publisher: POINT_MSG_PUBLISHER
-			-- Publisher object for points.
-
 	planned_path : LINKED_LIST [POINT_MSG]
 			-- Planned path.
 
@@ -171,6 +176,7 @@ feature {NONE}
 			-- Strategy used for searching a path.
 
 	path_params: PATH_PLANNER_PARAMETER
+			-- Parameters defining the path planner scheme
 
 
 end -- class
