@@ -70,16 +70,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 				create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
 
---				from
---				until
---					euclidean_distance (cur_goal_point, robot_point) < 0.05
---				loop
---					path_planner.move_to_next_goal
---					create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
---					 -- TODO: WHAT IF WE RUN OUT OF PATH BUT HAVEN'T REACHED GOAL YET
---					pid_controller.reset
---				end
-
 				if euclidean_distance (cur_goal_point, robot_point) < 0.05 then
 					path_planner.move_to_next_goal
 					create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
