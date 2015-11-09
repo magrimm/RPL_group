@@ -1,8 +1,8 @@
 note
-	description: "Summary description for {PATH_MSG_MAKER}."
-	author: ""
+	description: "Publishes a path msg of the form linked list of point messages"
+	author: "Lanke Frank Tarimo	 Fu"
 	date: "$Date$"
-	revision: "$Revision$"
+	revision: "$1.0$"
 
 class
 	PATH_MSG_PUBLISHER
@@ -22,21 +22,31 @@ feature
 
 feature
 	update_msg(path : LINKED_LIST[POINT_MSG])
+				-- update path to be sent with
 	local
 		poses : ARRAY[POSE_STAMPED_MSG]
+								-- An array of pose messages used to then generate an array of POINT_MSG
 		header: HEADER_MSG
+								-- Header to the message publishes
 		pose: POSE_MSG
+								-- One single pose
 		pose_stamped_msg : POSE_STAMPED_MSG
+
 		i : INTEGER
+								-- Iterator to go through the lists
 		header_frame: STRING
+								-- A critical value to have frames conform to each other on visualization
+								-- interfaces such as R_VIZ
 	do
 		header_frame := "odometry_link"
 		create poses.make_filled (create {POSE_STAMPED_MSG}.make_empty, 1, path.count)
 		if path.count = 0 then
 			io.put_string ("NO PATH EXISTS.")
 			io.put_new_line
+								-- Return when no path is given
 		end
-		from
+
+		from					-- Iterate through to add the points in the list one path one to create a path
 			path.start
 		until
 			path.exhausted
@@ -49,6 +59,7 @@ feature
 			path.forth
 		end
 		message_2_send := create {PATH_MSG}.make_with_values (create {HEADER_MSG}.make_now (header_frame), poses)
+								-- Update the path message being sent 
 	end
 
 
