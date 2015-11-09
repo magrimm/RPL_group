@@ -20,6 +20,7 @@ feature  -- Initialization
 			ALGORITHM_NAME := "NULL"
 			CONTROLLER_NAME := "NULL"
 			CONTROLLER_FILE_NAME := "NULL"
+			WALL_FOLLOW_CONTROLLER_FILE_NAME := "NULL"
 
 			create variable_name_setter_map.make(12)
 			create variable_name_getter_map.make(12)
@@ -27,6 +28,7 @@ feature  -- Initialization
 			variable_name_setter_map.put(agent set_algorithm_name() , "ALGORITHM_NAME")
 			variable_name_setter_map.put(agent set_controller_name() , "CONTROLLER_NAME")
 			variable_name_setter_map.put(agent set_controller_filename() , "CONTROLLER_FILE_NAME")
+			variable_name_setter_map.put(agent set_wall_follow_controller_file_name() , "WALL_FOLLOW_CONTROLLER_FILE_NAME")
 
 			variable_name_setter_map.put (agent set_desired_wall_distance(), "desired_wall_distance")
 			variable_name_setter_map.put (agent set_goal_unreachable_distance_threshold(), "goal_unreachable_distance_threshold")
@@ -47,7 +49,8 @@ feature -- Access
 
 	ALGORITHM_NAME : STRING
 	CONTROLLER_NAME : STRING
-	CONTROLLER_FILE_NAME : STRING
+	CONTROLLER_FILE_NAME,WALL_FOLLOW_CONTROLLER_FILE_NAME : STRING
+
 
 	goal_x: REAL_64
 	goal_y: REAL_64
@@ -75,6 +78,12 @@ feature -- Access
 
 		do
 			CONTROLLER_FILE_NAME := file
+		end
+
+	set_wall_follow_controller_file_name (file : STRING)
+
+		do
+			WALL_FOLLOW_CONTROLLER_FILE_NAME := file
 		end
 
 	set_desired_wall_distance (a_val: STRING)
