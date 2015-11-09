@@ -24,8 +24,8 @@ feature {NONE} -- Initialization
 			path_params := params
 
 			create occupancy_grid_signaler.make_with_topic ({MAP_TOPICS}.map)
-			create path_publisher.make_with_topic ({MAP_TOPICS}.path)
-			path_publisher.advertize (1, False)
+			create path_publisher.make_with_attributes ({MAP_TOPICS}.path)
+			create point_publisher.make_with_attributes("Goal")
 
 			grid_graph := make_grid_graph (occupancy_grid_signaler, c_strategy, params.inflate_radius)
 			set_start_node (params.start_x, params.start_y, 0)
@@ -46,6 +46,9 @@ feature {NONE} -- Initialization
 
 			search_strategy := s_strategy
 			create planned_path.make
+
+
+
 		end
 
 feature -- Access
@@ -117,44 +120,16 @@ feature -- Access
 
 	search_path
 			-- Search path.
-		local
-			poses : ARRAY[POSE_STAMPED_MSG]
-			header: HEADER_MSG
-			pose: POSE_MSG
-			pose_stamped_msg : POSE_STAMPED_MSG
-			i : INTEGER
-			header_frame: STRING
 		do
-			header_frame := "odometry_link"
-			planned_path := search_strategy.search_path (grid_graph, start_node, goal_node)
-			debug
-				io.put_string ("planned_path " + planned_path.count.out
-								+ "%Nstart_n: " + start_node.position.out
-								+ "goal_n: " + goal_node.position.out
-								+ "%N")
-			end
-			create poses.make_filled (create {POSE_STAMPED_MSG}.make_empty, 1, planned_path.count)
 
-			if planned_path.count = 0 then
-				io.put_string ("NO PATH EXISTS.")
-				io.put_new_line
-			end
-			debug
-				io.putstring ("The path length is: " + planned_path.count.out + "%N")
-			end
-			from
-				planned_path.start
-			until
-				planned_path.exhausted
-			loop
-				i := i + 1
-				header := create {HEADER_MSG}.make_now (header_frame)
-				pose := create {POSE_MSG}.make_with_values (planned_path.item, create {QUATERNION_MSG}.make_empty)
-				pose_stamped_msg := create {POSE_STAMPED_MSG}.make_with_values (header, pose)
-				poses.put (pose_stamped_msg, i)
-				planned_path.forth
-			end
-			path_publisher.publish (create {PATH_MSG}.make_with_values (create {HEADER_MSG}.make_now (header_frame), poses))
+			planned_path := search_strategy.search_path (grid_graph, start_node, goal_node)
+			path_publisher.update_msg (planned_path)
+			point_publisher.update_msg (create{POINT_MSG}.make_with_values (start_node.position.x, start_node.position.y, start_node.position.z))
+			point_publisher.set_duration (1000)
+			point_publisher.set_color (create{COLOR_RGBA_MSG}.make_red)
+			point_publisher.publish
+			io.putstring (planned_path.count.out + " Path length%N")
+			path_publisher.publish
 		end
 
 feature {NONE}
@@ -165,8 +140,11 @@ feature {NONE}
 	occupancy_grid_signaler: separate OCCUPANCY_GRID_SIGNALER
 			-- 2D grid map.
 
-	path_publisher: ROS_PUBLISHER [PATH_MSG]
-			-- Publisher object.
+	path_publisher: PATH_MSG_PUBLISHER
+			-- Publisher object for paths.
+
+	point_publisher: POINT_MSG_PUBLISHER
+			-- Publisher object for points.
 
 	planned_path : LINKED_LIST [POINT_MSG]
 			-- Planned path.
@@ -178,5 +156,6 @@ feature {NONE}
 			-- Strategy used for searching a path.
 
 	path_params: PATH_PLANNER_PARAMETER
+
 
 end -- class
