@@ -35,28 +35,10 @@ feature  -- Initialization
 			variable_name_setter_map.put (agent set_goal_reached_distance_threshold(), "goal_reached_distance_threshold")
 			variable_name_setter_map.put (agent set_obstacle_vanished_time_threshold(), "obstacle_vanished_time_threshold")
 			variable_name_setter_map.put (agent set_angle_looped_around_threshold(), "angle_looped_around_threshold")
+			variable_name_setter_map.put (agent set_move_to_next_goal_threshold(), "move_to_next_goal_threshold")
 			variable_name_setter_map.put (agent set_goal_x(), "goal_x")
 			variable_name_setter_map.put (agent set_goal_y(), "goal_y")
 			variable_name_setter_map.put (agent set_vx(), "vx")
-
-			variable_name_getter_map.put(agent get_algorithm_name() , "ALGORITHM_NAME")
-			variable_name_getter_map.put(agent get_controller_name() , "CONTROLLER_NAME")
-			variable_name_getter_map.put(agent get_controller_filename() , "CONTROLLER_FILE_NAME")
-
-			variable_name_getter_map.put (agent get_desired_wall_distance(), "desired_wall_distance")
-			variable_name_getter_map.put (agent get_goal_unreachable_distance_threshold(), "goal_unreachable_distance_threshold")
-			variable_name_getter_map.put (agent get_angle_looped_around_threshold_unreachable(), "angle_looped_around_threshold_unreachable")
-			variable_name_getter_map.put (agent get_vleave_reached_distance_threshold(), "vleave_reached_distance_threshold")
-			variable_name_getter_map.put (agent get_goal_reached_distance_threshold(), "goal_reached_distance_threshold")
-			variable_name_getter_map.put (agent get_obstacle_vanished_time_threshold(), "obstacle_vanished_time_threshold")
-			variable_name_getter_map.put (agent get_angle_looped_around_threshold(), "angle_looped_around_threshold")
-			variable_name_getter_map.put (agent get_goal_x(), "goal_x")
-			variable_name_getter_map.put (agent get_goal_y(), "goal_y")
-			variable_name_getter_map.put (agent get_vx(), "vx")
-
-
-
-
 		end
 
 
@@ -75,6 +57,7 @@ feature -- Access
 	angle_looped_around_threshold_unreachable: REAL_64
 	vleave_reached_distance_threshold, goal_reached_distance_threshold: REAL_64
 	obstacle_vanished_time_threshold, angle_looped_around_threshold: REAL_64
+	move_to_next_goal_threshold: REAL_64
 
 	set_algorithm_name (alg : STRING)
 
@@ -110,7 +93,10 @@ feature -- Access
 			angle_looped_around_threshold := a_val.to_real_64
 		end
 
-
+	set_move_to_next_goal_threshold (a_val: STRING)
+		do
+			move_to_next_goal_threshold := a_val.to_real_64
+		end
 
 	set_vleave_reached_distance_threshold (a_val: STRING)
 		do
@@ -122,14 +108,10 @@ feature -- Access
 			goal_reached_distance_threshold := a_val.to_real_64
 		end
 
-
-
 	set_angle_looped_around_threshold_unreachable (a_val: STRING)
 		do
 			angle_looped_around_threshold_unreachable := a_val.to_real_64
 		end
-
-
 
 	set_goal_unreachable_distance_threshold (a_val: STRING)
 		do
@@ -146,91 +128,9 @@ feature -- Access
 			goal_y := a_val.to_real_64
 		end
 
-
-
 	set_vx (a_val: STRING)
 		do
 			vx := a_val.to_real_64
 		end
 
-
-
-	get_algorithm_name ()
-
-		do
---			Result := ALGORITHM_NAME
-		end
-
-	get_controller_name () : STRING
-
-		do
-			RESULT := CONTROLLER_NAME
-		end
-
-	get_controller_filename () : STRING
-
-		do
-			RESULT := CONTROLLER_FILE_NAME
-		end
-
-	get_desired_wall_distance () : REAL_64
-		do
-			RESULT := desired_wall_distance
-		end
-
-
-	get_obstacle_vanished_time_threshold () : REAL_64
-		do
-			RESULT := obstacle_vanished_time_threshold
-		end
-
-	get_angle_looped_around_threshold () : REAL_64
-		do
-			RESULT := angle_looped_around_threshold
-		end
-
-
-
-	get_vleave_reached_distance_threshold () : REAL_64
-		do
-			RESULT := vleave_reached_distance_threshold
-		end
-
-	get_goal_reached_distance_threshold () : REAL_64
-		do
-			RESULT := goal_reached_distance_threshold
-		end
-
-
-
-	get_angle_looped_around_threshold_unreachable () : REAL_64
-		do
-			RESULT := angle_looped_around_threshold_unreachable
-		end
-
-
-
-	get_goal_unreachable_distance_threshold () : REAL_64
-		do
-			RESULT := goal_unreachable_distance_threshold
-		end
-
-	get_goal_x () : REAL_64
-		do
-			RESULT := goal_x
-		end
-
-	get_goal_y () : REAL_64
-		do
-			RESULT := goal_y
-		end
-
-
-	get_vx () : REAL_64
-		do
-			RESULT := vx
-		end
-
-
-
-end
+end -- class
