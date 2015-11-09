@@ -24,37 +24,30 @@ feature {NONE} -- Initialization
 			path_params := params
 
 			create occupancy_grid_signaler.make_with_topic ({MAP_TOPICS}.map)
-														-- Create an occupancy grid
+				-- Create an occupancy grid
 			create path_publisher.make_with_attributes ({MAP_TOPICS}.path)
-														-- Create the path publisher object
+				-- Create the path publisher object
 
 			grid_graph := make_grid_graph (occupancy_grid_signaler, c_strategy, params.inflate_radius)
-														-- Set the grid graph with given constraints and connectivities
+				-- Set the grid graph with given constraints and connectivities
 			set_start_node (params.start_x, params.start_y, 0)
-														-- Set the node to start path searching from
+				-- Set the node to start path searching from
 
 			start_i := convert_x_coord_to_x_index (occupancy_grid_signaler, params.start_x)
 			start_j := convert_x_coord_to_x_index (occupancy_grid_signaler, params.start_y)
+				-- Start indices
 
 			goal_i := convert_x_coord_to_x_index (occupancy_grid_signaler, params.goal_x)
 			goal_j := convert_y_coord_to_y_index (occupancy_grid_signaler, params.goal_y)
-														-- Goal indices
+				-- Goal indices
 
-
---			start_node := grid_graph.node_at (start_i, start_j, 1)
 			goal_node := grid_graph.node_at (goal_i, goal_j, 1)
-														-- Set goal node
-
-			debug
-				io.put_string ("start_i: " + start_i.out + " start_j: " + start_j.out + "%N")
-				io.put_string ("goal_i: " + goal_i.out + " goal_j: " + goal_j.out + "%N")
-			end
+				-- Set goal node
 
 			search_strategy := s_strategy
-														-- Declare how the graph should be search, with what algorithm?
+				-- Declare how the graph should be search, with what algorithm?
 			create planned_path.make
-														-- Object to hold the path planned
-
+				-- Object to hold the path planned
 		end
 
 feature -- Access
@@ -69,17 +62,13 @@ feature -- Access
 			k := convert_z_coord_to_z_index (occupancy_grid_signaler, z)
 
 			start_node := grid_graph.node_at (i, j, k)
-			debug
-				io.put_string ("start_node: " + start_node.position.out + "%N")
-			end
 		end
 
 	set_start_node_with_odometry (x, y, z: REAL_64)
+		-- Reset start node given coordinates of start position plus
+		-- the path planning start node
 		do
 			set_start_node (x + path_params.start_x, y + path_params.start_y, z + path_params.start_z)
-			debug
-				io.put_string ("start_node_odom: " + start_node.position.out + "%N")
-			end
 		end
 
 	get_cur_goal : POINT_MSG
@@ -87,9 +76,6 @@ feature -- Access
 		-- TODO: consider adding contract here
 		do
 			Result := planned_path.item
-			debug
-				io.put_string ("cur_goal_pos: " + planned_path.item.out + "%N")
-			end
 		end
 
 
@@ -97,9 +83,9 @@ feature -- Access
 		-- Given not on a path, find closest point on path to track back to
 		local
 			closest_goal_index: INTEGER
-								-- The closest point's index
+				-- The closest point's index
 			closest_goal_found: BOOLEAN
-								-- Is there even a closest point?
+				-- Is there even a closest point?
 		do
 			from
 				planned_path.start
@@ -117,42 +103,28 @@ feature -- Access
 				planned_path.forth
 			end
 			planned_path.go_i_th (closest_goal_index + 1)
-			debug
-				io.put_string ("POS_JUMP%N")
-			end
 		end
 
 	move_to_next_goal
 		-- Advances the cursor which points to the item that corresponds to the next point the robot should head to
 		-- TODO: consider adding contract here
-		require
-
 		do
 			if (planned_path.index + path_params.jump_in_number_of_nodes) < planned_path.count then
 				planned_path.go_i_th (planned_path.index + path_params.jump_in_number_of_nodes)
 			else
 				planned_path.finish
 			end
-
-			debug
-				io.put_string ("p_p.index: " + planned_path.index.out + "%N"
-								+ "item.pos: " + planned_path.item.out + "%N")
-			end
-			debug
-				io.put_string ("POS_NEXT%N")
-			end
 		end
 
 	search_path
-			-- Search path.
+		-- Search path.
 		do
-
 			planned_path := search_strategy.search_path (grid_graph, start_node, goal_node)
-												-- Use prescribed strategy to search for a path
+				-- Use prescribed strategy to search for a path
 			path_publisher.update_msg (planned_path)
-												-- Update the publisher with a path, if found
+				-- Update the publisher with a path, if found
 			path_publisher.publish
-												-- Publish with the new values
+				-- Publish with the new values
 		end
 
 feature {NONE}
@@ -177,6 +149,5 @@ feature {NONE}
 
 	path_params: PATH_PLANNER_PARAMETER
 			-- Parameters defining the path planner scheme
-
 
 end -- class
