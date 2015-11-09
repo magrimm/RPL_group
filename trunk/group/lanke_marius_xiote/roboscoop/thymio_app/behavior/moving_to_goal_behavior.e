@@ -16,21 +16,16 @@ feature {NONE} -- Initialization
 	make_with_attributes (robot: separate THYMIO_ROBOT; planner: PATH_PLANNER; beh_par: BEHAVIOR_PARAMETERS)
 			-- Create current with given attributes.
 		do
-			create stop_sig.make
-
 			behaviour_param := beh_par
-
-			create moving_to_goal_sig.make (beh_par.goal_x,beh_par.goal_y)
+			path_planner := planner
 			state_sig := robot.robot_state
-
---			io.putstring (robot_par.behavior_file_name + " got here" + "%N")
 
 			odometry_sig := robot.odometry_signaler
 			diff_drive := robot.diff_drive
 			range_sens := robot.range_sensors
 
-			path_planner := planner
---			robot_params := robot_par
+			create stop_sig.make
+			create moving_to_goal_sig.make (beh_par.goal_x,beh_par.goal_y)
 		end
 
 feature -- Access
@@ -72,7 +67,6 @@ feature {NONE} -- Implementation
 	moving_to_goal_sig: separate MOVING_TO_GOAL_SIGNALER
 			-- Current state of the behavior.
 
-
 	diff_drive: separate DIFFERENTIAL_DRIVE
 			-- Object to control robot's speed.
 
@@ -80,26 +74,61 @@ feature {NONE} -- Implementation
 			-- 5 Range sensors in front of the robot.
 
 	path_planner: separate PATH_PLANNER
+			-- Path planner for optimal path.
 
 	behaviour_param : separate BEHAVIOR_PARAMETERS
-
---	robot_params: ROBOT_PARAMETERS
+			-- Parameters for behaviors.
 
 	sep_start (a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER)
 			-- Start controllers asynchronously.
 		do
-			a.repeat_until_stop_requested (			-- Perform step 1. going to goal
-				agent a.go (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens, path_planner))
-			b.repeat_until_stop_requested (			-- Perform step 2. following obstacle
-				agent b.follow_wall (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
-			c.repeat_until_stop_requested (			-- Look for transition to step 3.
-				agent c.look_for_vleave (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, range_sens))
-			d.repeat_until_stop_requested (			-- Perform step 3. go towards intermediate point (closer to goal than current minimum)
-				agent d.transit_to_vleave (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, diff_drive, range_sens))
-			e.repeat_until_stop_requested (			-- Terminate task at goal
-				agent e.stop_when_goal_reached (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
-			f.repeat_until_stop_requested (			-- Terminate when task cannot be achieved
-				agent f.stop_when_goal_unreachable (state_sig, moving_to_goal_sig, odometry_sig, stop_sig, diff_drive))
+			a.repeat_until_stop_requested (
+					-- Perform step 1. going to goal.
+				agent a.go (state_sig,
+							 moving_to_goal_sig,
+							 odometry_sig,
+							 stop_sig,
+							 diff_drive,
+							 range_sens,
+							 path_planner))
+			b.repeat_until_stop_requested (
+					-- Perform step 2. following obstacle.
+				agent b.follow_wall (state_sig,
+									  moving_to_goal_sig,
+									  odometry_sig,
+									  stop_sig,
+									  diff_drive,
+									  range_sens))
+			c.repeat_until_stop_requested (
+					-- Look for transition to step 3.
+				agent c.look_for_vleave (state_sig,
+										  moving_to_goal_sig,
+										  odometry_sig,
+										  stop_sig,
+										  range_sens))
+			d.repeat_until_stop_requested (
+					-- Perform step 3. go towards intermediate point
+					-- (closer to goal than current minimum).
+				agent d.transit_to_vleave (state_sig,
+											moving_to_goal_sig,
+											odometry_sig,
+											stop_sig,
+											diff_drive,
+											range_sens))
+			e.repeat_until_stop_requested (
+					-- Terminate task at goal.
+				agent e.stop_when_goal_reached (state_sig,
+												 moving_to_goal_sig,
+												 odometry_sig,
+												 stop_sig,
+												 diff_drive))
+			f.repeat_until_stop_requested (
+					-- Terminate when task cannot be achieved.
+				agent f.stop_when_goal_unreachable (state_sig,
+													 moving_to_goal_sig,
+													 odometry_sig,
+													 stop_sig,
+													 diff_drive))
 		end
 
 	sep_stop (s_sig: separate STOP_SIGNALER; val: BOOLEAN)
