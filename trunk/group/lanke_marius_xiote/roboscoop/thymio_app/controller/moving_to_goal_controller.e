@@ -1,6 +1,6 @@
---note
---	description: "Different controllers for different moving_to_goal states."
---	author: "Xiaote Zhu"
+note
+	description: "Different controllers for different moving_to_goal states."
+	author: "Xiaote Zhu"
 
 class
 	MOVING_TO_GOAL_CONTROLLER
@@ -290,7 +290,7 @@ feature {NONE}
 			m_sig.set_wall_following_start_point (abs_start_point)
 		end
 
-feature 
+feature
 
 	ec: ERROR_CALCULATIONS
 	rsc: RELATIVE_SPACE_CALCULATIONS

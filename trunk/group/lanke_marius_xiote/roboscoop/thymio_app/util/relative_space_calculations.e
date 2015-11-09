@@ -62,8 +62,9 @@ feature -- Access
 		local
 			relative_coord: POINT_MSG
 		do
-			create relative_coord.make_with_values(distance * cosine(angle), distance * sine (angle), 0)		-- Transform using
-			Result := relative_coord																			-- Rotation Matrix Formulation
+			-- Transform using Rotation Matrix Formulation
+			create relative_coord.make_with_values(distance * cosine(angle), distance * sine (angle), 0)
+			Result := relative_coord
 		end
 
 	convert_relative_coordinates_to_absolute_coordinates (p0, p1: POINT_MSG; theta: REAL_64): POINT_MSG
