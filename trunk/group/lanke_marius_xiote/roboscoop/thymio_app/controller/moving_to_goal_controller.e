@@ -45,7 +45,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			heading_error: REAL_64
 			vtheta: REAL_64
 			vx: REAL_64
-			robot_point: separate POINT_MSG
+			robot_point: POINT_MSG
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
 
@@ -70,10 +70,17 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 				create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
 
-				from
-				until
-					euclidean_distance (cur_goal_point, robot_point) < 0.05
-				loop
+--				from
+--				until
+--					euclidean_distance (cur_goal_point, robot_point) < 0.05
+--				loop
+--					path_planner.move_to_next_goal
+--					create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
+--					 -- TODO: WHAT IF WE RUN OUT OF PATH BUT HAVEN'T REACHED GOAL YET
+--					pid_controller.reset
+--				end
+
+				if euclidean_distance (cur_goal_point, robot_point) < 0.05 then
 					path_planner.move_to_next_goal
 					create cur_goal_point.make_from_separate (path_planner.get_cur_goal)
 					 -- TODO: WHAT IF WE RUN OUT OF PATH BUT HAVEN'T REACHED GOAL YET

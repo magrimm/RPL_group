@@ -86,6 +86,7 @@ feature -- Access
 			closest_goal_found: BOOLEAN
 		do
 			from
+				planned_path.start
 			until
 				planned_path.exhausted
 			loop
@@ -96,10 +97,10 @@ feature -- Access
 					elseif euclidean_distance (planned_path.item, cur_position) < euclidean_distance (planned_path.i_th (closest_goal_index), cur_position) then
 						closest_goal_index := planned_path.index
 					end
-					planned_path.forth
 				end
+				planned_path.forth
 			end
-			planned_path.go_i_th (closest_goal_index)
+			planned_path.go_i_th (closest_goal_index + 1)
 		end
 
 	move_to_next_goal
@@ -124,7 +125,7 @@ feature -- Access
 			i : INTEGER
 			header_frame: STRING
 		do
-			header_frame := "/map"
+			header_frame := "odometry_link"
 			planned_path := search_strategy.search_path (grid_graph, start_node, goal_node)
 			debug
 				io.put_string ("planned_path " + planned_path.count.out
