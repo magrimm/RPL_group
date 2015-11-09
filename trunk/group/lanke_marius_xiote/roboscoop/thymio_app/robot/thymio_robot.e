@@ -1,7 +1,6 @@
 note
-	description: "Example class of the Thymio-II robot."
-	author: "Rusakov Andrey"
-	date: "05.09.2013"
+	description: "Class of the Thymio-II robot."
+	author: "Xiaote Zhu"
 
 class
 	THYMIO_ROBOT
@@ -15,11 +14,12 @@ create
 
 feature {NONE} -- Initialization
 
-	make
+	make (robot_params: separate ROBOT_PARAMETERS)
 			-- Create a robot.
 		do
 			-- Initialize sensors.
 			create range_sensors.make ({THYMIO_TOPICS}.prox_horizontal)
+			create range_group_wrapper.make (robot_params)
 			create ground_sensors.make ({THYMIO_TOPICS}.prox_ground)
 			create odometry_signaler.make_with_topic ({THYMIO_TOPICS}.odometry)
 
@@ -46,6 +46,9 @@ feature {BEHAVIOUR} -- Robot parts
 
 	range_sensors: separate THYMIO_RANGE_GROUP
 			-- Horizontal range sensors.
+
+	range_group_wrapper: separate THYMIO_RANGE_GROUP_WRAPPER
+			-- Wrapper on range sensors.
 
 	ground_sensors: separate THYMIO_GROUND_GROUP
 			-- Ground sensors.
@@ -109,3 +112,4 @@ feature {NONE} -- Behaviors
 		end
 
 end -- class
+
