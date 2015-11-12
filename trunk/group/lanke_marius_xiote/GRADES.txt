@@ -7,3 +7,5 @@ Total points:				15.95
 Assignment 2
 --------------------------------
 Demonstration points:		8.05
+Software Quality points:	7.0
+Total points:				15.05
