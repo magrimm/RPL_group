@@ -41,7 +41,6 @@ feature -- Access
 
 	get_closest_sensor_index: INTEGER
 			-- Get the index of the sensor that detects the closest obstacle.
-		require is_obstacle
 		local
 		    i, closest_sensor_index: INTEGER
 		    closest_sensor_range: REAL_64
@@ -64,7 +63,6 @@ feature -- Access
 
 	get_second_closest_sensor_index (closest_sensor_index: INTEGER): INTEGER
 			-- Get the index of the sensor that detects the second closest obstacle.
-		require is_obstacle
 		local
 		    i, second_closest_sensor_index: INTEGER
 		    second_closest_sensor_range: REAL_64

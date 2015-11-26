@@ -13,7 +13,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_attributes (robot: separate THYMIO_ROBOT)
+	make_with_attributes (robot: separate ROBOT)
 			-- Create current with given attributes.
 		do
 			create stop_sig.make
@@ -24,7 +24,7 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	start
-			-- Start the behaviour.
+			 -- Start the behaviour.
 		local
 			a: separate CHANGE_FEATURE_CONTROLLER
 		do
@@ -35,7 +35,7 @@ feature -- Access
 		end
 
 	stop
-			-- Stop the behaviour.
+			 -- Stop the behaviour.
 		do
 			sep_stop (stop_sig, True)
 		end
@@ -43,16 +43,16 @@ feature -- Access
 feature {NONE} -- Implementation
 
 	stop_sig: separate STOP_SIGNALER
-			-- Signaler for stopping the behaviour.
+			 -- Signaler for stopping the behaviour.
 
 	state_sig: separate STATE_SIGNALER
-			-- Robot current state.
+			 -- Robot current state.
 
 	top_leds: separate THYMIO_TOP_LEDS
-			-- RGB LEDs on the top.
+			 -- RGB LEDs on the top.
 
 	sep_start (a: separate CHANGE_FEATURE_CONTROLLER)
-			-- Start controllers asynchronously.
+			 -- Start controllers asynchronously.
 		do
 			a.repeat_until_stop_requested (
 				agent a.change_light_feature (state_sig,
@@ -61,7 +61,7 @@ feature {NONE} -- Implementation
 		end
 
 	sep_stop (s_sig: separate STOP_SIGNALER; val: BOOLEAN)
-			-- Signal behavior for a stop.
+			 -- Signal behavior for a stop.
 		do
 			s_sig.set_stop_requested (val)
 		end

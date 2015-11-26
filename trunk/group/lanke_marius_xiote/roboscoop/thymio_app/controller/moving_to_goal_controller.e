@@ -113,8 +113,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 	follow_wall (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
 					o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-					drive: separate DIFFERENTIAL_DRIVE; r_sens: separate THYMIO_RANGE_GROUP;
-					r_sens_wrapper: separate THYMIO_RANGE_GROUP_WRAPPER)
+					drive: separate DIFFERENTIAL_DRIVE; r_sens: separate RANGE_GROUP;
+					r_sens_wrapper: separate RANGE_GROUP_WRAPPER)
 				-- Turn and follow the boundary of the obstacle being detected.
 		require
 			(state_sig.is_go and
@@ -149,7 +149,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 	look_for_vleave (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
 						o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-						r_sens: separate THYMIO_RANGE_GROUP; r_sens_wrapper: separate THYMIO_RANGE_GROUP_WRAPPER)
+						r_sens: separate RANGE_GROUP; r_sens_wrapper: separate RANGE_GROUP_WRAPPER)
 				-- Look for v_leave when in wall_following state
 		require
 			state_sig.is_wall_following and
@@ -320,8 +320,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 feature {NONE}
 
-	set_wall_following_start_point (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; r_sens: separate THYMIO_RANGE_GROUP;
-										r_sens_wrapper: separate THYMIO_RANGE_GROUP_WRAPPER; desired_wall_distance: REAL_64)
+	set_wall_following_start_point (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; r_sens: separate RANGE_GROUP;
+										r_sens_wrapper: separate RANGE_GROUP_WRAPPER; desired_wall_distance: REAL_64)
 			-- Set the start point of the wall following state
 		local
 			closest_sensor_index : INTEGER
@@ -385,6 +385,6 @@ feature
 			-- Parser for A star search algorithm parameters.
 
 	cur_goal_point: POINT_MSG
-			-- Point of current goal position. 
+			-- Point of current goal position.
 
 end -- class
