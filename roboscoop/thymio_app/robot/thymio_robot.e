@@ -6,6 +6,7 @@ class
 	THYMIO_ROBOT
 
 inherit
+	ROBOT
 	BARRIER
 	SEPARATE_STRING_MAKER
 
@@ -42,7 +43,34 @@ feature -- Constants
 	default_linear_speed: REAL_64 = 0.08
 			-- Default linear speed of the robot.
 
-feature {BEHAVIOUR} -- Robot parts
+feature -- Access
+
+	get_odometry_signaler : separate ODOMETRY_SIGNALER
+		do
+			Result := odometry_signaler
+		end
+
+	get_diff_drive : separate THYMIO_DIFFERENTIAL_DRIVE
+		do
+			Result := diff_drive
+		end
+
+	get_range_sensors : separate THYMIO_RANGE_GROUP
+		do
+			Result := range_sensors
+		end
+
+	get_range_group_wrapper : separate THYMIO_RANGE_GROUP_WRAPPER
+		do
+			Result := range_group_wrapper
+		end
+
+	get_top_leds : separate THYMIO_TOP_LEDS
+		do
+			Result := top_leds
+		end
+
+feature {NONE} -- Robot parts
 
 	range_sensors: separate THYMIO_RANGE_GROUP
 			-- Horizontal range sensors.
@@ -52,9 +80,6 @@ feature {BEHAVIOUR} -- Robot parts
 
 	ground_sensors: separate THYMIO_GROUND_GROUP
 			-- Ground sensors.
-
-	odometry_signaler: separate ODOMETRY_SIGNALER
-			-- Current state of the odometry.
 
 	diff_drive: separate THYMIO_DIFFERENTIAL_DRIVE
 			-- Differential drive.
@@ -71,8 +96,8 @@ feature {BEHAVIOUR} -- Robot parts
 	circle_leds: separate THYMIO_CIRCLE_LEDS
 			-- 8 Orange LEDS around the buttons.
 
-	robot_state: separate STATE_SIGNALER
-			-- Robot current state.
+	odometry_signaler: separate ODOMETRY_SIGNALER
+			-- Current state of the odometry.
 
 feature {NONE} -- Behaviors
 

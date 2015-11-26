@@ -13,19 +13,17 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_attributes (robot: separate THYMIO_ROBOT; planner: separate PATH_PLANNER; beh_par: separate BEHAVIOR_PARAMETERS)
+	make_with_attributes (robot: separate ROBOT; planner: separate PATH_PLANNER; beh_par: separate BEHAVIOR_PARAMETERS)
 			-- Create current with given attributes.
 		do
 			behaviour_param := beh_par
 			path_planner := planner
 			state_sig := robot.robot_state
 
-			odometry_sig := robot.odometry_signaler
-			diff_drive := robot.diff_drive
-			r_sens := robot.range_sensors
-			r_sens_wrapper := robot.range_group_wrapper
-
-
+			odometry_sig := robot.get_odometry_signaler
+			diff_drive := robot.get_diff_drive
+			r_sens := robot.get_range_sensors
+			r_sens_wrapper := robot.get_range_group_wrapper
 
 			create stop_sig.make
 			create moving_to_goal_sig.make (beh_par.goal_x,beh_par.goal_y)
@@ -73,10 +71,11 @@ feature {NONE} -- Implementation
 	diff_drive: separate DIFFERENTIAL_DRIVE
 			-- Object to control robot's speed.
 
-	r_sens: separate THYMIO_RANGE_GROUP
+	r_sens: separate RANGE_GROUP
+			-- Horizontal range sensors.
 
-	r_sens_wrapper: separate THYMIO_RANGE_GROUP_WRAPPER
-			-- 5 Range sensors in front of the robot.
+	r_sens_wrapper: separate RANGE_GROUP_WRAPPER
+			-- Wrapper on range sensors.
 
 	path_planner: separate PATH_PLANNER
 			-- Path planner for optimal path.
@@ -131,7 +130,7 @@ feature {NONE} -- Implementation
 												 odometry_sig,
 												 stop_sig,
 												 diff_drive))
-												 
+
 			f.repeat_until_stop_requested (
 					-- Terminate when task cannot be achieved.
 				agent f.stop_when_goal_unreachable (state_sig,
