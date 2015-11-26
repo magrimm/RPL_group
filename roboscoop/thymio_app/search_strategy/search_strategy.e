@@ -9,7 +9,7 @@ feature -- Access
 
 	search_path (graph: SPATIAL_GRAPH;
 					start_node, goal_node: SPATIAL_GRAPH_NODE): LINKED_LIST [POINT_MSG]
-		-- Search a shortest path from start node to goal node.
+			-- Search a shortest path from start node to goal node.
 		deferred
 		end
 

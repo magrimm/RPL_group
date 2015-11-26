@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {THYMIO_RANGE_GROUP_WRAPPER}."
-	author: "Xiaote"
+	description: "Wrapper on thymio range group."
+	author: "Xiaote Zhu"
 
 class
 	THYMIO_RANGE_GROUP_WRAPPER
@@ -48,13 +48,13 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	sensor_distances: ARRAY[REAL_64]
-		-- Each sensor's distance to (0, 0).
+			-- Each sensor's distance to (0, 0).
 
 	sensor_angles: ARRAY[REAL_64]
-		-- Each sensor's angle to the positive x-axis.
+			-- Each sensor's angle to the positive x-axis.
 
 	get_relative_coordinates_with_sensor (distance: REAL_64; sensor_i: INTEGER): POINT_MSG
-		-- Calculate the relative coordinate of a point given its distance to a sensor and the sensor's index.
+			-- Calculate the relative coordinate of a point given its distance to a sensor and the sensor's index.
 		do
 			Result := get_relative_coordinates(distance + sensor_distances[sensor_i], sensor_angles[sensor_i])
 		end
@@ -76,7 +76,7 @@ feature -- Access
 			number_detecting_sensors := r_sens.get_number_detecting_sensors
 
 			if number_detecting_sensors > 0 then
-				-- Obstacle detected
+					-- Obstacle detected
 				set_obstacle_vanished (False)
 				closest_sensor_index := r_sens.get_closest_sensor_index
 				prev_closest_sensor_index := closest_sensor_index
@@ -84,8 +84,8 @@ feature -- Access
 			end
 
 			if number_detecting_sensors > 1 then
-				-- Obstacle detected with at least two sensors
-				-- Able to calculate orientation of wall
+					-- Obstacle detected with at least two sensors
+					-- Able to calculate orientation of wall
 				set_obstacle_vanished(False)
 				second_closest_sensor_index := r_sens.get_second_closest_sensor_index (closest_sensor_index)
 				closest_sensor_point := get_relative_coordinates_with_sensor (r_sens.sensors[closest_sensor_index].range,
@@ -100,26 +100,26 @@ feature -- Access
 															desired_distance)
 
 			elseif number_detecting_sensors = 1 then
-				-- Obstacle only detected by one sensor
-				-- Eg. when parallel to the wall
+					-- Obstacle only detected by one sensor
+					-- Eg. when parallel to the wall
 				d_desired := 0.12
 				k_p_wall_following := 8
 				if r_sens.sensors[prev_closest_sensor_index].range > 0.101 and r_sens.is_obstacle_mostly_at_left
 					and r_sens.sensors[1].is_valid_range and not r_sens.sensors[2].is_valid_range then
-					-- This if statement only has to be there, since the sensor emitter is always on the right and the detector on the left!
+						-- This if statement only has to be there, since the sensor emitter is always on the right and the detector on the left!
 					Result := 0.0
 				else
 					Result := k_p_wall_following * (r_sens.sensors[prev_closest_sensor_index].range - d_desired) * (3.0 - prev_closest_sensor_index).sign
 				end
 
 			elseif number_detecting_sensors = 0 then
-				-- Obstacle not detected anymore
-				-- Initiate turn at the end of the corner
+					-- Obstacle not detected anymore
+					-- Initiate turn at the end of the corner
 				if timestamp < timestamp_obstacle_last_seen + (distance_corner_turn_point/vx) then
-					-- Continue parallel to the obstacle until the end of the obstacle is reached.
+						-- Continue parallel to the obstacle until the end of the obstacle is reached.
 					Result := 0.0
 				else
-					-- Go with constant angular velocity around the corner.
+						-- Go with constant angular velocity around the corner.
 					corner_radius := 0.11
 					Result := vx/corner_radius * ((3.0 - prev_closest_sensor_index).sign)
 				end
