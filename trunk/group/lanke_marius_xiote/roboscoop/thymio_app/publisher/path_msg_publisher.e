@@ -7,7 +7,7 @@ class
 	PATH_MSG_PUBLISHER
 
 inherit
-	TASK_MSG_PUBLISHERS[LINKED_LIST[POINT_MSG]]
+	TASK_MSG_PUBLISHERS[LIST[POINT_MSG]]
 
 create
 	make_with_attributes
@@ -22,7 +22,7 @@ feature {NONE}
 
 feature -- Access
 
-	update_msg(path : LINKED_LIST[POINT_MSG])
+	update_msg(path : LIST[POINT_MSG])
 			-- update path to be sent with
 		local
 			poses : ARRAY[POSE_STAMPED_MSG]

@@ -10,6 +10,7 @@ class
 	THYMIO_RANGE_GROUP
 
 inherit
+	RANGE_GROUP
 	GROUP_SIGNALER[RANGE_MSG]
 
 create
@@ -210,42 +211,42 @@ feature -- Access
 		end
 
 	hit_point_front (a_sensor_index: INTEGER): VECTOR_3D_MSG
-		-- <Precursor>
+			-- <Precursor>
 		do
 			-- TODO.
 			Result := create {VECTOR_3D_MSG}.make_empty
 		end
 
 	has_obstacle (a_direction_with_respect_to_robot: REAL_64): BOOLEAN
-		-- <Precursor>
+			-- <Precursor>
 		do
 			-- TODO.
 			Result := False
 		end
 
 	is_all_front_sensors_open: BOOLEAN
-		-- <Precursor>
+			-- <Precursor>
 		do
 			-- TODO.
 			Result := False
 		end
 
 	is_enough_space_for_changing_direction: BOOLEAN
-		-- <Precursor>
+			-- <Precursor>
 		do
 			-- TODO.
 			Result := False
 		end
 
 	open_direction_front: VECTOR_3D_MSG
-		-- <Precursor>
+			-- <Precursor>
 		do
 			-- TODO.
 			Result := create {VECTOR_3D_MSG}.make_empty
 		end
 
 	follow_wall_orientation (a_desired_distance_from_wall: REAL_64): REAL_64
-		-- <Precursor>
+			-- <Precursor>
 		do
 			-- TODO.
 			Result := 0

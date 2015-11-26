@@ -1,8 +1,6 @@
 note
 	description: "A parent class for task related diagnostics publishing. Interfaced with ROS"
-	author: "Lanke Frank Tarimo Fu	"
-	date: "$Date$"
-	revision: "$Revision$"
+	author: "Lanke Frank Tarimo Fu"
 
 deferred class
 	TASK_MSG_PUBLISHERS[G]

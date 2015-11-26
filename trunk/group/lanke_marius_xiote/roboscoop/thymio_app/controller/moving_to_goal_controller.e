@@ -268,14 +268,17 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 						   	 drive: separate DIFFERENTIAL_DRIVE)
 			-- Stop if goal reached.
 		require
-			o_sig.is_moving
+			o_sig.is_moving or s_sig.is_stop_requested
 		local
 			robot_point, goal_point: POINT_MSG
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create goal_point.make_from_separate (m_sig.goal_point)
 
-			if euclidean_distance (goal_point, robot_point) < algorithm_params.goal_reached_distance_threshold then
+			if s_sig.is_stop_requested then
+				drive.stop
+
+			elseif euclidean_distance (goal_point, robot_point) < algorithm_params.goal_reached_distance_threshold then
 				-- Check if distance to goal is less than tolerance
 				state_sig.set_is_goal_reached
 				s_sig.set_stop_requested (True)
@@ -291,14 +294,17 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 								drive: separate DIFFERENTIAL_DRIVE)
 			-- Stop if goal unreachable.
 		require
-			o_sig.is_moving
+			o_sig.is_moving or s_sig.is_stop_requested
 		local
 			wall_following_start_point, robot_point: POINT_MSG
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
 			create wall_following_start_point.make_from_separate (m_sig.wall_following_start_point)
 
-			if ((m_sig.wall_following_start_theta - o_sig.theta).abs > algorithm_params.angle_looped_around_threshold_unreachable and
+			if s_sig.is_stop_requested then
+				drive.stop
+
+			elseif ((m_sig.wall_following_start_theta - o_sig.theta).abs > algorithm_params.angle_looped_around_threshold_unreachable and
 				-- Check if robot has looped a cycle.
 				euclidean_distance (robot_point, wall_following_start_point) < algorithm_params.goal_unreachable_distance_threshold) then
 				-- Check if robot is close enough to initial obstacle point.
@@ -358,12 +364,27 @@ feature {NONE}
 feature
 
 	pid_controller: PID_CONTROLLER
+			-- Pid controller.
+
 	controller_params: CONTROLLER_PARAMETERS
+			-- Parameters for pid controller.
+
 	controller_parser: PARSER[CONTROLLER_PARAMETERS]
+			-- Parser for pid controller parameters.
+
 	robot_params:ROBOT_PARAMETERS
+			-- Parameters for robot.
+
 	robot_parser: PARSER[ROBOT_PARAMETERS]
+			-- Parser for robot paraeters.
+
 	algorithm_params: TANGENT_BUG_PARAMETERS
+			-- Parameters for A star search algorithm.
+
 	algorithm_parser: PARSER[TANGENT_BUG_PARAMETERS]
+			-- Parser for A star search algorithm parameters.
+
 	cur_goal_point: POINT_MSG
+			-- Point of current goal position. 
 
 end -- class

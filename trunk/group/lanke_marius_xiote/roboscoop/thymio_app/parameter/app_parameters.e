@@ -1,9 +1,6 @@
 note
 	description: "Summary description for {APP_PARAMETERS}."
 	author: "Lanke Frank Tarimo Fu"
-	date: "$28.10.2015$"
-	revision: "$1$"
-
 class
 	APP_PARAMETERS
 
@@ -37,19 +34,22 @@ feature  -- Initialization
 feature	 -- Access
 
 	APP_NAME : STRING
+			-- Name of the app.
 
 	ROBOT_FILE_NAME : STRING
-		-- File names of the parameters to be parsed
+			-- File names of the parameters to be parsed.
 
 	ROBOT_NAME : STRING
+			-- Name of the robot.
 
 	BEHAVIOR_FILE_NAME : STRING
-		-- File names of the parameters to be parsed 			
+			-- File names of the parameters to be parsed 			
 
 	BEHAVIOR_NAME : STRING
+			-- Name fo the behavior.
 
 	PATH_PLANNER_FILE_NAME : STRING
-		-- File names of the parameters to be parsed
+			-- File names of the parameters to be parsed
 
 	set_app_name (the_app : STRING)
 
