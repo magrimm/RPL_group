@@ -92,6 +92,7 @@ feature -- Access
 			i: INTEGER
 			number_detecting_sensors: INTEGER
 		do
+			io.put_string ("number of detecting sensors.")
 			from
 				i := sensors.lower
 			until
@@ -125,7 +126,7 @@ feature -- Access
 			until
 				i > sensors.upper - 2 or Result
 			loop
-				Result := Result or sensors[i].range < 0.03 --.is_valid_range --range < 0.10
+				Result := Result or sensors[i].range < 0.1
 				i := i + 1
 			end
 		end

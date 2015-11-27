@@ -147,6 +147,8 @@ feature {NONE} -- Implementation
 
 	distance_corner_turn_point: REAL_64
 		-- Caculate the distance to the end of the obstacle when obstacle not detected anymore.
+		require
+			prev_closest_sensor_index > 0
 		do
 			Result := get_relative_coordinates_with_sensor (prev_closest_sensor_range, prev_closest_sensor_index).x * cosine (sensor_angles[prev_closest_sensor_index])
 		end
