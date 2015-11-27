@@ -30,8 +30,8 @@ feature -- Access
 		deferred
 		end
 
-	get_top_leds : separate THYMIO_TOP_LEDS
-			-- Get top leds.
+	get_state_leds : separate RGB_COLOR_ACTUATOR
+			-- Get leds that indicate robot state.
 		deferred
 		end
 
