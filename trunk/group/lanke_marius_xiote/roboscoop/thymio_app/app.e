@@ -20,8 +20,19 @@ feature {NONE} -- Initialization
 			ros_spinner: separate ROS_SPINNER
 			thymio: separate THYMIO_ROBOT
 
+			app_parser: PARSER[APP_PARAMETERS]
+			app_params: APP_PARAMETERS
+			app_params_path: separate STRING
+
+			robot_parser: PARSER[ROBOT_PARAMETERS]
+			robot_params: ROBOT_PARAMETERS
+
+			path_planning_parser: PARSER[PATH_PLANNER_PARAMETER]
+			path_planner_params: PATH_PLANNER_PARAMETER
 			path_planner_param_path: STRING
-			path_planner_parameter: PATH_PLANNER_PARAMETER
+
+			behaviour_parser : PARSER[BEHAVIOR_PARAMETERS]
+			behaviour_param : BEHAVIOR_PARAMETERS
 
 			conn_strategy: GRID_CONNECTIVITY_STRATEGY
 			heur_cost_strategy: EUCLIDEAN_DISTANCE_HEURISTIC
@@ -43,20 +54,20 @@ feature {NONE} -- Initialization
 
 			-- Parse parameter text file
 			create app_parser
-			create robot_parser
 			create app_params.make
+			create robot_parser
 			create robot_params.make
-			create path_planner_params.make
 			create path_planning_parser
+			create path_planner_params.make
 			create behaviour_parser
 			create behaviour_param.make
 
 			app_params_path := Arguments.argument (1).to_string_8
 
-			app_params := app_parser.parse_file (create {STRING}.make_from_separate (app_params_path), app_params)
-			robot_params := robot_parser.parse_file(app_params.robot_file_name, robot_params)
-			behaviour_param := behaviour_parser.parse_file (app_params.behavior_file_name, behaviour_param)
-			path_planner_params := path_planning_parser.parse_file(app_params.path_planner_file_name, path_planner_params)
+			app_parser.parse_file (create {STRING}.make_from_separate (app_params_path), app_params)
+			robot_parser.parse_file(app_params.robot_file_name, robot_params)
+			behaviour_parser.parse_file (app_params.behavior_file_name, behaviour_param)
+			path_planning_parser.parse_file(app_params.path_planner_file_name, path_planner_params)
 
 			-- Create a robot object.
 			create thymio.make (robot_params)
@@ -65,7 +76,6 @@ feature {NONE} -- Initialization
 			create heur_cost_strategy
 			create path_cost_strategy
 			create search_strategy.make (heur_cost_strategy, path_cost_strategy)
-
 			create path_planner.make (path_planner_params.get_connectivity_strategy, search_strategy, path_planner_params)
 
 			-- Initialize behaviors.
@@ -76,28 +86,5 @@ feature {NONE} -- Initialization
 			moving_to_goal_behavior.start
 			change_feature_behavior.start
 		end
-
-feature {NONE}
-
-	app_parser: PARSER[APP_PARAMETERS]
-			-- Parser class for app_parameters from text file.
-
-	robot_parser: PARSER[ROBOT_PARAMETERS]
-			-- Parser class for robot_paramteters from text file.
-
-	robot_params: ROBOT_PARAMETERS
-			-- Robot Parameters needed.
-
-	path_planner_params: PATH_PLANNER_PARAMETER
-	path_planning_parser: PARSER[PATH_PLANNER_PARAMETER]
-
-	behaviour_param : BEHAVIOR_PARAMETERS
-	behaviour_parser : PARSER[BEHAVIOR_PARAMETERS]
-
-
-	app_params: APP_PARAMETERS
-			-- App Parameters needed.
-
-	app_params_path: separate STRING
 
 end -- class
