@@ -14,6 +14,4 @@ feature -- Constants
 	current_goal: STRING = "/cur_goal"
 	odometry_frame: STRING = "odometry_link"
 
-
-
 end -- class

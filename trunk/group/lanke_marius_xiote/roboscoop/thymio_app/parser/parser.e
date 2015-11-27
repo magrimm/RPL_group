@@ -4,11 +4,13 @@ note
 						with a HASH_TABLE mapping parameter names to setter function agents {PARSER}.
 					]"
 	author: "Lanke Frank Tarimo Fu"
+	date: "09.11.15"
 
 class
 	PARSER[P ->  PARAMETERS]
 
-feature
+feature -- Access
+
 	parse_file(filename: separate STRING ; params : P):  P
 		local
 			input_file: PLAIN_TEXT_FILE
@@ -57,4 +59,4 @@ feature
 			Result := params
 		end
 
-end
+end -- class

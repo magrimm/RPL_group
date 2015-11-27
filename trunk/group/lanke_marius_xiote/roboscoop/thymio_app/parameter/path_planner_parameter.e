@@ -5,7 +5,8 @@ note
 class
 	PATH_PLANNER_PARAMETER
 
-inherit PARAMETERS
+inherit
+	PARAMETERS
 
 create
 	make
@@ -31,7 +32,8 @@ feature  -- Initialization
 
 feature -- Access
 
-	connect_four, connect_eight : BOOLEAN -- connectivity strategy boolean
+	connect_four, connect_eight : BOOLEAN
+		-- connectivity strategy boolean
 
 	set_connectivity(str : STRING)
 		-- Set the connectivity using one of the below functions
@@ -42,7 +44,7 @@ feature -- Access
 		end
 
 	set_four_connect()
-	-- Set to using four connectivity
+		-- Set to using four connectivity
 		do
 			connect_four := true
 		end

@@ -9,6 +9,7 @@ inherit
 	RELATIVE_SPACE_CALCULATIONS
 
 feature -- Access
+
 	sensor_distances: ARRAY[REAL_64]
 			-- Each sensor's distance to (0, 0).
 
@@ -26,4 +27,4 @@ feature -- Access
 		deferred
 		end
 
-end
+end -- class

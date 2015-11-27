@@ -1,14 +1,14 @@
 note
-	description: "Summary description for {MOVING_TO_GOAL_PARAMETERS}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Parameter class BEHAVIOR_PARAMETERS."
+	author: "Lanke Frank Tarimo Fu"
+	date: "09.11.15"
 
 class
 	BEHAVIOR_PARAMETERS
 
 
-inherit PARAMETERS
+inherit
+	PARAMETERS
 
 create
 	make
@@ -23,7 +23,7 @@ feature {NONE} -- Initialization
 			ROBOT_FILE_NAME := "NULL"
 
 			create variable_name_setter_map.make(6)
-			
+
 			variable_name_setter_map.put(agent set_behavior_name() , "BEHAVIOR_NAME")
 			variable_name_setter_map.put(agent set_algorithm_name() , "ALGORITHM_NAME")
 			variable_name_setter_map.put(agent set_algorithm_filename() , "ALGORITHM_FILE_NAME")

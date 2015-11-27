@@ -7,7 +7,8 @@ note
 class
 	CONTROLLER_PARAMETERS
 
-inherit PARAMETERS
+inherit
+	PARAMETERS
 
 create
 	make
@@ -16,7 +17,6 @@ feature  -- Initialization
 
 	make
 		do
-
 			CONTROLLER_NAME := "NULL"
 
 			create variable_name_setter_map.make(5)
@@ -29,8 +29,6 @@ feature  -- Initialization
 			variable_name_setter_map.put (agent set_vx(), "vx")
 		end
 
-
-
 feature -- Access	
 
 	CONTROLLER_NAME : STRING
@@ -39,7 +37,6 @@ feature -- Access
 
 
 	set_controller_name (beh : STRING)
-
 		do
 			CONTROLLER_NAME := beh
 		end
@@ -63,4 +60,5 @@ feature -- Access
 		do
 			k_d := a_val.to_real_64
 		end
-end
+		
+end -- class

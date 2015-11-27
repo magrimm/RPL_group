@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {APP_PARAMETERS}."
+	description: "Parameter class ROBOT_PARAMETERS."
 	author: "Lanke Frank Tarimo Fu"
 
 class

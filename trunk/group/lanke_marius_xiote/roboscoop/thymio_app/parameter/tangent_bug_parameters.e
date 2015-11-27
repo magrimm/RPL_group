@@ -1,6 +1,6 @@
 note
 	description: "Summary description for {TANGENT_BUG_PARAMETERS}."
-	author: ""
+	author: "Xiaote Zhu"
 
 class
 	TANGENT_BUG_PARAMETERS

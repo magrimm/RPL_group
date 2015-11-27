@@ -34,4 +34,5 @@ feature -- Access
 			-- Get top leds.
 		deferred
 		end
-end
+
+end --class
