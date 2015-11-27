@@ -50,4 +50,4 @@ feature -- Access
 		deferred
 		end
 
-end
+end --class

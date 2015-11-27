@@ -10,9 +10,11 @@ inherit
 	TASK_MSG_PUBLISHERS[LIST[POINT_MSG]]
 
 create
+
 	make_with_attributes
 
 feature {NONE}
+
 	make_with_attributes(tp_name : STRING)
 		do
 			message_2_send := create {PATH_MSG}.make_empty
@@ -23,7 +25,7 @@ feature {NONE}
 feature -- Access
 
 	update_msg(path : LIST[POINT_MSG])
-			-- update path to be sent with
+		-- update path to be sent with
 		local
 			poses : ARRAY[POSE_STAMPED_MSG]
 				-- An array of pose messages used to then generate an array of POINT_MSG				
@@ -35,10 +37,10 @@ feature -- Access
 
 
 		i : INTEGER
-								-- Iterator to go through the lists
+			-- Iterator to go through the lists
 		header_frame: STRING
-								-- A critical value to have frames conform to each other on visualization
-								-- interfaces such as R_VIZ
+			-- A critical value to have frames conform to each other on visualization
+			-- interfaces such as R_VIZ
 	do
 		header_frame := {MAP_TOPICS}.odometry_frame
 		create poses.make_filled (create {POSE_STAMPED_MSG}.make_empty, 1, path.count)
@@ -62,6 +64,7 @@ feature -- Access
 				poses.put (pose_stamped_msg, i)
 				path.forth
 			end
+			
 			message_2_send := create {PATH_MSG}.make_with_values (create {HEADER_MSG}.make_now (header_frame), poses)
 				-- Update the path message being sent
 			path.start
