@@ -18,7 +18,7 @@ feature {NONE} -- Initialization
 		do
 			create stop_sig.make
 			state_sig := robot.robot_state
-			top_leds := robot.top_leds
+			state_leds := robot.get_state_leds
 		end
 
 feature -- Access
@@ -48,7 +48,7 @@ feature {NONE} -- Implementation
 	state_sig: separate STATE_SIGNALER
 			 -- Robot current state.
 
-	top_leds: separate THYMIO_TOP_LEDS
+	state_leds: separate RGB_COLOR_ACTUATOR
 			 -- RGB LEDs on the top.
 
 	sep_start (a: separate CHANGE_FEATURE_CONTROLLER)
@@ -57,7 +57,7 @@ feature {NONE} -- Implementation
 			a.repeat_until_stop_requested (
 				agent a.change_light_feature (state_sig,
 											   stop_sig,
-											   top_leds))
+											   state_leds))
 		end
 
 	sep_stop (s_sig: separate STOP_SIGNALER; val: BOOLEAN)

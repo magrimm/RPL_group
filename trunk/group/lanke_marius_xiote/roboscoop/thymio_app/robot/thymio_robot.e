@@ -65,7 +65,7 @@ feature -- Access
 			Result := range_group_wrapper
 		end
 
-	get_top_leds : separate THYMIO_TOP_LEDS
+	get_state_leds : separate THYMIO_TOP_LEDS
 		do
 			Result := top_leds
 		end

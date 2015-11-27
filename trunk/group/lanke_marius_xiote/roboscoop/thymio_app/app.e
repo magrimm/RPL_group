@@ -1,4 +1,3 @@
-
 note
 	description: "The main class of the application."
 	author: "Xiaote Zhu"
@@ -31,7 +30,7 @@ feature {NONE} -- Initialization
 			path_planner: PATH_PLANNER
 
 			moving_to_goal_behavior: MOVING_TO_GOAL_BEHAVIOR
---			change_feature_behavior: CHANGE_FEATURE_BEHAVIOR
+			change_feature_behavior: CHANGE_FEATURE_BEHAVIOR
 		do
 
 			-- Initialize this application as a ROS node.
@@ -71,11 +70,11 @@ feature {NONE} -- Initialization
 
 			-- Initialize behaviors.
 			create moving_to_goal_behavior.make_with_attributes (thymio, path_planner, behaviour_param)
---			create change_feature_behavior.make_with_attributes (thymio)
+			create change_feature_behavior.make_with_attributes (thymio)
 
 			-- Launch behaviors.
 			moving_to_goal_behavior.start
---			change_feature_behavior.start
+			change_feature_behavior.start
 		end
 
 feature {NONE}

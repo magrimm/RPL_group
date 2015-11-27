@@ -21,7 +21,7 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	change_light_feature (state_sig: separate STATE_SIGNALER; s_sig: separate STOP_SIGNALER; top_leds: separate THYMIO_TOP_LEDS)
+	change_light_feature (state_sig: separate STATE_SIGNALER; s_sig: separate STOP_SIGNALER; top_leds: separate RGB_COLOR_ACTUATOR)
 			-- Change features including light color based on current state.
 		require
 			not s_sig.is_stop_requested
