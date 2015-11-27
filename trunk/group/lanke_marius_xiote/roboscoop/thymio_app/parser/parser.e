@@ -23,6 +23,10 @@ feature -- Access
 		do
 			create input_file.make_open_read (create {STRING}.make_from_separate (filename))
 
+			if not input_file.access_exists then
+				io.putstring ("ERROR: Cannot open file " + create {STRING}.make_from_separate (filename) + "%N")
+			end
+
 			from
     			input_file.read_line
     		until

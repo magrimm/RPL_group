@@ -23,10 +23,10 @@ feature  -- Initialization
 
 			variable_name_setter_map.put(agent set_controller_name() , "CONTROLLER_NAME")
 
-			variable_name_setter_map.put (agent set_k_p(), "k_p")
-			variable_name_setter_map.put (agent set_k_i(), "k_i")
-			variable_name_setter_map.put (agent set_k_d(), "k_d")
-			variable_name_setter_map.put (agent set_vx(), "vx")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_k_p()), "k_p")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_k_i()), "k_i")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_k_d()), "k_d")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_vx()), "vx")
 		end
 
 feature -- Access	
@@ -41,24 +41,24 @@ feature -- Access
 			CONTROLLER_NAME := beh
 		end
 
-	set_vx (a_val: STRING)
+	set_vx (a_val: REAL_64)
 		do
-			vx := a_val.to_real_64
+			vx := a_val
 		end
 
-	set_k_p (a_val: STRING)
+	set_k_p (a_val: REAL_64)
 		do
-			k_p := a_val.to_real_64
+			k_p := a_val
 		end
 
-	set_k_i (a_val: STRING)
+	set_k_i (a_val: REAL_64)
 		do
-			k_i := a_val.to_real_64
+			k_i := a_val
 		end
 
-	set_k_d (a_val: STRING)
+	set_k_d (a_val: REAL_64)
 		do
-			k_d := a_val.to_real_64
+			k_d := a_val
 		end
-		
+
 end -- class

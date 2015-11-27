@@ -21,18 +21,18 @@ feature {NONE} -- Initialization
 		ROBOT_NAME := "NULL"
 
 		variable_name_setter_map.put(agent set_robot_name(), "ROBOT_NAME")
-		variable_name_setter_map.put(agent set_total_number_of_sensors() , "TOTAL_NUMBER_OF_SENSORS")
-		variable_name_setter_map.put(agent set_number_of_front_sensors() , "NUMBER_OF_FRONT_SENSORS")
-		variable_name_setter_map.put(agent set_number_of_back_sensors() , "NUMBER_OF_BACK_SENSORS")
-		variable_name_setter_map.put(agent set_front_sensor_distance() , "FRONT_SENSOR_DISTANCE")
-		variable_name_setter_map.put(agent set_back_sensor_distance() , "BACK_SENSOR_DISTANCE")
-		variable_name_setter_map.put(agent set_sensor_angle_front_1() , "SENSOR_ANGLE_FRONT_1")
-		variable_name_setter_map.put(agent set_sensor_angle_front_2() , "SENSOR_ANGLE_FRONT_2")
-		variable_name_setter_map.put(agent set_sensor_angle_front_3() , "SENSOR_ANGLE_FRONT_3")
-		variable_name_setter_map.put(agent set_sensor_angle_front_4() , "SENSOR_ANGLE_FRONT_4")
-		variable_name_setter_map.put(agent set_sensor_angle_front_5() , "SENSOR_ANGLE_FRONT_5")
-		variable_name_setter_map.put(agent set_sensor_angle_back_1() , "SENSOR_ANGLE_BACK_1")
-		variable_name_setter_map.put(agent set_sensor_angle_back_2() , "SENSOR_ANGLE_BACK_2")
+		variable_name_setter_map.put(agent convert_set_INT64(? , agent set_total_number_of_sensors()) , "TOTAL_NUMBER_OF_SENSORS")
+		variable_name_setter_map.put(agent convert_set_INT64(? , agent set_number_of_front_sensors()) , "NUMBER_OF_FRONT_SENSORS")
+		variable_name_setter_map.put(agent convert_set_INT64(? , agent set_number_of_back_sensors()) , "NUMBER_OF_BACK_SENSORS")
+		variable_name_setter_map.put(agent convert_set_REAL64(? , agent set_front_sensor_distance()) , "FRONT_SENSOR_DISTANCE")
+		variable_name_setter_map.put(agent convert_set_REAL64(? , agent set_back_sensor_distance()) , "BACK_SENSOR_DISTANCE")
+		variable_name_setter_map.put(agent convert_set_REAL64(? , agent set_sensor_angle_front_1()) , "SENSOR_ANGLE_FRONT_1")
+		variable_name_setter_map.put(agent convert_set_REAL64(? , agent set_sensor_angle_front_2()) , "SENSOR_ANGLE_FRONT_2")
+		variable_name_setter_map.put(agent convert_set_REAL64(? , agent set_sensor_angle_front_3()) , "SENSOR_ANGLE_FRONT_3")
+		variable_name_setter_map.put(agent convert_set_REAL64(? , agent set_sensor_angle_front_4()) , "SENSOR_ANGLE_FRONT_4")
+		variable_name_setter_map.put(agent convert_set_REAL64(? , agent set_sensor_angle_front_5()) , "SENSOR_ANGLE_FRONT_5")
+		variable_name_setter_map.put(agent convert_set_REAL64(? , agent set_sensor_angle_back_1()) , "SENSOR_ANGLE_BACK_1")
+		variable_name_setter_map.put(agent convert_set_REAL64(? , agent set_sensor_angle_back_2()) , "SENSOR_ANGLE_BACK_2")
 	end
 
 feature	 -- Access
@@ -69,64 +69,64 @@ feature	 -- Access
 			ROBOT_NAME := rob
 		end
 
-	set_total_number_of_sensors (number : STRING)
+	set_total_number_of_sensors (number : INTEGER)
 		do
-			TOTAL_NUMBER_OF_SENSORS := number.to_integer
+			TOTAL_NUMBER_OF_SENSORS := number
 		end
 
-	set_number_of_front_sensors (number : STRING)
+	set_number_of_front_sensors (number : INTEGER)
 		do
-			NUMBER_OF_FRONT_SENSORS := number.to_integer
+			NUMBER_OF_FRONT_SENSORS := number
 		end
 
-	set_number_of_back_sensors (number : STRING)
+	set_number_of_back_sensors (number : INTEGER)
 		do
-			NUMBER_OF_BACK_SENSORS := number.to_integer
+			NUMBER_OF_BACK_SENSORS := number
 		end
 
-	set_front_sensor_distance (distance : STRING)
+	set_front_sensor_distance (distance : REAL_64)
 		do
-			FRONT_SENSOR_DISTANCE := distance.to_real_64
+			FRONT_SENSOR_DISTANCE := distance
 		end
 
-	set_back_sensor_distance (distance : STRING)
+	set_back_sensor_distance (distance : REAL_64)
 		do
-			BACK_SENSOR_DISTANCE := distance.to_real_64
+			BACK_SENSOR_DISTANCE := distance
 		end
 
-	set_sensor_angle_front_1 (angle : STRING)
+	set_sensor_angle_front_1 (angle : REAL_64)
 		do
-			SENSOR_ANGLE_FRONT_1 := angle.to_real_64
+			SENSOR_ANGLE_FRONT_1 := angle
 		end
 
-	set_sensor_angle_front_2 (angle : STRING)
+	set_sensor_angle_front_2 (angle : REAL_64)
 		do
-			SENSOR_ANGLE_FRONT_2 := angle.to_real_64
+			SENSOR_ANGLE_FRONT_2 := angle
 		end
 
-	set_sensor_angle_front_3 (angle : STRING)
+	set_sensor_angle_front_3 (angle : REAL_64)
 		do
-			SENSOR_ANGLE_FRONT_3 := angle.to_real_64
+			SENSOR_ANGLE_FRONT_3 := angle
 		end
 
-	set_sensor_angle_front_4 (angle : STRING)
+	set_sensor_angle_front_4 (angle : REAL_64)
 		do
-			SENSOR_ANGLE_FRONT_4 := angle.to_real_64
+			SENSOR_ANGLE_FRONT_4 := angle
 		end
 
-	set_sensor_angle_front_5 (angle : STRING)
+	set_sensor_angle_front_5 (angle : REAL_64)
 		do
-			SENSOR_ANGLE_FRONT_5 := angle.to_real_64
+			SENSOR_ANGLE_FRONT_5 := angle
 		end
 
-	set_sensor_angle_back_1 (angle : STRING)
+	set_sensor_angle_back_1 (angle : REAL_64)
 		do
-			SENSOR_ANGLE_BACK_1 := angle.to_real_64
+			SENSOR_ANGLE_BACK_1 := angle
 		end
 
-	set_sensor_angle_back_2 (angle : STRING)
+	set_sensor_angle_back_2 (angle : REAL_64)
 		do
-			SENSOR_ANGLE_BACK_2 := angle.to_real_64
+			SENSOR_ANGLE_BACK_2 := angle
 		end
 
 end -- class

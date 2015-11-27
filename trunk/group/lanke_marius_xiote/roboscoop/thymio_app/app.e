@@ -56,6 +56,7 @@ feature {NONE} -- Initialization
 			app_params := app_parser.parse_file (create {STRING}.make_from_separate (app_params_path), app_params)
 			robot_params := robot_parser.parse_file(app_params.robot_file_name, robot_params)
 			behaviour_param := behaviour_parser.parse_file (app_params.behavior_file_name, behaviour_param)
+			io.putstring ("The goal x is : " + behaviour_param.goal_x.out)
 			path_planner_params := path_planning_parser.parse_file(app_params.path_planner_file_name, path_planner_params)
 
 			-- Create a robot object.
