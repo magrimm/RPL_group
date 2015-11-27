@@ -41,11 +41,9 @@ feature -- Access
 			create c.make (stop_sig, behaviour_param)
 			create d.make (stop_sig, behaviour_param)
 			create e.make (stop_sig, behaviour_param)
-			create f.make (stop_sig, behaviour_param)
-			create g.make (stop_sig, behaviour_param)
 
 			sep_stop (stop_sig, False)
-			sep_start (a, b, c, d, e, f, g)
+			sep_start (a, b, c, d, e)
 		end
 
 	stop
@@ -83,7 +81,7 @@ feature {NONE} -- Implementation
 	behaviour_param : separate BEHAVIOR_PARAMETERS
 			-- Parameters for behaviors.
 
-	sep_start (a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER)
+	sep_start (a, b, c, d, e: separate MOVING_TO_GOAL_CONTROLLER)
 			-- Start controllers asynchronously.
 		do
 			a.repeat_until_stop_requested (
@@ -130,14 +128,6 @@ feature {NONE} -- Implementation
 												 odometry_sig,
 												 stop_sig,
 												 diff_drive))
-
-			f.repeat_until_stop_requested (
-					-- Terminate when task cannot be achieved.
-				agent f.stop_when_goal_unreachable (state_sig,
-													 moving_to_goal_sig,
-													 odometry_sig,
-													 stop_sig,
-													 diff_drive))
 		end
 
 	sep_stop (s_sig: separate STOP_SIGNALER; val: BOOLEAN)
