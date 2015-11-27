@@ -23,19 +23,20 @@ feature {NONE} -- Initialization
 			stop_signaler := s_sig
 			algorithm_name := create {STRING}.make_from_separate (par.algorithm_file_name)
 			robot_file_name := create {STRING}.make_from_separate (par.robot_file_name)
+
 			create algorithm_params.make
-			create algorithm_parser
 			create controller_params.make
-			create controller_parser
 			create robot_params.make
+
+			create algorithm_parser
+			create controller_parser
 			create robot_parser
 
-			algorithm_params := algorithm_parser.parse_file (algorithm_name, algorithm_params)
-			controller_params := controller_parser.parse_file (algorithm_params.controller_file_name, controller_params)
-			robot_params:= robot_parser.parse_file (robot_file_name, robot_params)
+			algorithm_parser.parse_file (algorithm_name, algorithm_params)
+			controller_parser.parse_file (algorithm_params.controller_file_name, controller_params)
+			robot_parser.parse_file (robot_file_name, robot_params)
 
 			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
-			create cur_goal_point.make_empty
 		end
 
 feature {MOVING_TO_GOAL_BEHAVIOR} -- Control	
@@ -48,23 +49,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			state_sig.is_go or s_sig.is_stop_requested
 		local
 			vtheta, heading_error: REAL_64
-			robot_point: POINT_MSG
+			cur_goal_point, robot_point: POINT_MSG
 			point_pub: POINT_MSG_PUBLISHER
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
-
-			separate o_sig as odom do
-				odom.update_odometry (create{ODOMETRY_MSG}.make_with_values(
-									  	 create{HEADER_MSG}.make_now ({MAP_TOPICS}.odometry_frame),
-										 {MAP_TOPICS}.base_frame,
-										 create{POSE_WITH_COVARIANCE_MSG}.make_with_values(
-										 	create{POSE_MSG}.make_with_values(
-										 		create{POINT_MSG}.make_with_values (1, 1, 1),
-												create{QUATERNION_MSG}.make_empty),
-											create{ARRAY[REAL_64]}.make_filled (0.0, 1, 36)),
-										create{TWIST_WITH_COVARIANCE_MSG}.make_empty))
-				io.putstring (odom.x.out + " We at this x %N")
-			end
 
 			if s_sig.is_stop_requested then
 				drive.stop
@@ -72,7 +60,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			else
 				if not m_sig.is_path_planned then
 					-- Don't execute when path alread parsed.
-					path_planner.set_start_node_with_odometry (o_sig.x, o_sig.y, o_sig.z)
 					path_planner.search_path
 					m_sig.set_is_path_planned (True)
 				end
@@ -384,8 +371,5 @@ feature
 
 	algorithm_parser: PARSER[TANGENT_BUG_PARAMETERS]
 		-- Parser for A star search algorithm parameters.
-
-	cur_goal_point: POINT_MSG
-		-- Point of current goal position.
 
 end -- class

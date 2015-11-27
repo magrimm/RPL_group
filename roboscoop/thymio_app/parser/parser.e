@@ -11,7 +11,7 @@ class
 
 feature -- Access
 
-	parse_file(filename: separate STRING ; params : P):  P
+	parse_file(filename: separate STRING ; params : P)
 		local
 			input_file: PLAIN_TEXT_FILE
 				-- File being parsed										
@@ -60,7 +60,6 @@ feature -- Access
 				-- Increment one line											
 			end
 			input_file.close
-			Result := params
 		end
 
 end -- class
