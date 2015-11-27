@@ -12,6 +12,7 @@ feature -- Constants
 	path: STRING_8 = "/path"
 	goal: STRING = "/goal"
 	current_goal: STRING = "/cur_goal"
-	odometry_frame: STRING = "odometry_link"
+	odometry_frame: STRING_8 = "/odometry_link"
+	base_frame: STRING_8 = "/base_link"
 
 end -- class

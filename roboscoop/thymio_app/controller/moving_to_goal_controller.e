@@ -54,15 +54,16 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
 
 			separate o_sig as odom do
-			odom.update_odometry (create{ODOMETRY_MSG}.make_with_values
-			(create{HEADER_MSG}.make_now ("/odometry_link"),
-			"/base_link",
-			create{POSE_WITH_COVARIANCE_MSG}.make_with_values
-			(create{POSE_MSG}.make_with_values
-			(create{POINT_MSG}.make_with_values (1, 1, 1),
-			create{QUATERNION_MSG}.make_empty), create{ARRAY[REAL_64]}.make_filled (0.0, 1, 36)),
-			create{TWIST_WITH_COVARIANCE_MSG}.make_empty))
-			io.putstring (odom.x.out + " We at this x %N")
+				odom.update_odometry (create{ODOMETRY_MSG}.make_with_values(
+									  	 create{HEADER_MSG}.make_now ({MAP_TOPICS}.odometry_frame),
+										 {MAP_TOPICS}.base_frame,
+										 create{POSE_WITH_COVARIANCE_MSG}.make_with_values(
+										 	create{POSE_MSG}.make_with_values(
+										 		create{POINT_MSG}.make_with_values (1, 1, 1),
+												create{QUATERNION_MSG}.make_empty),
+											create{ARRAY[REAL_64]}.make_filled (0.0, 1, 36)),
+										create{TWIST_WITH_COVARIANCE_MSG}.make_empty))
+				io.putstring (odom.x.out + " We at this x %N")
 			end
 
 			if s_sig.is_stop_requested then
@@ -322,7 +323,7 @@ feature {NONE}
 
 	set_wall_following_start_point (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; r_sens: separate RANGE_GROUP;
 										r_sens_wrapper: separate RANGE_GROUP_WRAPPER; desired_wall_distance: REAL_64)
-			-- Set the start point of the wall following state
+		-- Set the start point of the wall following state
 		local
 			closest_sensor_index : INTEGER
 			robot_point, abs_start_point, relative_start_point : POINT_MSG
@@ -335,8 +336,8 @@ feature {NONE}
 						/ cosine (r_sens_wrapper.sensor_angles[closest_sensor_index]), 0.0, 0.0)
 			abs_start_point := convert_relative_coordinates_to_absolute_coordinates (robot_point,
 													relative_start_point, o_sig.theta)
-			-- Calculate first wall point in global coordinates using sensor return values
-			-- and coordinate transformation functions
+				-- Calculate first wall point in global coordinates using sensor return values
+				-- and coordinate transformation functions
 			m_sig.set_wall_following_start_point (abs_start_point)
 		end
 
@@ -364,27 +365,27 @@ feature {NONE}
 feature
 
 	pid_controller: PID_CONTROLLER
-			-- Pid controller.
+		-- Pid controller.
 
 	controller_params: CONTROLLER_PARAMETERS
-			-- Parameters for pid controller.
+		-- Parameters for pid controller.
 
 	controller_parser: PARSER[CONTROLLER_PARAMETERS]
-			-- Parser for pid controller parameters.
+		-- Parser for pid controller parameters.
 
 	robot_params:ROBOT_PARAMETERS
-			-- Parameters for robot.
+		-- Parameters for robot.
 
 	robot_parser: PARSER[ROBOT_PARAMETERS]
-			-- Parser for robot paraeters.
+		-- Parser for robot paraeters.
 
 	algorithm_params: TANGENT_BUG_PARAMETERS
-			-- Parameters for A star search algorithm.
+		-- Parameters for A star search algorithm.
 
 	algorithm_parser: PARSER[TANGENT_BUG_PARAMETERS]
-			-- Parser for A star search algorithm parameters.
+		-- Parser for A star search algorithm parameters.
 
 	cur_goal_point: POINT_MSG
-			-- Point of current goal position.
+		-- Point of current goal position.
 
 end -- class
