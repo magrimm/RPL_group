@@ -9,7 +9,7 @@ class
 	PARSER[P ->  PARAMETERS]
 
 feature
-	parse_file(filename: STRING ; params : P):  P
+	parse_file(filename: separate STRING ; params : P):  P
 		local
 			input_file: PLAIN_TEXT_FILE
 				-- File being parsed										
@@ -19,7 +19,7 @@ feature
 				-- Current strings streamed	
 
 		do
-			create input_file.make_open_read (filename)
+			create input_file.make_open_read (create {STRING}.make_from_separate (filename))
 
 			from
     			input_file.read_line
