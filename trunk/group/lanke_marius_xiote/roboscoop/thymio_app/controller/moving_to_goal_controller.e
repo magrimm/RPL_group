@@ -17,8 +17,8 @@ feature {NONE} -- Initialization
 	make (s_sig: separate STOP_SIGNALER; par:  separate BEHAVIOR_PARAMETERS)
 			-- Create current and assign given attributes.
 		local
-			algorithm_name : STRING
-			robot_file_name : STRING
+			algorithm_name: STRING
+			robot_file_name: STRING
 		do
 			stop_signaler := s_sig
 			algorithm_name := create {STRING}.make_from_separate (par.algorithm_file_name)
