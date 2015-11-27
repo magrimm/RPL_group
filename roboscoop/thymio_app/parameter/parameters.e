@@ -6,8 +6,20 @@ note
 deferred class
 	PARAMETERS
 
-feature 
+feature
 
 	variable_name_setter_map : HASH_TABLE [ PROCEDURE[ANY,TUPLE] , STRING ]
+
+	convert_set_REAL64(a_string : STRING; setter : PROCEDURE[ANY,TUPLE])
+				--
+		do
+			setter.call(a_string.to_real_64)
+		end
+
+	convert_set_INT64(a_string : STRING; setter : PROCEDURE[ANY,TUPLE])
+				--
+		do
+			setter.call(a_string.to_integer)
+		end
 
 end -- class

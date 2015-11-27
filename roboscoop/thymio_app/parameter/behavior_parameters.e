@@ -29,9 +29,9 @@ feature {NONE} -- Initialization
 			variable_name_setter_map.put(agent set_algorithm_filename() , "ALGORITHM_FILE_NAME")
 			variable_name_setter_map.put(agent set_robot_file_name() , "ROBOT_FILE_NAME")
 
-			variable_name_setter_map.put (agent set_goal_x(), "goal_x")
-			variable_name_setter_map.put (agent set_goal_y(), "goal_y")
-			variable_name_setter_map.put (agent set_vx(), "vx")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_x() ), "goal_x")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_y() ), "goal_y")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_vx() ), "vx")
 		end
 
 
@@ -52,6 +52,7 @@ feature -- Access
 	goal_y: REAL_64
 
 	vx: REAL_64
+
 
 		-- SETTERS
 	set_behavior_name (beh : STRING)
@@ -78,19 +79,19 @@ feature -- Access
 			ALGORITHM_NAME := alg
 		end
 
-	set_goal_x (a_val: STRING)
+	set_goal_x (a_val: REAL_64)
 		do
-			goal_x := a_val.to_real_64
+			goal_x := a_val
 		end
 
-	set_goal_y (a_val: STRING)
+	set_goal_y (a_val: REAL_64)
 		do
-			goal_y := a_val.to_real_64
+			goal_y := a_val
 		end
 
-	set_vx (a_val: STRING)
+	set_vx (a_val: REAL_64)
 		do
-			vx := a_val.to_real_64
+			vx := a_val
 		end
 
 end -- class
