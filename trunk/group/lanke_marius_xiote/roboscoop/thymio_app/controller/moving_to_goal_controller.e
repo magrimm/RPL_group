@@ -106,8 +106,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Turn and follow the boundary of the obstacle being detected.
 		require
 			(state_sig.is_go and
-				r_sens.is_obstacle) or
-				state_sig.is_wall_following or s_sig.is_stop_requested
+			r_sens.is_obstacle) or
+			state_sig.is_wall_following or
+			s_sig.is_stop_requested
 		local
 			vtheta: REAL_64
 		do
@@ -116,14 +117,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			if s_sig.is_stop_requested then
 				drive.stop
 			else
-				if not m_sig.is_wall_following_start_set then
-					-- Set wall_following_start_point and wall_following_start_theta
-					-- when enter into wall following state the first time.
-					set_wall_following_start_point (m_sig, o_sig, r_sens, r_sens_wrapper, algorithm_params.desired_wall_distance)
-					m_sig.set_wall_following_start_theta (o_sig.theta)
-					m_sig.set_is_wall_following_start_set (True)
-				end
-
 				vtheta := r_sens_wrapper.follow_wall_orientation (r_sens, algorithm_params.desired_wall_distance, o_sig.timestamp, m_sig.timestamp_obstacle_last_seen, algorithm_params.vx)
 
 				state_sig.set_is_wall_following
@@ -141,7 +134,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Look for v_leave when in wall_following state
 		require
 			state_sig.is_wall_following and
-			(m_sig.wall_following_start_theta - o_sig.theta).abs > algorithm_params.angle_looped_around_threshold and
 			not s_sig.is_stop_requested
 		local
 			goal_point, robot_point, sensor_max_range_rel_point, sensor_max_range_abs_point: POINT_MSG
@@ -278,55 +270,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 		end
 
-	stop_when_goal_unreachable (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-								drive: separate DIFFERENTIAL_DRIVE)
-			-- Stop if goal unreachable.
-		require
-			o_sig.is_moving or s_sig.is_stop_requested
-		local
-			wall_following_start_point, robot_point: POINT_MSG
-		do
-			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
-			create wall_following_start_point.make_from_separate (m_sig.wall_following_start_point)
-
-			if s_sig.is_stop_requested then
-				drive.stop
-
-			elseif ((m_sig.wall_following_start_theta - o_sig.theta).abs > algorithm_params.angle_looped_around_threshold_unreachable and
-				-- Check if robot has looped a cycle.
-				euclidean_distance (robot_point, wall_following_start_point) < algorithm_params.goal_unreachable_distance_threshold) then
-				-- Check if robot is close enough to initial obstacle point.
-				state_sig.set_is_goal_unreachable
-				s_sig.set_stop_requested (True)
-				drive.stop
-
-				debug ("STATE")
-					io.put_string ("Current state: GOAL UNREACHABLE%N")
-				end
-			end
-		end
-
 feature {NONE}
-
-	set_wall_following_start_point (m_sig: separate MOVING_TO_GOAL_SIGNALER; o_sig: separate ODOMETRY_SIGNALER; r_sens: separate RANGE_GROUP;
-										r_sens_wrapper: separate RANGE_GROUP_WRAPPER; desired_wall_distance: REAL_64)
-		-- Set the start point of the wall following state
-		local
-			closest_sensor_index : INTEGER
-			robot_point, abs_start_point, relative_start_point : POINT_MSG
-		do
-			create robot_point.make_with_values (o_sig.x, o_sig.y, 0)
-			closest_sensor_index := r_sens.get_closest_sensor_index
-			create relative_start_point.make_with_values (
-						(r_sens_wrapper.sensor_distances[closest_sensor_index] +
-						r_sens.sensors[closest_sensor_index].range - desired_wall_distance)
-						/ cosine (r_sens_wrapper.sensor_angles[closest_sensor_index]), 0.0, 0.0)
-			abs_start_point := convert_relative_coordinates_to_absolute_coordinates (robot_point,
-													relative_start_point, o_sig.theta)
-				-- Calculate first wall point in global coordinates using sensor return values
-				-- and coordinate transformation functions
-			m_sig.set_wall_following_start_point (abs_start_point)
-		end
 
 	get_heading_error (cur_x, cur_y, cur_theta, goal_x, goal_y: REAL_64): REAL_64
 		-- Calculating heading error
