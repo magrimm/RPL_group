@@ -5,6 +5,7 @@
 		<option debug="true">
 			<debug name="__unnamed_debug__" enabled="true"/>
 			<debug name="debug_info" enabled="true"/>
+			<debug name="state" enabled="true"/>
 		</option>
 		<setting name="concurrency" value="scoop"/>
 		<precompile name="roboscoop" location="..\roboscoop_lib\roboscoop.ecf" readonly="false"/>
