@@ -38,9 +38,10 @@ feature {NONE} -- Initialization
 
 			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
 
-			create vleave_pub.make_with_attributes ("vleave_current")
+			create vleave_pub.make_with_attributes ("v_leave_point")
 			create cur_goal_pub.make_with_attributes ("cur_goal")
-			create search_vleave_pub.make_with_attributes ("Vleave_Point")
+			create search_vleave_pub.make_with_attributes ("search_vleave_point")
+
 		end
 
 feature {MOVING_TO_GOAL_BEHAVIOR} -- Control	
@@ -54,6 +55,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		local
 			vtheta, heading_error: REAL_64
 			cur_goal_point, robot_point: POINT_MSG
+
 
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
@@ -84,6 +86,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				end
 
 				debug ("PUB_CUR_GOAL_POINT")
+
 					-- Publish cur_goal_point.
 
 					cur_goal_pub.update_msg (cur_goal_point)
@@ -143,6 +146,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			goal_point, robot_point, sensor_max_range_rel_point, sensor_max_range_abs_point: POINT_MSG
 			vleave_point: separate POINT_MSG
 			cur_distance, vleave_d_min, sensor_max_range_d_min: REAL_64
+
 			i: INTEGER
 
 		do
@@ -188,14 +192,18 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				m_sig.set_v_leave (vleave_point)
 				m_sig.set_is_v_leave_found (True)
 
-				debug ("PUB_LOOK_FOR_V_LEAVE")
+			end
 
-					search_vleave_pub.set_color (create{COLOR_RGBA_MSG}.make_black)
-					search_vleave_pub.set_duration (10000)
+			debug ("PUB_LOOK_FOR_V_LEAVE")
+			-- The vleave point when transiting
 
-					search_vleave_pub.update_msg (create{POINT_MSG}.make_from_separate (vleave_point))
-					search_vleave_pub.publish
-				end
+			-- The vleave point when searching
+
+				search_vleave_pub.set_color (create{COLOR_RGBA_MSG}.make_black)
+				search_vleave_pub.set_duration (10000)
+
+				search_vleave_pub.update_msg (create{POINT_MSG}.make_from_separate (vleave_point))
+				search_vleave_pub.publish
 			end
 
 			debug ("STATE")
@@ -220,13 +228,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			if s_sig.is_stop_requested then
 				drive.stop
 
-				debug ("PUBLISH_V_LEAVE")
 
-					vleave_pub.set_color (create {COLOR_RGBA_MSG}.make_black)
-					vleave_pub.set_duration (1000)
-					vleave_pub.update_msg (create {POINT_MSG}.make_from_separate (vleave))
-					vleave_pub.publish
-				end
+
 
 			elseif euclidean_distance (vleave, robot_point) < algorithm_params.vleave_reached_distance_threshold then
 				-- Exit transition state when vleave point reached.
@@ -236,11 +239,27 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 			else
 				heading_error := get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)
+			debug ("PUBLISH_V_LEAVE")
+			-- Publishers for debug use
+				vleave_pub.set_color (create {COLOR_RGBA_MSG}.make_blue)
+				vleave_pub.set_duration (1000)
+				vleave_pub.update_msg (create {POINT_MSG}.make_from_separate (vleave))
+				vleave_pub.publish
+				io.putstring("Vleave x: " + vleave.x.out +  "Vleave y: " + vleave.y.out + "Vleave z: " + vleave.z.out + "%N"
+				+ "Current x: " +o_sig.x.out +"Current y: " + o_sig.y.out +"Current theta: " + o_sig.theta.out + "%N"
+				+ "Driving at vx: " + controller_params.vx.out + "  vtheta: " +vtheta.out + "%N"
+				+ "Heading error: " + heading_error.out + "%N"
+				+ "PID time step diff: " + (pid_controller.cur_time-pid_controller.prev_time).out + "%N"
+				+ "PID integral error: " + pid_controller.acc_error.out  + "%N"
+				)
+			end
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
 
 				state_sig.set_is_transiting
 				drive.set_velocity (controller_params.vx, vtheta)
 			end
+
+
 
 			debug ("STATE")
 				io.put_string ("Current state: TRANSIT%N")
@@ -294,6 +313,12 @@ feature {NONE}
 			direction := -y_diff*x_heading+x_diff*y_heading
 
 			theta_out := (x_diff*x_heading+y_diff*y_heading)
+
+			if direction.abs = 0 then
+				direction := 1
+				-- This handles the case when the error is exactly zero.
+			end
+
 			Result := arc_cosine(theta_out)*-direction/(direction.abs)
 		end
 
@@ -320,11 +345,11 @@ feature
 	algorithm_parser: PARSER[TANGENT_BUG_PARAMETERS]
 		-- Parser for A star search algorithm parameters.
 
-	-- Publishers for debug use
-	vleave_pub : POINT_MSG_PUBLISHER
-				-- The vleave point when transiting
+
 	cur_goal_pub: POINT_MSG_PUBLISHER
 				-- The current goal in go state
 	search_vleave_pub : POINT_MSG_PUBLISHER
-				-- The vleave point when searching
+				-- The current searched vleave point to go to
+	vleave_pub : POINT_MSG_PUBLISHER
+				-- The vleave point transiting to
 end -- class
