@@ -40,7 +40,6 @@ feature -- Access
 
 	update_error (current_error, current_time: REAL_64)
 			-- Update prev_error, cur_error and acc_error accordingly.
-
 		do
 			prev_time := cur_time
 			cur_time := current_time

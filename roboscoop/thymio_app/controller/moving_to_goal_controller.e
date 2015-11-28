@@ -239,6 +239,13 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 			else
 				heading_error := get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)
+
+				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
+
+				state_sig.set_is_transiting
+				drive.set_velocity (controller_params.vx, vtheta)
+			end
+
 			debug ("PUBLISH_V_LEAVE")
 			-- Publishers for debug use
 				vleave_pub.set_color (create {COLOR_RGBA_MSG}.make_blue)
@@ -253,13 +260,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				+ "PID integral error: " + pid_controller.acc_error.out  + "%N"
 				)
 			end
-				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
-
-				state_sig.set_is_transiting
-				drive.set_velocity (controller_params.vx, vtheta)
-			end
-
-
 
 			debug ("STATE")
 				io.put_string ("Current state: TRANSIT%N")
@@ -314,12 +314,13 @@ feature {NONE}
 
 			theta_out := (x_diff*x_heading+y_diff*y_heading)
 
-			if direction.abs = 0 then
-				direction := 1
+			if (arc_cosine(theta_out)*-direction/(direction.abs)).is_nan then
+				Result := arc_cosine(1.0)
 				-- This handles the case when the error is exactly zero.
+			else
+				-- This is the case when the error is not zero
+				Result := arc_cosine(theta_out)*-direction/(direction.abs)
 			end
-
-			Result := arc_cosine(theta_out)*-direction/(direction.abs)
 		end
 
 feature
