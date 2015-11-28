@@ -19,7 +19,7 @@ feature {NONE}
 		do
 			point_color := create {COLOR_RGBA_MSG}.make_red
 				-- Color of the point displayed
-			size := create {VECTOR_3D_MSG}.make_empty
+			size := create {VECTOR_3D_MSG}.make_with_values (0.02, 0.02, 0.02)
 				-- Size of the point displayed
 			message_2_send := create {MARKER_MSG}.make_empty
 				-- Initialize the message to send
@@ -41,7 +41,7 @@ feature	-- Access
 									create {QUATERNION_MSG}.make_empty),
 								size,
 								point_color,"","",
-		 						1, 1 ,1 , life_time)
+		 						1, 1 ,0 , life_time)
 	end
 
 	set_color(color : COLOR_RGBA_MSG)

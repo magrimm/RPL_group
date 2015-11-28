@@ -5,6 +5,9 @@
 		<option debug="true">
 			<debug name="__unnamed_debug__" enabled="true"/>
 			<debug name="debug_info" enabled="true"/>
+			<debug name="pub_cur_goal_point" enabled="true"/>
+			<debug name="pub_look_for_v_leave" enabled="true"/>
+			<debug name="publish_v_leave" enabled="true"/>
 			<debug name="state" enabled="true"/>
 		</option>
 		<setting name="concurrency" value="scoop"/>
