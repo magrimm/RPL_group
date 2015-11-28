@@ -37,6 +37,10 @@ feature {NONE} -- Initialization
 			robot_parser.parse_file (robot_file_name, robot_params)
 
 			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
+
+			create vleave_pub.make_with_attributes ("vleave_current")
+			create cur_goal_pub.make_with_attributes ("cur_goal")
+			create search_vleave_pub.make_with_attributes ("Vleave_Point")
 		end
 
 feature {MOVING_TO_GOAL_BEHAVIOR} -- Control	
@@ -50,7 +54,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		local
 			vtheta, heading_error: REAL_64
 			cur_goal_point, robot_point: POINT_MSG
-			point_pub: POINT_MSG_PUBLISHER
+
 		do
 			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
 
@@ -81,9 +85,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 				debug ("PUB_CUR_GOAL_POINT")
 					-- Publish cur_goal_point.
-					create point_pub.make_with_attributes ("cur_goal")
-					point_pub.update_msg (cur_goal_point)
-					point_pub.publish
+
+					cur_goal_pub.update_msg (cur_goal_point)
+					cur_goal_pub.publish
 				end
 
 				-- Calculate angular velocity.
@@ -140,7 +144,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			vleave_point: separate POINT_MSG
 			cur_distance, vleave_d_min, sensor_max_range_d_min: REAL_64
 			i: INTEGER
-			point_pub : POINT_MSG_PUBLISHER
+
 		do
 			vleave_d_min := {REAL_64}.positive_infinity
 			create goal_point.make_from_separate (m_sig.goal_point)
@@ -185,12 +189,12 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				m_sig.set_is_v_leave_found (True)
 
 				debug ("PUB_LOOK_FOR_V_LEAVE")
-					create point_pub.make_with_attributes ("Vleave_Point")
-					point_pub.set_color (create{COLOR_RGBA_MSG}.make_black)
-					point_pub.set_duration (10000)
 
-					point_pub.update_msg (create{POINT_MSG}.make_from_separate (vleave_point))
-					point_pub.publish
+					search_vleave_pub.set_color (create{COLOR_RGBA_MSG}.make_black)
+					search_vleave_pub.set_duration (10000)
+
+					search_vleave_pub.update_msg (create{POINT_MSG}.make_from_separate (vleave_point))
+					search_vleave_pub.publish
 				end
 			end
 
@@ -208,7 +212,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		local
 			heading_error, vtheta: REAL_64
 			vleave, robot_point: POINT_MSG
-			vleave_pub : POINT_MSG_PUBLISHER
+
 		do
 			create vleave.make_from_separate (m_sig.v_leave)
 			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
@@ -217,7 +221,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				drive.stop
 
 				debug ("PUBLISH_V_LEAVE")
-					create vleave_pub.make_with_attributes ("vleave_current")
+
 					vleave_pub.set_color (create {COLOR_RGBA_MSG}.make_black)
 					vleave_pub.set_duration (1000)
 					vleave_pub.update_msg (create {POINT_MSG}.make_from_separate (vleave))
@@ -316,4 +320,11 @@ feature
 	algorithm_parser: PARSER[TANGENT_BUG_PARAMETERS]
 		-- Parser for A star search algorithm parameters.
 
+	-- Publishers for debug use
+	vleave_pub : POINT_MSG_PUBLISHER
+				-- The vleave point when transiting
+	cur_goal_pub: POINT_MSG_PUBLISHER
+				-- The current goal in go state
+	search_vleave_pub : POINT_MSG_PUBLISHER
+				-- The vleave point when searching
 end -- class
