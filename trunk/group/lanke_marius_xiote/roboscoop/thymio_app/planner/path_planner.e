@@ -29,10 +29,14 @@ feature {NONE} -- Initialization
 			start_node := convert_coord_to_node (params.start_x, params.start_y, 0)
 			goal_node := convert_coord_to_node (params.goal_x, params.goal_y, 0)
 
+			create destinations.make_filled (create {POINT_MSG}.make_empty, 1, 4)
+			destinations.put(create {POINT_MSG}.make_with_values(0.5, 0.5, 0), 1)
+			destinations.put(create {POINT_MSG}.make_with_values(1.5, 0.5, 0), 2)
+			destinations.put(create {POINT_MSG}.make_with_values(1.5, 1.5, 0), 3)
+			destinations.put(create {POINT_MSG}.make_with_values(0.5, 1.5, 0), 4)
+
 			search_strategy := s_strategy
-				-- Declare how the graph should be search, with what algorithm?
 			create planned_path.make
-				-- Object to hold the path planned
 		end
 
 feature -- Access
@@ -47,6 +51,11 @@ feature -- Access
 			k := convert_z_coord_to_z_index (occupancy_grid_signaler, z)
 
 			Result := grid_graph.node_at (i, j, k)
+		end
+
+	convert_pt_to_node (p: POINT_MSG) : SPATIAL_GRAPH_NODE
+		do
+			Result := convert_coord_to_node(p.x, p.y, p.z)
 		end
 
 	get_cur_goal : POINT_MSG
@@ -92,9 +101,20 @@ feature -- Access
 
 	search_path
 			-- Search path.
+		local
+			i : INTEGER
+			path : LINKED_LIST [POINT_MSG]
 		do
-			planned_path := search_strategy.search_path (grid_graph, start_node, goal_node)
-				-- Use prescribed strategy to search for a path
+			from
+				i := destinations.lower
+			until
+				i >= destinations.upper
+			loop
+				path := search_strategy.search_path (grid_graph, convert_pt_to_node(destinations[i]), convert_pt_to_node(destinations[i + 1]))
+				planned_path.append (path)
+				i := i + 1
+			end
+
 			path_publisher.update_msg (planned_path)
 				-- Update the publisher with a path, if found
 			path_publisher.publish
@@ -114,6 +134,9 @@ feature {NONE}
 
 	planned_path : LINKED_LIST [POINT_MSG]
 			-- Planned path.
+
+	destinations : ARRAY [POINT_MSG]
+			-- List of positions need to be visited.
 
 	start_node, goal_node : SPATIAL_GRAPH_NODE
 			-- Graph nodes of the start position and the goal position
