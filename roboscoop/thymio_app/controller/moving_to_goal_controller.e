@@ -157,10 +157,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 			cur_distance := euclidean_distance (goal_point, robot_point)
 
-			if cur_distance < m_sig.d_min then
-				-- Update d_min.
-				m_sig.set_d_min (cur_distance)
-			end
+--			if cur_distance < m_sig.d_min then
+--				-- Update d_min.
+--				m_sig.set_d_min (cur_distance)
+--			end
 
 			from
 				i := r_sens.sensors.lower
@@ -179,7 +179,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 					 if (sensor_max_range_d_min < vleave_d_min) and
 					 	(sensor_max_range_d_min < m_sig.d_min) then
-
+						m_sig.set_d_min (sensor_max_range_d_min)
 					 	vleave_d_min := sensor_max_range_d_min
 					 	vleave_point := sensor_max_range_abs_point
 					 end
