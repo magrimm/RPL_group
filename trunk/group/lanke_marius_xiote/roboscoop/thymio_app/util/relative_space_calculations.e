@@ -47,6 +47,16 @@ feature -- Access
 			Result := atan2 (v_theta_y, v_theta_x)
 		end
 
+	transform_coordinates_with_startpoint_offset (start_point, point: POINT_MSG): POINT_MSG
+		local
+			transformed_point: POINT_MSG
+		do
+			create transformed_point.make_with_values (point.x-start_point.x,
+													   point.y-start_point.y,
+													   point.z-start_point.z)
+			Result := transformed_point
+		end
+
 	get_heading_vector(p1,p2 : POINT_MSG) : POINT_MSG
 			-- Generate a difference vector heading from p1 to p2 in the form of a point msg from two point msgs.
 		do
