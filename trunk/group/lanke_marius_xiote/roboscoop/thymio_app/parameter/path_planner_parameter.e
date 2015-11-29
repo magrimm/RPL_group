@@ -24,6 +24,15 @@ feature  -- Initialization
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_x()), "goal_x")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_y()), "goal_y")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_z()), "goal_z")
+
+			variable_name_setter_map.put (agent convert_set_INT64(? , agent set_number_of_destinations()), "number_of_destinations")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint1_x()), "viapoint1_x")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint1_y()), "viapoint1_y")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint1_z()), "viapoint1_z")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint2_x()), "viapoint2_x")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint2_y()), "viapoint2_y")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint2_z()), "viapoint2_z")
+
 			variable_name_setter_map.put (agent set_connectivity(), "GRID_CONNECTIVITY_STRATEGY")
 			variable_name_setter_map.put (agent set_four_connect(), "FOUR_CONNECTIVITY_STRATEGY")
 			variable_name_setter_map.put (agent set_eight_connect(), "EIGHT_CONNECTIVITY_STRATEGY")
@@ -119,6 +128,61 @@ feature -- Access
 	set_goal_z (a_val: REAL_64)
 		do
 			goal_z := a_val
+		end
+
+	number_of_destinations : INTEGER_32
+
+	set_number_of_destinations (a_val: INTEGER_32)
+		do
+			number_of_destinations := a_val
+		end
+
+	viapoint1_x : REAL_64
+		-- x coordinate of goal position.
+
+	set_viapoint1_x (a_val: REAL_64)
+		do
+			viapoint1_x := a_val
+		end
+
+	viapoint1_y : REAL_64
+		-- y coordinate of goal position.
+
+	set_viapoint1_y (a_val: REAL_64)
+		do
+			viapoint1_y := a_val
+		end
+
+	viapoint1_z : REAL_64
+		-- z coordinate of goal position.
+
+	set_viapoint1_z (a_val: REAL_64)
+		do
+			viapoint1_z := a_val
+		end
+
+	viapoint2_x : REAL_64
+		-- x coordinate of goal position.
+
+	set_viapoint2_x (a_val: REAL_64)
+		do
+			viapoint2_x := a_val
+		end
+
+	viapoint2_y : REAL_64
+		-- y coordinate of goal position.
+
+	set_viapoint2_y (a_val: REAL_64)
+		do
+			viapoint2_y := a_val
+		end
+
+	viapoint2_z : REAL_64
+		-- z coordinate of goal position.
+
+	set_viapoint2_z (a_val: REAL_64)
+		do
+			viapoint2_z := a_val
 		end
 
 	jump_in_number_of_nodes: INTEGER
