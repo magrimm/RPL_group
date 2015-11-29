@@ -21,7 +21,6 @@ feature {NONE} -- Initialization
 			robot_file_name: STRING
 		do
 			stop_signaler := s_sig
-			cont_params := controller_params
 
 			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
 		end
@@ -73,7 +72,11 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				end
 
 				-- Calculate angular velocity.
-				heading_error := get_heading_error (o_sig.x, o_sig.y, o_sig.theta, cur_goal_point.x, cur_goal_point.y)
+				heading_error := get_heading_error (o_sig.x + path_planner.get_start.x,
+													o_sig.y + path_planner.get_start.y,
+													o_sig.theta,
+													cur_goal_point.x,
+													cur_goal_point.y)
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
 
 				state_sig.set_is_go
@@ -303,7 +306,5 @@ feature
 
 	pid_controller: PID_CONTROLLER
 		-- Pid controller.
-
-	cont_params: separate CONTROLLER_PARAMETERS
 
 end -- class
