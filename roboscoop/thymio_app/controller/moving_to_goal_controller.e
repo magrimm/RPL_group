@@ -37,8 +37,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		local
 			vtheta, heading_error: REAL_64
 			cur_goal_point, robot_point: POINT_MSG
-
-
 		do
 			create robot_point.make_with_values (o_sig.x + path_planner.get_start.x,
 												 o_sig.y + path_planner.get_start.y,
@@ -135,7 +133,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		do
 			vleave_d_min := {REAL_64}.positive_infinity
 			create goal_point.make_from_separate (path_planner.get_final_goal)
-			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
+			create robot_point.make_with_values (o_sig.x + path_planner.get_start.x,
+												 o_sig.y + path_planner.get_start.y,
+												 0.0)
 			create vleave_point.make_empty
 
 			cur_distance := euclidean_distance (goal_point, robot_point)
@@ -195,7 +195,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 	transit_to_vleave (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
 						o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 						drive: separate DIFFERENTIAL_DRIVE; vleave_pub: separate POINT_MSG_PUBLISHER;
-						algorithm_params: separate TANGENT_BUG_PARAMETERS)
+						path_planner: separate PATH_PLANNER; algorithm_params: separate TANGENT_BUG_PARAMETERS)
 			-- Transit to v_leave if found
 		require
 			(m_sig.is_v_leave_found or state_sig.is_transiting) or s_sig.is_stop_requested
@@ -205,7 +205,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 		do
 			create vleave.make_from_separate (m_sig.v_leave)
-			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
+			create robot_point.make_with_values (o_sig.x + path_planner.get_start.x,
+												 o_sig.y + path_planner.get_start.y,
+												 o_sig.z + path_planner.get_start.z)
 
 			if s_sig.is_stop_requested then
 				drive.stop
@@ -213,11 +215,14 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			elseif euclidean_distance (vleave, robot_point) < algorithm_params.vleave_reached_distance_threshold then
 				-- Exit transition state when vleave point reached.
 				state_sig.set_is_go
+				path_planner.move_to_next_goal
 				m_sig.set_is_v_leave_found (False)
 				m_sig.set_need_to_reset_cur_goal (True)
 
 			else
-				heading_error := get_heading_error (o_sig.x, o_sig.y, o_sig.theta, vleave.x, vleave.y)
+				heading_error := get_heading_error (o_sig.x + path_planner.get_start.x,
+													o_sig.y + path_planner.get_start.y,
+													o_sig.theta, vleave.x, vleave.y)
 
 				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
 
@@ -232,7 +237,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				vleave_pub.update_msg (vleave)
 				vleave_pub.publish
 				io.putstring("Vleave x: " + vleave.x.out +  "Vleave y: " + vleave.y.out + "Vleave z: " + vleave.z.out + "%N"
-				+ "Current x: " +o_sig.x.out +"Current y: " + o_sig.y.out +"Current theta: " + o_sig.theta.out + "%N"
+				+ "Current x: " +(o_sig.x + path_planner.get_start.x).out +"Current y: " + (o_sig.y + path_planner.get_start.y).out +"Current theta: " + o_sig.theta.out + "%N"
 				+ "Driving at vx: " + algorithm_params.transit_vx.out + "  vtheta: " +vtheta.out + "%N"
 				+ "Heading error: " + heading_error.out + "%N"
 				+ "PID time step diff: " + (pid_controller.cur_time-pid_controller.prev_time).out + "%N"
@@ -254,7 +259,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		local
 			robot_point, goal_point: POINT_MSG
 		do
-			create robot_point.make_with_values (o_sig.x, o_sig.y, 0.0)
+			create robot_point.make_with_values (o_sig.x + path_planner.get_start.x,
+												 o_sig.y + path_planner.get_start.y,
+												 o_sig.z + path_planner.get_start.z)
 			create goal_point.make_from_separate (path_planner.get_final_goal)
 
 			if s_sig.is_stop_requested then
