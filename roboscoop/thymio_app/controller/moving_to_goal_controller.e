@@ -112,7 +112,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 					r_sens_wrapper: separate RANGE_GROUP_WRAPPER)
 				-- Turn and follow the boundary of the obstacle being detected.
 		require
-			((state_sig.is_go or state_sig.is_transiting)and
+			((state_sig.is_go) and
 			r_sens.is_obstacle) or
 			state_sig.is_wall_following or
 			s_sig.is_stop_requested
