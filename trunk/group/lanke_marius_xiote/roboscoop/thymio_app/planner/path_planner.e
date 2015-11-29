@@ -24,10 +24,16 @@ feature {NONE} -- Initialization
 			create path_publisher.make_with_attributes ({MAP_TOPICS}.path)
 				-- Create the path publisher object
 
-			grid_graph := make_grid_graph (occupancy_grid_signaler, c_strategy, params.inflate_radius)
+			grid_graph := make_grid_graph (occupancy_grid_signaler,
+										   c_strategy,
+										   params.inflate_radius)
 				-- Set the grid graph with given constraints and connectivities
-			start_node := convert_coord_to_node (params.start_x, params.start_y, 0)
-			goal_node := convert_coord_to_node (params.goal_x, params.goal_y, 0)
+			start_node := convert_coord_to_node (params.start_x,
+			 									 params.start_y,
+			 									 params.start_z)
+			goal_node := convert_coord_to_node (params.goal_x,
+												params.goal_y,
+												params.goal_z)
 
 			create destinations.make_filled (create {POINT_MSG}.make_empty, 1, path_params.number_of_destinations)
 			destinations.put(create {POINT_MSG}.make_with_values(path_params.start_x,
