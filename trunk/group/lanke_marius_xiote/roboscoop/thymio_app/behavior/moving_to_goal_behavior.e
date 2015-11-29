@@ -153,6 +153,7 @@ feature {NONE} -- Implementation
 											stop_sig,
 											diff_drive,
 											vleave_pub,
+											path_planner,
 											algorithm_params))
 
 			e.repeat_until_stop_requested (
