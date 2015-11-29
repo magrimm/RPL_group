@@ -51,9 +51,9 @@ feature -- Access
 		local
 			transformed_point: POINT_MSG
 		do
-			create transformed_point.make_with_values (point.x-start_point.x,
-													   point.y-start_point.y,
-													   point.z-start_point.z)
+			create transformed_point.make_with_values (point.x+start_point.x,
+													   point.y+start_point.y,
+													   point.z+start_point.z)
 			Result := transformed_point
 		end
 
