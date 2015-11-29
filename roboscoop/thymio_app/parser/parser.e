@@ -19,9 +19,14 @@ feature -- Access
 				-- The setter procedure							
 			string_tokens: LIST[STRING]
 				-- Current strings streamed	
+			is_set_map : HASH_TABLE[BOOLEAN,STRING]
+
+			exception_handler : EXCEPTIONS
 
 		do
 			create input_file.make_open_read (create {STRING}.make_from_separate (filename))
+			create is_set_map.make (1)
+			create exception_handler.default_create
 
 			if not input_file.access_exists then
 				io.putstring ("ERROR: Cannot open file " + create {STRING}.make_from_separate (filename) + "%N")
@@ -35,6 +40,10 @@ feature -- Access
 				string_tokens := input_file.last_string.split (':')
 					-- Separate variable name from given value		
 
+				across params.variable_name_setter_map as  eht loop
+					is_set_map.put(false,eht.key)
+				end
+
 				across params.variable_name_setter_map as eht loop
 					-- Loop through current parameter class's variable names			
 						string_tokens.at (1).adjust
@@ -46,11 +55,12 @@ feature -- Access
 							-- Check if procedure was properly set						
 							string_tokens.at (2).adjust
 							run_it.call (string_tokens.at (2))
+							is_set_map.replace (true, eht.key)
 
 							debug
 								-- Set the parameter with its correponding value	
-								io.put_string ("Scanning parameter : " +
-								string_tokens.at (1) + " = " + string_tokens.at (2) + "%N" )
+--								io.put_string ("Scanning parameter : " +
+--								string_tokens.at (1) + " = " + string_tokens.at (2) + "%N" )
 							end
 						end
 					end
@@ -59,6 +69,14 @@ feature -- Access
 				input_file.read_line
 				-- Increment one line											
 			end
+
+			across is_set_map as eht loop
+				if eht.item = false then
+					io.putstring ("In file " + create {STRING}.make_from_separate (filename) + " " + eht.key + " is not set%N")
+--					exception_handler.die(0)
+				end
+			end
+
 			input_file.close
 		end
 
