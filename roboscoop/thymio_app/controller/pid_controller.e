@@ -16,7 +16,6 @@ feature {NONE} -- Initialization
 			k_p := k_proportional
 			k_i := k_integral
 			k_d := k_derivative
-
 		end
 
 feature -- Access

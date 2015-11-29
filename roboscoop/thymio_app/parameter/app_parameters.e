@@ -21,15 +21,15 @@ feature  -- Initialization
 			APP_NAME := "NULL"
 			ROBOT_FILE_NAME := "NULL"
 			ROBOT_NAME := "NULL"
-			BEHAVIOR_FILE_NAME := "NULL"
-			BEHAVIOR_NAME := "NULL"
+			ALGORITHM_FILE_NAME := "NULL"
+			ALGORITHM_NAME := "NULL"
 			PATH_PLANNER_FILE_NAME := "NULL"
 
 			variable_name_setter_map.put(agent set_app_name() , "APP_NAME")
 			variable_name_setter_map.put(agent set_robot_name() , "ROBOT_NAME")
 			variable_name_setter_map.put(agent set_robot_filename() , "ROBOT_FILE_NAME")
-			variable_name_setter_map.put(agent set_behavior_name() , "BEHAVIOR_NAME")
-			variable_name_setter_map.put(agent set_behavior_filename() , "BEHAVIOR_FILE_NAME")
+			variable_name_setter_map.put(agent set_algorithm_name() , "ALGORITHM_NAME")
+			variable_name_setter_map.put(agent set_algorithm_filename() , "ALGORITHM_FILE_NAME")
 			variable_name_setter_map.put(agent set_path_planner_file_name() , "PATH_PLANNER_FILE_NAME")
 		end
 
@@ -44,10 +44,10 @@ feature	 -- Access
 	ROBOT_NAME : STRING
 		-- Name of the robot.
 
-	BEHAVIOR_FILE_NAME : STRING
+	ALGORITHM_FILE_NAME : STRING
 		-- File names of the parameters to be parsed 			
 
-	BEHAVIOR_NAME : STRING
+	ALGORITHM_NAME : STRING
 		-- Name fo the behavior.
 
 	PATH_PLANNER_FILE_NAME : STRING
@@ -71,16 +71,16 @@ feature	 -- Access
 			ROBOT_NAME := robot
 		end
 
-	set_behavior_filename (file : STRING)
+	set_algorithm_filename (file : STRING)
 
 		do
-			BEHAVIOR_FILE_NAME := file
+			ALGORITHM_FILE_NAME := file
 		end
 
-	set_behavior_name (behavior : STRING)
+	set_algorithm_name (algorithm : STRING)
 
 		do
-			BEHAVIOR_NAME := behavior
+			ALGORITHM_NAME := algorithm
 		end
 
 	set_path_planner_file_name (file : STRING)

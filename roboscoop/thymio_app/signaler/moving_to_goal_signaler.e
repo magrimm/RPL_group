@@ -10,9 +10,8 @@ create
 
 feature {NONE} -- Initialization
 
-	make (goal_x, goal_y : REAL_64)
+	make
 		do
-			create goal_point.make_with_values (goal_x, goal_y, 0.0)
 			create v_leave.make_empty
 
 			d_min := {REAL_64}.positive_infinity
@@ -23,17 +22,11 @@ feature -- Access
 	is_v_leave_found: BOOLEAN
 			-- Is v_leave found yet?
 
-	is_path_planned: BOOLEAN
-			-- Is path planned yet?
-
 	need_to_reset_cur_goal: BOOLEAN
 			-- Do we need to reset cur_goal?
 
 	d_min: REAL_64
 			-- Minimum distance between robot and the goal so far.
-
-	goal_point: POINT_MSG
-			-- goal position.
 
 	timestamp_obstacle_last_seen: REAL_64
 			-- timestamp when obstacle was last seen.
@@ -45,12 +38,6 @@ feature -- Access
 			-- Set is_v_leave_found value to a_val
 		do
 			is_v_leave_found := a_val
-		end
-
-	set_is_path_planned (a_val: BOOLEAN)
-			-- Set is_path_planned value to a_val
-		do
-			is_path_planned := a_val
 		end
 
 	set_need_to_reset_cur_goal (a_val: BOOLEAN)

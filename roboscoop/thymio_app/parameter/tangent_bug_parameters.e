@@ -18,14 +18,12 @@ feature  -- Initialization
 			ALGORITHM_NAME := "NULL"
 			CONTROLLER_NAME := "NULL"
 			CONTROLLER_FILE_NAME := "NULL"
-			VLEAVE_CONTROLLER_FILE_NAME := "NULL"
 
 			create variable_name_setter_map.make(12)
 
 			variable_name_setter_map.put(agent set_algorithm_name() , "ALGORITHM_NAME")
 			variable_name_setter_map.put(agent set_controller_name() , "CONTROLLER_NAME")
 			variable_name_setter_map.put(agent set_controller_filename() , "CONTROLLER_FILE_NAME")
-			variable_name_setter_map.put(agent set_vleave_controller_file_name() , "VLEAVE_TRANSIT_CONTROLLER_FILE_NAME")
 
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_desired_wall_distance()), "desired_wall_distance")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_unreachable_distance_threshold()), "goal_unreachable_distance_threshold")
@@ -35,9 +33,10 @@ feature  -- Initialization
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_obstacle_vanished_time_threshold()), "obstacle_vanished_time_threshold")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_angle_looped_around_threshold()), "angle_looped_around_threshold")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_move_to_next_goal_threshold()), "move_to_next_goal_threshold")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_x()), "goal_x")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_y()), "goal_y")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_vx()), "vx")
+
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_go_vx()), "go_vx")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_follow_wall_vx()), "follow_wall_vx")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_transit_vx()), "transit_vx")
 		end
 
 
@@ -46,11 +45,11 @@ feature -- Access
 
 	ALGORITHM_NAME : STRING
 	CONTROLLER_NAME : STRING
-	CONTROLLER_FILE_NAME,VLEAVE_CONTROLLER_FILE_NAME : STRING
+	CONTROLLER_FILE_NAME: STRING
 
-	goal_x: REAL_64
-	goal_y: REAL_64
-	vx: REAL_64
+	go_vx: REAL_64
+	follow_wall_vx: REAL_64
+	transit_vx: REAL_64
 	desired_wall_distance: REAL_64
 	goal_unreachable_distance_threshold: REAL_64
 	angle_looped_around_threshold_unreachable: REAL_64
@@ -76,17 +75,10 @@ feature -- Access
 			CONTROLLER_FILE_NAME := file
 		end
 
-	set_vleave_controller_file_name (file : STRING)
-
-		do
-			VLEAVE_CONTROLLER_FILE_NAME := file
-		end
-
 	set_desired_wall_distance (a_val: REAL_64)
 		do
 			desired_wall_distance := a_val
 		end
-
 
 	set_obstacle_vanished_time_threshold (a_val: REAL_64)
 		do
@@ -123,19 +115,19 @@ feature -- Access
 			goal_unreachable_distance_threshold := a_val
 		end
 
-	set_goal_x (a_val: REAL_64)
+	set_go_vx (a_val: REAL_64)
 		do
-			goal_x := a_val
+			go_vx := a_val
 		end
 
-	set_goal_y (a_val: REAL_64)
+	set_follow_wall_vx (a_val: REAL_64)
 		do
-			goal_y := a_val
+			follow_wall_vx := a_val
 		end
 
-	set_vx (a_val: REAL_64)
+	set_transit_vx (a_val: REAL_64)
 		do
-			vx := a_val
+			transit_vx := a_val
 		end
 
 end -- class

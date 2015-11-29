@@ -17,7 +17,11 @@ feature {NONE} -- Initialization
 		local
 			i: INTEGER
 		do
-			create sensor_distances.make (1, robot_params.total_number_of_sensors)
+			total_number_of_sensors := robot_params.total_number_of_sensors
+			number_of_front_sensors := robot_params.number_of_front_sensors
+			number_of_back_sensors := robot_params.number_of_back_sensors
+
+			create sensor_distances.make (1, total_number_of_sensors)
 			from
 				i := 1
 			until
@@ -29,13 +33,13 @@ feature {NONE} -- Initialization
 
 			from
 			until
-				i > robot_params.total_number_of_sensors
+				i > total_number_of_sensors
 			loop
 				sensor_distances.put (robot_params.back_sensor_distance, i)
 				i := i + 1
 			end
 
-			create sensor_angles.make (1, robot_params.total_number_of_sensors)
+			create sensor_angles.make (1, total_number_of_sensors)
 			sensor_angles.put (robot_params.sensor_angle_front_1, 1)
 			sensor_angles.put (robot_params.sensor_angle_front_2, 2)
 			sensor_angles.put (robot_params.sensor_angle_front_3, 3)

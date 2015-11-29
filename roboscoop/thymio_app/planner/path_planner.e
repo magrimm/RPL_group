@@ -41,21 +41,9 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	convert_coord_to_node (x, y, z: REAL_64) : SPATIAL_GRAPH_NODE
-			-- Find graph node that corresponds to the given x, y, z coordinate.
-		local
-			i, j, k : INTEGER_32
+	get_final_goal : POINT_MSG
 		do
-			i := convert_x_coord_to_x_index (occupancy_grid_signaler, x)
-			j := convert_y_coord_to_y_index (occupancy_grid_signaler, y)
-			k := convert_z_coord_to_z_index (occupancy_grid_signaler, z)
-
-			Result := grid_graph.node_at (i, j, k)
-		end
-
-	convert_pt_to_node (p: POINT_MSG) : SPATIAL_GRAPH_NODE
-		do
-			Result := convert_coord_to_node(p.x, p.y, p.z)
+			Result := destinations [destinations.count]
 		end
 
 	get_cur_goal : POINT_MSG
@@ -119,6 +107,25 @@ feature -- Access
 				-- Update the publisher with a path, if found
 			path_publisher.publish
 				-- Publish with the new values
+		end
+
+feature {NONE} -- Implementation
+
+	convert_coord_to_node (x, y, z: REAL_64) : SPATIAL_GRAPH_NODE
+			-- Find graph node that corresponds to the given x, y, z coordinate.
+		local
+			i, j, k : INTEGER_32
+		do
+			i := convert_x_coord_to_x_index (occupancy_grid_signaler, x)
+			j := convert_y_coord_to_y_index (occupancy_grid_signaler, y)
+			k := convert_z_coord_to_z_index (occupancy_grid_signaler, z)
+
+			Result := grid_graph.node_at (i, j, k)
+		end
+
+	convert_pt_to_node (p: POINT_MSG) : SPATIAL_GRAPH_NODE
+		do
+			Result := convert_coord_to_node(p.x, p.y, p.z)
 		end
 
 feature {NONE}
