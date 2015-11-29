@@ -135,7 +135,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			create goal_point.make_from_separate (path_planner.get_final_goal)
 			create robot_point.make_with_values (o_sig.x + path_planner.get_start.x,
 												 o_sig.y + path_planner.get_start.y,
-												 0.0)
+												 o_sig.z + path_planner.get_start.z)
 			create vleave_point.make_empty
 
 			cur_distance := euclidean_distance (goal_point, robot_point)
