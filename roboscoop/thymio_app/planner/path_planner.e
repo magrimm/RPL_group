@@ -35,19 +35,20 @@ feature {NONE} -- Initialization
 												params.goal_y,
 												params.goal_z)
 
-			create destinations.make_filled (create {POINT_MSG}.make_empty, 1, path_params.number_of_destinations)
-			destinations.put(create {POINT_MSG}.make_with_values(path_params.start_x,
-															     path_params.start_y,
-															     path_params.start_z), 1)
-			destinations.put(create {POINT_MSG}.make_with_values(path_params.goal_x,
-																 path_params.goal_y,
-																 path_params.goal_z), path_params.number_of_destinations)
-			destinations.put(create {POINT_MSG}.make_with_values(path_params.viapoint1_x,
-																 path_params.viapoint1_y,
-																 path_params.viapoint1_z), 2)
-			destinations.put(create {POINT_MSG}.make_with_values(path_params.viapoint2_x,
-																 path_params.viapoint2_y,
-																 path_params.viapoint2_z), 3)
+			create destinations.make_filled (create {POINT_MSG}.make_empty, 1, params.number_of_destinations)
+			destinations.put(create {POINT_MSG}.make_with_values(params.start_x,
+															     params.start_y,
+															     params.start_z), 1)
+			destinations.put(create {POINT_MSG}.make_with_values(params.goal_x,
+																 params.goal_y,
+																 params.goal_z),
+																 params.number_of_destinations)
+			destinations.put(create {POINT_MSG}.make_with_values(params.viapoint1_x,
+																 params.viapoint1_y,
+																 params.viapoint1_z), 2)
+			destinations.put(create {POINT_MSG}.make_with_values(params.viapoint2_x,
+																 params.viapoint2_y,
+																 params.viapoint2_z), 3)
 
 			search_strategy := s_strategy
 			create planned_path.make
