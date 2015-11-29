@@ -8,7 +8,7 @@ deferred class
 
 feature -- Access
 
-	update_msg(item : G)
+	update_msg(item : separate G)
 		-- Deferred, used to update he generic message type
 		deferred
 		end

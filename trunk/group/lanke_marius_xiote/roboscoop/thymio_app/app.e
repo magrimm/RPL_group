@@ -29,10 +29,9 @@ feature {NONE} -- Initialization
 
 			path_planning_parser: PARSER[PATH_PLANNER_PARAMETER]
 			path_planner_params: PATH_PLANNER_PARAMETER
-			path_planner_param_path: STRING
 
-			behaviour_parser : PARSER[BEHAVIOR_PARAMETERS]
-			behaviour_param : BEHAVIOR_PARAMETERS
+			tangent_bug_parser: PARSER[TANGENT_BUG_PARAMETERS]
+			tangent_bug_params: TANGENT_BUG_PARAMETERS
 
 			conn_strategy: GRID_CONNECTIVITY_STRATEGY
 			heur_cost_strategy: EUCLIDEAN_DISTANCE_HEURISTIC
@@ -59,14 +58,14 @@ feature {NONE} -- Initialization
 			create robot_params.make
 			create path_planning_parser
 			create path_planner_params.make
-			create behaviour_parser
-			create behaviour_param.make
+			create tangent_bug_parser
+			create tangent_bug_params.make
 
 			app_params_path := Arguments.argument (1).to_string_8
 
 			app_parser.parse_file (create {STRING}.make_from_separate (app_params_path), app_params)
 			robot_parser.parse_file(app_params.robot_file_name, robot_params)
-			behaviour_parser.parse_file (app_params.behavior_file_name, behaviour_param)
+			tangent_bug_parser.parse_file (app_params.algorithm_file_name, tangent_bug_params)
 			path_planning_parser.parse_file(app_params.path_planner_file_name, path_planner_params)
 
 			-- Create a robot object.
@@ -79,7 +78,7 @@ feature {NONE} -- Initialization
 			create path_planner.make (path_planner_params.get_connectivity_strategy, search_strategy, path_planner_params)
 
 			-- Initialize behaviors.
-			create moving_to_goal_behavior.make_with_attributes (thymio, path_planner, behaviour_param)
+			create moving_to_goal_behavior.make_with_attributes (thymio, path_planner, tangent_bug_params)
 			create change_feature_behavior.make_with_attributes (thymio)
 
 			-- Launch behaviors.

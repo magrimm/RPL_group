@@ -15,7 +15,7 @@ create
 
 feature {NONE}
 
-	make_with_attributes(tp_name : STRING)
+	make_with_attributes(tp_name : separate STRING)
 		do
 			point_color := create {COLOR_RGBA_MSG}.make_red
 				-- Color of the point displayed
@@ -31,7 +31,7 @@ feature {NONE}
 
 feature	-- Access
 
-	update_msg(position :  POINT_MSG)
+	update_msg(position : separate POINT_MSG)
 		-- Update the message to be sent
 	do
 		message_2_send := create {MARKER_MSG}.make_with_values (
@@ -44,10 +44,10 @@ feature	-- Access
 		 						1, 1 ,0 , life_time)
 	end
 
-	set_color(color : COLOR_RGBA_MSG)
+	set_color(color : separate COLOR_RGBA_MSG)
 		-- Set color of the point displayed
 	do
-		point_color := color
+		create point_color.make_from_separate (color)
 	end
 
 	set_duration(time_length : REAL_64)
@@ -66,9 +66,11 @@ feature {NONE} -- Implementation
 
 	point_color : COLOR_RGBA_MSG
 		-- 	Color of the point
-	life_time   : REAL_64
+
+	life_time : REAL_64
 		-- Duration of the point
-	size        : VECTOR_3D_MSG
+
+	size : VECTOR_3D_MSG
 		-- Size of the point
 
 end -- class

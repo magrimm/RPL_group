@@ -10,6 +10,15 @@ inherit
 
 feature -- Access
 
+	total_number_of_sensors : INTEGER
+			-- Total number of sensors.
+
+	number_of_front_sensors: INTEGER
+			-- Number of front sensors.
+
+	number_of_back_sensors: INTEGER
+			-- Number of back sensors.
+
 	sensor_distances: ARRAY[REAL_64]
 			-- Each sensor's distance to (0, 0).
 
