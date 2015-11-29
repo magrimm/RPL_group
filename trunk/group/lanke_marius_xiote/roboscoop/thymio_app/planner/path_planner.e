@@ -61,6 +61,11 @@ feature -- Access
 			Result := destinations [destinations.count]
 		end
 
+	get_start : POINT_MSG
+		do
+			Result := destinations [1]
+		end
+
 	get_cur_goal : POINT_MSG
 			-- Find the current position to go to, given a path in a list of points format
 			-- TODO: consider adding contract here
