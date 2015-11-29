@@ -29,11 +29,19 @@ feature {NONE} -- Initialization
 			start_node := convert_coord_to_node (params.start_x, params.start_y, 0)
 			goal_node := convert_coord_to_node (params.goal_x, params.goal_y, 0)
 
-			create destinations.make_filled (create {POINT_MSG}.make_empty, 1, 4)
-			destinations.put(create {POINT_MSG}.make_with_values(0.5, 0.5, 0), 1)
-			destinations.put(create {POINT_MSG}.make_with_values(1.5, 0.5, 0), 2)
-			destinations.put(create {POINT_MSG}.make_with_values(1.5, 1.5, 0), 3)
-			destinations.put(create {POINT_MSG}.make_with_values(0.5, 1.5, 0), 4)
+			create destinations.make_filled (create {POINT_MSG}.make_empty, 1, path_params.number_of_destinations)
+			destinations.put(create {POINT_MSG}.make_with_values(path_params.start_x,
+															     path_params.start_y,
+															     path_params.start_z), 1)
+			destinations.put(create {POINT_MSG}.make_with_values(path_params.goal_x,
+																 path_params.goal_y,
+																 path_params.goal_z), path_params.number_of_destinations)
+			destinations.put(create {POINT_MSG}.make_with_values(path_params.viapoint1_x,
+																 path_params.viapoint1_y,
+																 path_params.viapoint1_z), 2)
+			destinations.put(create {POINT_MSG}.make_with_values(path_params.viapoint2_x,
+																 path_params.viapoint2_y,
+																 path_params.viapoint2_z), 3)
 
 			search_strategy := s_strategy
 			create planned_path.make
