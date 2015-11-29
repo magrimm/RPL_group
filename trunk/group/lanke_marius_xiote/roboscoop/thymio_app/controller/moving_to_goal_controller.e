@@ -21,6 +21,7 @@ feature {NONE} -- Initialization
 			robot_file_name: STRING
 		do
 			stop_signaler := s_sig
+			cont_params := controller_params
 
 			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
 		end
@@ -40,7 +41,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 
 		do
-			create robot_point.make_with_values (o_sig.x, o_sig.y, o_sig.z)
+			create robot_point.make_with_values (o_sig.x + path_planner.get_start.x,
+												 o_sig.y + path_planner.get_start.y,
+												 o_sig.z + path_planner.get_start.z)
 
 			if s_sig.is_stop_requested then
 				drive.stop
@@ -300,5 +303,7 @@ feature
 
 	pid_controller: PID_CONTROLLER
 		-- Pid controller.
+
+	cont_params: separate CONTROLLER_PARAMETERS
 
 end -- class
