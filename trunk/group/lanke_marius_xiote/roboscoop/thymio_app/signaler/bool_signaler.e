@@ -1,6 +1,7 @@
 note
-	description: "Summary description for {BOOL_SIGNALER}."
-	author: ""
+	description: "Signaler for communication."
+	author: "Xiaote Zhu"
+	date: "29.11.15"
 
 class
 	BOOL_SIGNALER
@@ -23,7 +24,6 @@ feature {NONE} -- Initilization
 
 feature -- Access
 
-
 	data: BOOL_MSG
 			-- State.
 
@@ -44,5 +44,5 @@ feature {NONE} -- Implementation
 		do
 			a_sub.subscribe (a_topic, agent a_listener.update_state)
 		end
-end
+end -- class
 

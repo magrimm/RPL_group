@@ -6,7 +6,7 @@ note
 deferred class
 	PARAMETERS
 
-feature
+feature -- access
 
 	variable_name_setter_map : HASH_TABLE [ PROCEDURE[ANY,TUPLE] , STRING ]
 

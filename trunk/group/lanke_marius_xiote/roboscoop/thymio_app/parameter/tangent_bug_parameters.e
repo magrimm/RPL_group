@@ -1,17 +1,16 @@
 note
-	description: "Summary description for {TANGENT_BUG_PARAMETERS}."
+	description: "Tangent bug parameters."
 	author: "Xiaote Zhu"
 
 class
 	TANGENT_BUG_PARAMETERS
-
 
 inherit PARAMETERS
 
 create
 	make
 
-feature  -- Initialization
+feature {NONE} -- Initialization
 
 	make
 		do
@@ -61,19 +60,16 @@ feature -- Access
 	search_vleave_pub_duration: INTEGER_64
 
 	set_algorithm_name (alg : STRING)
-
 		do
 			ALGORITHM_NAME := alg
 		end
 
 	set_controller_name (cntlr : STRING)
-
 		do
 			CONTROLLER_NAME := cntlr
 		end
 
 	set_controller_filename (file : STRING)
-
 		do
 			CONTROLLER_FILE_NAME := file
 		end
