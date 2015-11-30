@@ -6,6 +6,7 @@
 #include <boost/foreach.hpp>
 
 #include <ros/ros.h>
+#include <unistd.h>
 #include <pcl_ros/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -26,6 +27,8 @@ typedef pcl::PointCloud<PointT> PointCloud;
 objrec::Parameters params;
 ros::Publisher markerPub;
 ros::Publisher objrecPub;
+
+size_t objectCounts; 
 
 bool objrec_permitted;
 
@@ -61,7 +64,6 @@ void recCallback(const PointCloud::ConstPtr& msg) {
     recognizer.recognize(msg, results);
 
     std::vector<visualization_msgs::Marker> marker_msgs;
-    size_t i = 0;
     // Create marker msg for each cluster indicating the result. 
     BOOST_FOREACH(std::vector<objrec::RecognizerResult<PointT> > cluster_result, results) {
       objrec::RecognizerResult<PointT> highest_result;
@@ -74,33 +76,41 @@ void recCallback(const PointCloud::ConstPtr& msg) {
       visualization_msgs::Marker marker;
       if (cluster_result.empty() || highest_result.score == 0.0) {
         std::cerr << "Unknown object." << std::endl;
-        objrec::createMarkerMsg(params.get("camera_frame_id"), highest_result.cloud, ++i, params.get_color_r("unknown"), params.get_color_g("unknown"), params.get_color_b("unknown"), marker);
+        objrec::createMarkerMsg(params.get("camera_frame_id"), highest_result.cloud, ++objectCounts, params.get_color_r("unknown"), params.get_color_g("unknown"), params.get_color_b("unknown"), marker);
       }
       else {
         std::cerr << "Winner is " << highest_result.label << " with score of " << highest_result.score << std::endl;
-        objrec::createMarkerMsg(params.get("camera_frame_id"), highest_result.cloud, ++i, params.get_color_r(highest_result.label), params.get_color_g(highest_result.label), params.get_color_b(highest_result.label), marker);
+        objrec::createMarkerMsg(params.get("camera_frame_id"), highest_result.cloud, ++objectCounts, params.get_color_r(highest_result.label), params.get_color_g(highest_result.label), params.get_color_b(highest_result.label), marker);
       }
       marker_msgs.push_back(marker);
     }
     
+
+    objrec::publishMarkerMsgs(markerPub, marker_msgs);
+    objrec_permitted = false;
+
     if (ros::ok) {
       std_msgs::Bool msg;
       msg.data = true;
       objrecPub.publish(msg);
       ros::spinOnce();
-    }
 
-    objrec::publishMarkerMsgs(markerPub, marker_msgs);
+      // ros::Duration::sleep();
+      usleep(1);
+      msg.data = false;
+      objrecPub.publish(msg);
+      ros::spinOnce();
+    }
   }
 
-  else {
+/*  else {
     if (ros::ok) {
       std_msgs::Bool msg;
       msg.data = false;
       objrecPub.publish(msg);
       ros::spinOnce();
     }
-  }
+  }*/
 }
 
 void startCallback(const std_msgs::Bool is_permitted) {
