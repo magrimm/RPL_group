@@ -78,7 +78,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 													o_sig.theta,
 													cur_goal_point.x,
 													cur_goal_point.y)
-				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
+				vtheta := pid_controller.get_control_output (heading_error,
+															 o_sig.timestamp)
 
 				state_sig.set_is_go
 				drive.set_velocity (algorithm_params.go_vx, vtheta)
@@ -92,7 +93,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 	follow_wall (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
 					o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 					drive: separate DIFFERENTIAL_DRIVE; r_sens: separate RANGE_GROUP;
-					r_sens_wrapper: separate RANGE_GROUP_WRAPPER; algorithm_params: separate TANGENT_BUG_PARAMETERS;)
+					r_sens_wrapper: separate RANGE_GROUP_WRAPPER; algorithm_params: separate TANGENT_BUG_PARAMETERS)
 				-- Turn and follow the boundary of the obstacle being detected.
 		require
 			((state_sig.is_go) and
@@ -106,7 +107,11 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			if s_sig.is_stop_requested then
 				drive.stop
 			else
-				vtheta := r_sens_wrapper.follow_wall_orientation (r_sens, algorithm_params.desired_wall_distance, o_sig.timestamp, m_sig.timestamp_obstacle_last_seen, algorithm_params.follow_wall_vx)
+				vtheta := r_sens_wrapper.follow_wall_orientation (r_sens,
+																  algorithm_params.desired_wall_distance,
+																  o_sig.timestamp,
+																  m_sig.timestamp_obstacle_last_seen,
+																  algorithm_params.follow_wall_vx)
 
 				state_sig.set_is_wall_following
 				drive.set_velocity (algorithm_params.follow_wall_vx, vtheta)
@@ -120,7 +125,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 	look_for_vleave (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
 						o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 						r_sens: separate RANGE_GROUP; r_sens_wrapper: separate RANGE_GROUP_WRAPPER;
-						search_vleave_pub: separate POINT_MSG_PUBLISHER; path_planner: separate PATH_PLANNER)
+						search_vleave_pub: separate POINT_MSG_PUBLISHER; path_planner: separate PATH_PLANNER;
+						algorithm_params: separate TANGENT_BUG_PARAMETERS)
 				-- Look for v_leave when in wall_following state
 		require
 			state_sig.is_wall_following and
@@ -142,11 +148,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 			cur_distance := euclidean_distance (goal_point, robot_point)
 
---			if cur_distance < m_sig.d_min then
---				-- Update d_min.
---				m_sig.set_d_min (cur_distance)
---			end
-
 			from
 				i := r_sens.sensors.lower
 			until
@@ -157,8 +158,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				if r_sens.is_enough_space_for_moving_to_the_max_range (i) then
 					 create sensor_max_range_rel_point.make_from_separate (r_sens_wrapper.get_relative_coordinates_with_sensor (r_sens.sensors[i].max_range, i))
 					 sensor_max_range_abs_point := convert_relative_coordinates_to_absolute_coordinates (robot_point,
-					 															sensor_max_range_rel_point,
-					 															o_sig.theta)
+					 																					 sensor_max_range_rel_point,
+					 																					 o_sig.theta)
 					 sensor_max_range_d_min := euclidean_distance (goal_point,
 					 												sensor_max_range_abs_point)
 
@@ -183,7 +184,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- The vleave point when searching
 
 				search_vleave_pub.set_color (create{COLOR_RGBA_MSG}.make_black)
-				search_vleave_pub.set_duration (10000)
+				search_vleave_pub.set_duration (algorithm_params.search_vleave_pub_duration)
 
 				search_vleave_pub.update_msg (vleave_point)
 				search_vleave_pub.publish
@@ -225,8 +226,8 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				heading_error := get_heading_error (o_sig.x + path_planner.get_start.x,
 													o_sig.y + path_planner.get_start.y,
 													o_sig.theta, vleave.x, vleave.y)
-
-				vtheta := pid_controller_vleave.get_control_output (heading_error, o_sig.timestamp)
+				vtheta := pid_controller_vleave.get_control_output (heading_error,
+																    o_sig.timestamp)
 
 				state_sig.set_is_transiting
 				drive.set_velocity (algorithm_params.transit_vx, vtheta)
@@ -235,16 +236,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			debug ("PUBLISH_V_LEAVE")
 				-- Publishers for debug use
 				vleave_pub.set_color (create {COLOR_RGBA_MSG}.make_blue)
-				vleave_pub.set_duration (1000)
+				vleave_pub.set_duration (algorithm_params.vleave_pub_duration)
 				vleave_pub.update_msg (vleave)
 				vleave_pub.publish
-				io.putstring("Vleave x: " + vleave.x.out +  "Vleave y: " + vleave.y.out + "Vleave z: " + vleave.z.out + "%N"
-				+ "Current x: " +(o_sig.x + path_planner.get_start.x).out +"Current y: " + (o_sig.y + path_planner.get_start.y).out +"Current theta: " + o_sig.theta.out + "%N"
-				+ "Driving at vx: " + algorithm_params.transit_vx.out + "  vtheta: " +vtheta.out + "%N"
-				+ "Heading error: " + heading_error.out + "%N"
-				+ "PID time step diff: " + (pid_controller.cur_time-pid_controller.prev_time).out + "%N"
-				+ "PID integral error: " + pid_controller.acc_error.out  + "%N"
-				)
 			end
 
 			debug ("STATE")
@@ -273,7 +267,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			elseif euclidean_distance (wait_point, robot_point) < algorithm_params.wait_point_distance_threshold then
 				-- Check if distance to wait point is less than tolerance
 				state_sig.set_is_waiting
-				drive.set_velocity (0, 0)
+				drive.stop
 				path_planner.move_to_next_wait_point
 				robot_state_pub.publish (create {BOOL_MSG}.make_with_values(True))
 
@@ -355,7 +349,7 @@ feature {NONE}
 			end
 		end
 
-feature
+feature {NONE}
 
 	pid_controller: PID_CONTROLLER
 		-- Pid controller.

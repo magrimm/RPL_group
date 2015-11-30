@@ -36,6 +36,9 @@ feature  -- Initialization
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_go_vx()), "go_vx")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_follow_wall_vx()), "follow_wall_vx")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_transit_vx()), "transit_vx")
+
+			variable_name_setter_map.put (agent convert_set_INT64(? , agent set_search_vleave_pub_duration()), "searh_vleave_pub_duration")
+			variable_name_setter_map.put (agent convert_set_INT64(? , agent set_vleave_pub_duration()), "vleave_pub_duration")
 		end
 
 
@@ -54,6 +57,8 @@ feature -- Access
 	vleave_reached_distance_threshold, wait_point_distance_threshold: REAL_64
 	obstacle_vanished_time_threshold: REAL_64
 	move_to_next_goal_threshold: REAL_64
+	vleave_pub_duration: INTEGER_64
+	search_vleave_pub_duration: INTEGER_64
 
 	set_algorithm_name (alg : STRING)
 
@@ -106,6 +111,16 @@ feature -- Access
 	set_goal_unreachable_distance_threshold (a_val: REAL_64)
 		do
 			goal_unreachable_distance_threshold := a_val
+		end
+
+	set_vleave_pub_duration (a_val: INTEGER_64)
+		do
+			vleave_pub_duration := a_val
+		end
+
+	set_search_vleave_pub_duration (a_val: INTEGER_64)
+		do
+			search_vleave_pub_duration := a_val
 		end
 
 	set_go_vx (a_val: REAL_64)

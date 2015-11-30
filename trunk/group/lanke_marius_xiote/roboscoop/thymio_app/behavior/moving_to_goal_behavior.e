@@ -152,7 +152,8 @@ feature {NONE} -- Implementation
 										  r_sens,
 										  r_sens_wrapper,
 										  search_vleave_pub,
-										  path_planner))
+										  path_planner,
+										  algorithm_params))
 
 			d.repeat_until_stop_requested (
 					-- Perform step 3. go towards intermediate point
@@ -176,6 +177,7 @@ feature {NONE} -- Implementation
 												 path_planner))
 
 			f.repeat_until_stop_requested (
+					-- Wait at intermediate goal.
 				agent f.wait_when_intermediate_goal_reached (state_sig,
 																odometry_sig,
 																stop_sig,
@@ -185,7 +187,11 @@ feature {NONE} -- Implementation
 																robot_state_pub))
 
 			g.repeat_until_stop_requested (
-				agent g.continue_after_task_finished (state_sig, stop_sig, objrec_state_signaler, robot_state_pub))
+					-- Continue after waiting at intermediate goal.
+				agent g.continue_after_task_finished (state_sig,
+													   stop_sig,
+													   objrec_state_signaler,
+													   robot_state_pub))
 		end
 
 	sep_stop (s_sig: separate STOP_SIGNALER; val: BOOLEAN)
