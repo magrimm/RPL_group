@@ -1,12 +1,14 @@
-=== XML Tangent Bug + Path Planning ===
+=== XML Tangent Bug + Path Planning + Object Recognition ===
 Contributors: Xiaote, Marius, Lanke
 SVN link: https://svn.inf.ethz.ch/svn/meyer/rpl2015/trunk/group/lanke_marius_xiote/
-Tags: Obstacle Avoidance, PID CONTROL, Path Planning A-STAR
+Tags: Obstacle Avoidance, PID CONTROL, Path Planning A-STAR, 3-D Spin Image, Object Recognition
 
 
-This Tangent Bug algorithm implementation along with an ASTAR algorithm maneuvers a robot from an initial position to final goal while avoiding obstacles.
+This implementation accomodates path finding in a spatial node graph, driving through way-points using a pid controller, obstacle avoidance using the tangent bug algorithm and object recognition using a correlation of 3d spin image features.
 
 == Description ==
+
+A thorough documentation of the theory of 3D spin images may be found at: http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=765655
 
 In general, the task of approaching a wall while avoiding obstacles is a complex task. The algorithm implemented here is capable of reaching feasible goal points i.e. points to which an aperture exists, bigger than the size of the robot such that the robot can drive to the goal. It achieves so by running task "go_to_call" and "track_obstacles" simultaneuosly. Once an obstacle is found, the robot tracks it until a new point is available from which the distance to goal is minimal, out of the points seen so far.
 
@@ -24,32 +26,39 @@ The Algorithm works through the following states:
 
 == Structure ==
     Hierachy
-
-   |---------|           |----------|	       |----------|
-   |   APP   |---------->|   ROBOT  |--------->|  PLANNER |
-   |---------|           |----------|	       |----------|	      
-						     |
-						     |
-						     | 
-						     \/
-						|----------|	
-					     |  TANGENT_BUG |
-						|----------|
-						     |
-						     |
-						     | 
-						     \/
-                                             |--------------|
-                                             |  CONTROLLER  |
-                                             |--------------|
-                     			        ^       ^ 
-					       /          \                             
-                  			      /            \                            
-                                             /              \
-                  			    /                \  										
-      			    |----------------------|       |------------|
-          	            |   	PID	   |       |   ERROR    |
-             	            |----------------------|       |------------|
+--------------------------------------------------------------------------------------------------------------------------------	   -------------------------------------------------------	
+   |---------|           |--------------------------|	       	       	 |----------|						|	   |
+   |   APP   |---------->|   Move to goal Behavior  |------------------->|  PLANNER |						|	   |	
+   |---------|     |     |--------------------------|	   		 |----------|						|	   |
+		   |                                                         |							|	   |
+		   |     |--------------------------|	       		     |							|	   |
+	           ----->|     Feature Behavior     |		             |							|	   |
+   		         |--------------------------|		             |							|	   |
+									     |							|	   |
+									     | 							|	   |
+									     \/							|	   |
+									|----------|                     |-----------------|	|	   |		|--------------------|
+								     |  TANGENT_BUG |------------------->|  Blob Detected  | --------------|---->       | Object Recognition |
+									|----------|			 |-----------------|    |	   |		|--------------------|
+									     |							|	   |
+									     |							|	   |
+									     | 							|	   |
+									     \/							|	   |
+		EIFFEL 					             |--------------|    					|	   |		C++
+							             |  CONTROLLER  |						|	   |
+							             |--------------|						|	   |
+					     			        ^       ^ 						|	   |
+								       /          \                             		|	   |
+					  			      /            \                       			|	   |
+							             /              \						|	   |
+					  			    /                \  					|	   |			   
+			      			    |----------------------|       |------------|				|	   |
+				  	            |   	PID	   |       |   ERROR    |				|	   |
+				     	            |----------------------|       |------------|				|	   |
+																|	   |
+ -------------------------------------------------------------------------------------------------------------------------------- 	    ------------------------------------------------------------ 
+    
+							
 	Fig 1: Hierarchy of this implementation
 
 
