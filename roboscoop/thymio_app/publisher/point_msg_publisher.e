@@ -19,7 +19,7 @@ feature {NONE}
 		do
 			point_color := create {COLOR_RGBA_MSG}.make_red
 				-- Color of the point displayed
-			size := create {VECTOR_3D_MSG}.make_with_values (0.02, 0.02, 0.02)
+			size := create {VECTOR_3D_MSG}.make_empty
 				-- Size of the point displayed
 			message_2_send := create {MARKER_MSG}.make_empty
 				-- Initialize the message to send
@@ -32,9 +32,9 @@ feature {NONE}
 feature	-- Access
 
 	update_msg(position : separate POINT_MSG)
-		-- Update the message to be sent
-	do
-		message_2_send := create {MARKER_MSG}.make_with_values (
+			-- Update the message to be sent
+		do
+			message_2_send := create {MARKER_MSG}.make_with_values (
 								create {HEADER_MSG}.make_with_values (0, 0, {MAP_TOPICS}.odometry_frame),
 		  						create {POSE_MSG}.make_with_values (
 		  							create{POINT_MSG}.make_with_values (position.x, position.y, position.z),
@@ -42,25 +42,25 @@ feature	-- Access
 								size,
 								point_color,"","",
 		 						1, 1 ,0 , life_time)
-	end
+		end
 
 	set_color(color : separate COLOR_RGBA_MSG)
-		-- Set color of the point displayed
-	do
-		create point_color.make_from_separate (color)
-	end
+			-- Set color of the point displayed
+		do
+			create point_color.make_from_separate (color)
+		end
 
 	set_duration(time_length : REAL_64)
-		-- Set the publishing duration
-	do
-		life_time := time_length
-	end
+			-- Set the publishing duration
+		do
+			life_time := time_length
+		end
 
 	set_size (length,width,height : REAL_64)
-		-- Set size of the point displayed
-	do
-		size := create {VECTOR_3D_MSG}.make_with_values (length, width, height)
-	end
+			-- Set size of the point displayed
+		do
+			size := create {VECTOR_3D_MSG}.make_with_values (length, width, height)
+		end
 
 feature {NONE} -- Implementation
 

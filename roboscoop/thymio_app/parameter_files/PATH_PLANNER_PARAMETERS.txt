@@ -20,5 +20,7 @@ viapoint2_z: 0.0
 
 jump_in_number_of_nodes: 6
 
+cur_wait_point_index: 2
+
 GRID_CONNECTIVITY_STRATEGY : EIGHT_CONNECTIVITY_STRATEGY
 

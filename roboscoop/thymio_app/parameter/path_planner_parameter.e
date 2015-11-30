@@ -11,7 +11,7 @@ inherit
 create
 	make
 
-feature  -- Initialization
+feature {NONE} -- Initialization
 
 	make
 		do
@@ -32,6 +32,9 @@ feature  -- Initialization
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint2_x()), "viapoint2_x")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint2_y()), "viapoint2_y")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint2_z()), "viapoint2_z")
+
+
+			variable_name_setter_map.put (agent convert_set_INT64(? , agent set_cur_wait_point_index()), "cur_wait_point_index")
 
 			variable_name_setter_map.put (agent set_connectivity(), "GRID_CONNECTIVITY_STRATEGY")
 			variable_name_setter_map.put (agent set_four_connect(), "FOUR_CONNECTIVITY_STRATEGY")
@@ -190,6 +193,13 @@ feature -- Access
 	set_jump_in_number_of_nodes (number: INTEGER)
 		do
 			jump_in_number_of_nodes := number
+		end
+
+	cur_wait_point_index: INTEGER
+
+	set_cur_wait_point_index (number: INTEGER)
+		do
+			cur_wait_point_index := number
 		end
 
 end -- class

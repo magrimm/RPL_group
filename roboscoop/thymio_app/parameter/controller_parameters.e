@@ -1,8 +1,7 @@
 note
-	description: "Summary description for {PID_PARAMETERS}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Controller parameters."
+	author: "Lanke Frank Tarimo Fu"
+	date: "29.11.15"
 
 class
 	CONTROLLER_PARAMETERS
@@ -13,7 +12,7 @@ inherit
 create
 	make
 
-feature  -- Initialization
+feature {NONE} -- Initialization
 
 	make
 		do

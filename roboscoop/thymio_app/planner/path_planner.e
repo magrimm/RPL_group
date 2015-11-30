@@ -51,7 +51,7 @@ feature {NONE} -- Initialization
 																 params.viapoint2_y,
 																 params.viapoint2_z), 3)
 
-			cur_wait_point_index := 2
+			cur_wait_point_index := params.cur_wait_point_index
 
 			search_strategy := s_strategy
 			create planned_path.make
