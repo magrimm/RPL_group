@@ -47,7 +47,7 @@ feature -- Access
 			Result := atan2 (v_theta_y, v_theta_x)
 		end
 
-	transform_coordinates_with_startpoint_offset (start_point, point: POINT_MSG): POINT_MSG
+	transform_coordinates_with_startpoint_offset (point, start_point: POINT_MSG): POINT_MSG
 		local
 			transformed_point: POINT_MSG
 		do
