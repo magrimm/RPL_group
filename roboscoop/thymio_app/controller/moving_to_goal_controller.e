@@ -34,7 +34,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 	go (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
 		o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 		drive: separate DIFFERENTIAL_DRIVE; path_planner: separate PATH_PLANNER;
-		cur_goal_pub: separate POINT_MSG_PUBLISHER; algorithm_params: separate TANGENT_BUG_PARAMETERS)
+		cur_goal_pub: separate POINT_MSG_TO_MARKER_MSG; algorithm_params: separate TANGENT_BUG_PARAMETERS)
 			-- Move robot if goal not reached yet.
 		require
 			state_sig.is_go or s_sig.is_stop_requested
@@ -125,7 +125,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 	look_for_vleave (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
 						o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 						r_sens: separate RANGE_GROUP; r_sens_wrapper: separate RANGE_GROUP_WRAPPER;
-						search_vleave_pub: separate POINT_MSG_PUBLISHER; path_planner: separate PATH_PLANNER;
+						search_vleave_pub: separate POINT_MSG_TO_MARKER_MSG; path_planner: separate PATH_PLANNER;
 						algorithm_params: separate TANGENT_BUG_PARAMETERS)
 				-- Look for v_leave when in wall_following state
 		require
@@ -196,7 +196,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 	transit_to_vleave (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
 						o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
-						drive: separate DIFFERENTIAL_DRIVE; vleave_pub: separate POINT_MSG_PUBLISHER;
+						drive: separate DIFFERENTIAL_DRIVE; vleave_pub: separate POINT_MSG_TO_MARKER_MSG;
 						path_planner: separate PATH_PLANNER; algorithm_params: separate TANGENT_BUG_PARAMETERS)
 			-- Transit to v_leave if found
 		require

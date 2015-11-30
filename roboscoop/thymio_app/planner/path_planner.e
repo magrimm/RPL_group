@@ -179,7 +179,7 @@ feature {NONE}
 	occupancy_grid_signaler: separate OCCUPANCY_GRID_SIGNALER
 			-- 2D grid map.
 
-	path_publisher: PATH_MSG_PUBLISHER
+	path_publisher: POINT_MSG_LIST_TO_PATH_MSG
 			-- Publisher object for paths.
 
 	planned_path : LINKED_LIST [POINT_MSG]
