@@ -12,7 +12,7 @@ inherit
 create
 	make
 
-feature  -- Initialization
+feature {NONE} -- Initialization
 
 	make
 		do
