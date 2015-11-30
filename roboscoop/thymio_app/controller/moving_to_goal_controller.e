@@ -177,7 +177,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Set vleave_point when one is found.
 				m_sig.set_v_leave (vleave_point)
 				m_sig.set_is_v_leave_found (True)
-
 			end
 
 			debug ("PUB_LOOK_FOR_V_LEAVE")

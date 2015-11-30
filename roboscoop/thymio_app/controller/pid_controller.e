@@ -59,7 +59,7 @@ feature -- Access
 			prev_time := 0
 		end
 
-feature
+feature {NONE}
 
 	cur_error, prev_error, acc_error: REAL_64
 	cur_time, prev_time: REAL_64
