@@ -11,7 +11,7 @@ class
 
 feature -- Access
 
-	parse_file(filename: separate STRING ; params : P)
+	parse_file(filename: separate STRING ; params: P)
 		local
 			input_file: PLAIN_TEXT_FILE
 				-- File being parsed										
@@ -56,12 +56,6 @@ feature -- Access
 							string_tokens.at (2).adjust
 							run_it.call (string_tokens.at (2))
 							is_set_map.replace (true, eht.key)
-
-							debug
-								-- Set the parameter with its correponding value	
---								io.put_string ("Scanning parameter : " +
---								string_tokens.at (1) + " = " + string_tokens.at (2) + "%N" )
-							end
 						end
 					end
 				end
@@ -73,7 +67,6 @@ feature -- Access
 			across is_set_map as eht loop
 				if eht.item = false then
 					io.putstring ("In file " + create {STRING}.make_from_separate (filename) + " " + eht.key + " is not set%N")
---					exception_handler.die(0)
 				end
 			end
 
