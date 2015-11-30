@@ -66,7 +66,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				end
 
 				debug ("PUB_CUR_GOAL_POINT")
-
 					-- Publish cur_goal_point.
 
 					cur_goal_pub.update_msg (cur_goal_point)
@@ -253,11 +252,48 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 		end
 
-	wait_when_intermediate_goal_reached ()
+	wait_when_intermediate_goal_reached (state_sig: separate STATE_SIGNALER;  o_sig: separate ODOMETRY_SIGNALER;
+											s_sig: separate STOP_SIGNALER; drive: separate DIFFERENTIAL_DRIVE;
+											algorithm_params: separate TANGENT_BUG_PARAMETERS; path_planner: separate PATH_PLANNER;
+											robot_state_pub: separate ROS_PUBLISHER [BOOL_MSG])
 			-- Stop if intermediate goal reached.
 		require
+			(not state_sig.is_waiting and not state_sig.is_goal_reached) or s_sig.is_stop_requested
+		local
+			robot_point, wait_point: POINT_MSG
 		do
+			create robot_point.make_with_values (o_sig.x + path_planner.get_start.x,
+												 o_sig.y + path_planner.get_start.y,
+												 o_sig.z + path_planner.get_start.z)
+			create wait_point.make_from_separate (path_planner.get_cur_wait_point)
 
+			if s_sig.is_stop_requested then
+				drive.stop
+
+			elseif euclidean_distance (wait_point, robot_point) < algorithm_params.wait_point_distance_threshold then
+				-- Check if distance to wait point is less than tolerance
+				state_sig.set_is_waiting
+				drive.set_velocity (0, 0)
+				path_planner.move_to_next_wait_point
+				robot_state_pub.publish (create {BOOL_MSG}.make_with_values(True))
+
+				debug ("STATE")
+					io.put_string ("Current state: WAIT%N")
+				end
+			end
+		end
+
+	continue_after_task_finished (state_sig: separate STATE_SIGNALER; s_sig:separate STOP_SIGNALER
+									objrec_state_signaler: separate BOOL_SIGNALER; robot_state_pub: separate ROS_PUBLISHER [BOOL_MSG])
+			-- Continue if task is finished at the wait point.
+		require
+			state_sig.is_waiting or s_sig.is_stop_requested
+		do
+			if objrec_state_signaler.data.data then
+				-- When task finished, switch to go state.
+				state_sig.set_is_go
+				robot_state_pub.publish (create {BOOL_MSG}.make_with_values(False))
+			end
 		end
 
 	stop_when_goal_reached (state_sig: separate STATE_SIGNALER; o_sig: separate ODOMETRY_SIGNALER;
@@ -326,8 +362,5 @@ feature
 
 	pid_controller_vleave: PID_CONTROLLER
 		-- Pid controller.
-
---	cont_params: separate CONTROLLER_PARAMETERS
---		-- Controller parameters
 
 end -- class
