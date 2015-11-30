@@ -46,24 +46,21 @@ public:
     double matching_similarity_threshold = 0.25, int gc_threshold = 25, double gc_size = 0.01) : _matching_similarity_threshold(matching_similarity_threshold), _gc_threshold(gc_threshold), _gc_size(gc_size),
     _segmenter(segmenter), _selector(selector), _feature_extractor(feature_extractor) {}
 
-  void addModelPCDFiles(const std::string& label, const std::vector<std::string>& pcd_files) {
-    //  Compute and store features for each model file.
-    BOOST_FOREACH(std::string filename, pcd_files) {
-      typename pcl::PointCloud<PointT>::Ptr pcd(new pcl::PointCloud<PointT>());
-      if (pcl::io::loadPCDFile<PointT> (filename, *pcd) == -1)
-      {
-        PCL_ERROR(("Couldn't read file " + filename + " \n").c_str());
-        throw std::runtime_error("couldn't read pcd file " + filename);
+  void addModelClouds(const typename std::map<std::string, std::vector<typename pcl::PointCloud<PointT>::Ptr> >& model_clouds) {
+    // Compute and store features for each model clouds.
+    _model_clouds = model_clouds;
+    for (typename std::map<std::string, std::vector<typename pcl::PointCloud<PointT>::Ptr> >::const_iterator it = _model_clouds.begin(); it != _model_clouds.end(); ++it) {
+      // Compute feature for each model. 
+      for (size_t j = 0; j < it->second.size(); ++j) {
+        typename pcl::PointCloud<PointT>::Ptr keypoints(new pcl::PointCloud<PointT>());
+        _selector->select(it->second[j], keypoints);
+
+        typename pcl::PointCloud<FeatureT>::Ptr descriptors(new pcl::PointCloud<FeatureT>());
+        _feature_extractor->extract(keypoints, descriptors);
+
+        _model_descriptors[it->first].push_back(descriptors);
+        _model_keypoints[it->first].push_back(keypoints);
       }
-
-      typename pcl::PointCloud<PointT>::Ptr keypoints(new pcl::PointCloud<PointT>());
-      _selector->select(pcd, keypoints);
-
-      typename pcl::PointCloud<FeatureT>::Ptr descriptors(new pcl::PointCloud<FeatureT>());
-      _feature_extractor->extract(keypoints, descriptors);
-
-      _model_descriptors[label].push_back(descriptors);
-      _model_keypoints[label].push_back(keypoints);
     }
   }
 
@@ -158,6 +155,8 @@ private:
   // Map label to its descriptors.
   typename std::map<std::string, std::vector<typename pcl::PointCloud<PointT>::Ptr> > _model_keypoints;
   // Map label to its keypoints.
+  typename std::map<std::string, std::vector<typename pcl::PointCloud<PointT>::Ptr> > _model_clouds;
+  // Map label to its clouds.
 };
 
 }  // end namespace

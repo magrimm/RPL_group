@@ -29,8 +29,11 @@ ros::Publisher markerPub;
 ros::Publisher objrecPub;
 
 size_t objectCounts; 
-
+// Total objects being recognized.
 bool objrec_permitted;
+// Whether object recognition should be allowed.
+std::map<std::string, std::vector<PointCloud::Ptr> > _model_clouds;
+// Map label to its clouds.
 
 void recCallback(const PointCloud::ConstPtr& msg) {
 // Callback function for when image is received.
@@ -48,16 +51,8 @@ void recCallback(const PointCloud::ConstPtr& msg) {
     objrec::SpinImageFeatureExtractor<pcl::PointXYZ> feature_extractor;
     objrec::GCGRecognizer<PointT, FeatureT> recognizer(&segmenter, &selector, &feature_extractor);
 
-    // Add model files to recognizer.
-    std::vector<std::string> labels;
-    params.get("labels", labels);
-    for (std::vector<std::string>::iterator it = labels.begin(); it != labels.end(); ++it) {
-      std::vector<std::string> filenames;
-      std::string label_dir = params.get(*it + "_dir");
-      pcl::getAllPcdFilesInDirectory(label_dir, filenames);
-      for (std::vector<std::string>::iterator it2 = filenames.begin(); it2 != filenames.end(); ++it2) *it2 = label_dir + *it2;
-      recognizer.addModelPCDFiles(*it, filenames);
-    }
+    // Add model files to recognizer
+    recognizer.addModelClouds(_model_clouds);
 
     // Object recognition.
     std::vector<std::vector<objrec::RecognizerResult<PointT> > > results;
@@ -84,7 +79,6 @@ void recCallback(const PointCloud::ConstPtr& msg) {
       }
       marker_msgs.push_back(marker);
     }
-    
 
     objrec::publishMarkerMsgs(markerPub, marker_msgs);
     objrec_permitted = false;
@@ -95,28 +89,39 @@ void recCallback(const PointCloud::ConstPtr& msg) {
       objrecPub.publish(msg);
       ros::spinOnce();
 
-      // ros::Duration::sleep();
       usleep(1);
       msg.data = false;
       objrecPub.publish(msg);
       ros::spinOnce();
     }
   }
-
-/*  else {
-    if (ros::ok) {
-      std_msgs::Bool msg;
-      msg.data = false;
-      objrecPub.publish(msg);
-      ros::spinOnce();
-    }
-  }*/
 }
 
 void startCallback(const std_msgs::Bool is_permitted) {
-// Call back function for when msg indicating that object recognition can be started is received
-  std::cerr << "start recognition..." << std::endl;
+// Call back function for when msg indicating that object recognition can be started is received.
+  std::cerr << "Start recognition..." << std::endl;
   objrec_permitted = is_permitted.data;
+}
+
+void loadPCDFiles() {
+// Load all pcd files to _model_clouds.
+  std::vector<std::string> labels;
+  params.get("labels", labels);
+  for (std::vector<std::string>::iterator it = labels.begin(); it != labels.end(); ++it) {
+    std::vector<std::string> filenames;
+    std::string label_dir = params.get(*it + "_dir");
+    pcl::getAllPcdFilesInDirectory(label_dir, filenames);
+    for (std::vector<std::string>::iterator it2 = filenames.begin(); it2 != filenames.end(); ++it2) {
+      *it2 = label_dir + *it2;
+      PointCloud::Ptr cloud(new PointCloud());
+      if (pcl::io::loadPCDFile<PointT> (*it2, *cloud) == -1)
+      {
+        PCL_ERROR(("Couldn't read file " + *it2 + " \n").c_str());
+        throw std::runtime_error("couldn't read pcd file " + *it2);
+      }
+      _model_clouds[*it].push_back(cloud);
+    }
+  }
 }
 
 int main(int argc, char** argv)
@@ -127,6 +132,8 @@ int main(int argc, char** argv)
   } 
   else 
     params.from_file(argv[1]);
+
+  loadPCDFiles();
 
 	ros::init(argc, argv, params.get("node_name"));
   ros::NodeHandle nh;
