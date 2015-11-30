@@ -42,7 +42,7 @@ feature -- Access
 			-- A critical value to have frames conform to each other on visualization
 			-- interfaces such as R_VIZ
 	do
-		header_frame := {MAP_TOPICS}.odometry_frame
+		header_frame := {MAP_TOPICS}.map
 		create poses.make_filled (create {POSE_STAMPED_MSG}.make_empty, 1, path.count)
 
 
@@ -64,7 +64,7 @@ feature -- Access
 				poses.put (pose_stamped_msg, i)
 				path.forth
 			end
-			
+
 			message_2_send := create {PATH_MSG}.make_with_values (create {HEADER_MSG}.make_now (header_frame), poses)
 				-- Update the path message being sent
 			path.start

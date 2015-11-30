@@ -83,7 +83,7 @@ void publishMarkerMsgs(ros::Publisher markerPub, std::vector<visualization_msgs:
   std::cerr << "Publish..." << std::endl;
   ros::Rate loop_rate(4);
 
-  while (ros::ok())
+  if (ros::ok())
   {
     for (std::vector<visualization_msgs::Marker>::const_iterator it = marker_msgs.begin (); it != marker_msgs.end (); ++it)
     {

@@ -44,12 +44,12 @@ feature {NONE} -- Initialization
 																 params.goal_y,
 																 params.goal_z),
 																 params.number_of_destinations)
---			destinations.put(create {POINT_MSG}.make_with_values(params.viapoint1_x,
---																 params.viapoint1_y,
---																 params.viapoint1_z), 2)
---			destinations.put(create {POINT_MSG}.make_with_values(params.viapoint2_x,
---																 params.viapoint2_y,
---																 params.viapoint2_z), 3)
+			destinations.put(create {POINT_MSG}.make_with_values(params.viapoint1_x,
+																 params.viapoint1_y,
+																 params.viapoint1_z), 2)
+			destinations.put(create {POINT_MSG}.make_with_values(params.viapoint2_x,
+																 params.viapoint2_y,
+																 params.viapoint2_z), 3)
 
 			cur_wait_point_index := 2
 
@@ -87,7 +87,11 @@ feature -- Access
 	move_to_next_wait_point
 			-- Advance cursor to the next wait poin.
 		do
-			cur_wait_point_index := cur_wait_point_index + 1
+			if cur_wait_point_index < destinations.upper then
+				cur_wait_point_index := cur_wait_point_index + 1
+			else
+				cur_wait_point_index := 1
+			end
 		end
 
 	jump_to_next_closest_goal (cur_position: separate POINT_MSG)
