@@ -100,13 +100,13 @@ feature {NONE} -- Implementation
 	objrec_state_signaler: BOOL_SIGNALER
 			-- If objrec has finished recognition process.
 
-	cur_goal_pub: POINT_MSG_PUBLISHER
+	cur_goal_pub: POINT_MSG_TO_MARKER_MSG
 			-- The current goal in go state
 
-	search_vleave_pub : POINT_MSG_PUBLISHER
+	search_vleave_pub : POINT_MSG_TO_MARKER_MSG
 			-- The current searched vleave point to go to
 
-	vleave_pub : POINT_MSG_PUBLISHER
+	vleave_pub : POINT_MSG_TO_MARKER_MSG
 			-- The vleave point transiting to
 
 	algorithm_params: TANGENT_BUG_PARAMETERS
