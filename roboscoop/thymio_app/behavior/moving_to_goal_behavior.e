@@ -28,6 +28,9 @@ feature {NONE} -- Initialization
 			create stop_sig.make
 			create moving_to_goal_sig.make
 
+			create robot_state_pub.make_with_topic ("/robot_state")
+			robot_state_pub.advertize (1, True)
+
 			create vleave_pub.make_with_attributes ("vleave_point")
 			create cur_goal_pub.make_with_attributes ("cur_goal")
 			create search_vleave_pub.make_with_attributes ("search_vleave_point")
@@ -90,23 +93,26 @@ feature {NONE} -- Implementation
 	path_planner: separate PATH_PLANNER
 			-- Path planner for optimal path.
 
+	robot_state_pub: ROS_PUBLISHER [BOOL_MSG]
+			-- If robot should wait for object recognition.
+
 	cur_goal_pub: separate POINT_MSG_PUBLISHER
-				-- The current goal in go state
+			-- The current goal in go state
 
 	search_vleave_pub : separate POINT_MSG_PUBLISHER
-				-- The current searched vleave point to go to
+			-- The current searched vleave point to go to
 
 	vleave_pub : separate POINT_MSG_PUBLISHER
-				-- The vleave point transiting to
+			-- The vleave point transiting to
 
 	algorithm_params: TANGENT_BUG_PARAMETERS
-		-- Parameters for tangent bug algorithm.
+			-- Parameters for tangent bug algorithm.
 
 	controller_params: CONTROLLER_PARAMETERS
-		-- Parameters for pid controller.
+			-- Parameters for pid controller.
 
 	controller_parser: PARSER[CONTROLLER_PARAMETERS]
-		-- Parser for pid controller parameters.
+			-- Parser for pid controller parameters.
 
 	sep_start (a, b, c, d, e: separate MOVING_TO_GOAL_CONTROLLER)
 			-- Start controllers asynchronously.
