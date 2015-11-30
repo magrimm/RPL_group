@@ -92,6 +92,7 @@ int main(int argc, char** argv)
 	ros::init(argc, argv, params.get("node_name"));
   ros::NodeHandle nh;
   ros::Subscriber sub = nh.subscribe<PointCloud>(params.get("camera_topic"), 1, callback);
+
   markerPub = nh.advertise<visualization_msgs::Marker>(params.get("marker_topic"), 1);
   ros::spin();
   

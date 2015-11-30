@@ -43,12 +43,12 @@ feature {NONE} -- Initialization
 																 params.goal_y,
 																 params.goal_z),
 																 params.number_of_destinations)
-			destinations.put(create {POINT_MSG}.make_with_values(params.viapoint1_x,
-																 params.viapoint1_y,
-																 params.viapoint1_z), 2)
-			destinations.put(create {POINT_MSG}.make_with_values(params.viapoint2_x,
-																 params.viapoint2_y,
-																 params.viapoint2_z), 3)
+--			destinations.put(create {POINT_MSG}.make_with_values(params.viapoint1_x,
+--																 params.viapoint1_y,
+--																 params.viapoint1_z), 2)
+--			destinations.put(create {POINT_MSG}.make_with_values(params.viapoint2_x,
+--																 params.viapoint2_y,
+--																 params.viapoint2_z), 3)
 
 			search_strategy := s_strategy
 			create planned_path.make

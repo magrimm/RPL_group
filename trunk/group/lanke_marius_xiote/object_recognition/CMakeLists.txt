@@ -3,6 +3,7 @@ project(object_recognition)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  tf
 )
 find_package(PCL REQUIRED)
 
@@ -119,6 +120,7 @@ set(CMAKE_CXX_FLAGS "-g ${CMAKE_CXX_FLAGS}")
 # add_dependencies(object_recognition ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(object_recognition_node src/object_recognition_node.cpp)
+add_executable(tf_broadcaster src/tf_broadcaster.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -128,6 +130,7 @@ target_link_libraries(object_recognition_node
   ${PCL_LIBRARIES}
   ${catkin_LIBRARIES}
 )
+target_link_libraries(tf_broadcaster ${catkin_LIBRARIES})
 
 #############
 ## Install ##
