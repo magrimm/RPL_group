@@ -1,13 +1,13 @@
 inflate_radius: 0.18
 
-number_of_destinations: 4
+number_of_destinations: 2
 
 start_x: 0.5
 start_y: 0.5
 start_z: 0.0
 
-goal_x: 0.5
-goal_y: 1.5
+goal_x: 1.5
+goal_y: 0.5
 goal_z: 0.0
 
 viapoint1_x: 1.5
