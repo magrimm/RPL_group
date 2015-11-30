@@ -40,15 +40,15 @@ The Algorithm works through the following states:
 									|----------|                     |-----------------|	|	   |		|--------------------|
 								     |  TANGENT_BUG |------------------->|  Blob Detected  | --------------|---->       | Object Recognition |
 									|----------|			 |-----------------|    |	   |		|--------------------|
-									     |							|	   |
-									     |							|	   |
-									     | 							|	   |
-									     \/							|	   |
-		EIFFEL 					             |--------------|    					|	   |		C++
-							             |  CONTROLLER  |						|	   |
-							             |--------------|						|	   |
-					     			        ^       ^ 						|	   |
-								       /          \                             		|	   |
+									     |							|	   |		           |
+									     |							|	   |		           |
+									     | 							|	   |		           |
+									     \/							|	   |		           |
+		EIFFEL 					             |--------------|    					|	   |		C++        |
+							             |  CONTROLLER  |						|	   |			   \/
+							             |--------------|						|	   |		|--------------------|
+					     			        ^       ^ 						|	   |		| Free to Proceed    |	
+								       /          \                             		|	   |		|--------------------|
 					  			      /            \                       			|	   |
 							             /              \						|	   |
 					  			    /                \  					|	   |			   
@@ -82,6 +82,16 @@ The number references refer to the steps mentioned in the = Description = sectio
 	Perform task in 2. that states task is impossible.
 
 == Usage ==
+
+To run the application please peform the following procedures:
+1) Enter input parameters of the execution of the thymio_app. This is should be the file path to the app parameters which in the provided repository is located in parameter_files folder.
+2) Run the separate object recognition node in catkin workspace using the command : "rosrun object_recognition_node object_recognition (path to pcd reference point clouds)"
+3) Run the separate tf frame converter also in the catkin workspace using the command : "rosrun objection_recognition_node tf_broadcaster"
+4) Run the mapserver for the given task.
+5) Make sure the corresponding task parameters are set properly. 
+6) Run Rviz through the command : "rviz"
+7) Connect to the controlled robot agent either wirelessly or by wire.
+8) Run the thymio_app.
 
 /Parameters
 The parameters play a huge role of defining the properties of the tasks as well as the algorithms which are used to achieve them. The files used to access the parameters can be found in the parameter_files_folder. Figure one shows the order in which these parameters are parsed. The access of a lower level file is achieved by entering its filename in the properties file of its parent. For example, the controller parameters file's name has to be placed in the parameters file of the planner. The parsing here is done using a hash table in which a string is associated to a corresponding setter that assigns a value to a parameter classes' variables once a certain string is encountered. 
