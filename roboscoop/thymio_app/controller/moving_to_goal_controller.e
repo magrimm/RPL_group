@@ -21,8 +21,12 @@ feature {NONE} -- Initialization
 			robot_file_name: STRING
 		do
 			stop_signaler := s_sig
-
-			create pid_controller.make(controller_params.k_p, controller_params.k_i, controller_params.k_d)
+			create pid_controller.make (controller_params.k_p_go,
+										controller_params.k_i_go,
+										controller_params.k_d_go)
+			create pid_controller_vleave.make (controller_params.k_p_vleave,
+											   controller_params.k_i_vleave,
+											   controller_params.k_d_vleave)
 		end
 
 feature {MOVING_TO_GOAL_BEHAVIOR} -- Control	
@@ -94,12 +98,11 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		require
 			((state_sig.is_go) and
 			r_sens.is_obstacle) or
-			state_sig.is_wall_following or
-			s_sig.is_stop_requested
+			state_sig.is_wall_following or s_sig.is_stop_requested
 		local
 			vtheta: REAL_64
 		do
-			m_sig.set_timestamp_obstacle_last_seen (r_sens.is_obstacle, o_sig.timestamp)     																														--
+			m_sig.set_timestamp_obstacle_last_seen (r_sens.is_obstacle, o_sig.timestamp)
 
 			if s_sig.is_stop_requested then
 				drive.stop
@@ -224,7 +227,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 													o_sig.y + path_planner.get_start.y,
 													o_sig.theta, vleave.x, vleave.y)
 
-				vtheta := pid_controller.get_control_output (heading_error, o_sig.timestamp)
+				vtheta := pid_controller_vleave.get_control_output (heading_error, o_sig.timestamp)
 
 				state_sig.set_is_transiting
 				drive.set_velocity (algorithm_params.transit_vx, vtheta)
@@ -313,5 +316,11 @@ feature
 
 	pid_controller: PID_CONTROLLER
 		-- Pid controller.
+
+	pid_controller_vleave: PID_CONTROLLER
+		-- Pid controller.
+
+--	cont_params: separate CONTROLLER_PARAMETERS
+--		-- Controller parameters
 
 end -- class
