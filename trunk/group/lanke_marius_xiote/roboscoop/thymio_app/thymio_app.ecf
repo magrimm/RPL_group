@@ -35,6 +35,7 @@
 			<cluster name="planner" location=".\planner\"/>
 			<cluster name="search_strategy" location=".\search_strategy\"/>
 			<cluster name="publisher" location=".\publisher\"/>
+			<cluster name="msg" location="\home\xiaote\catkin_group_ws\src\lanke_marius_xiote\roboscoop\thymio_app\msg\"/>
 		</cluster>
 	</target>
 </system>

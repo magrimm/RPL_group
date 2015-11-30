@@ -28,10 +28,13 @@ feature -- Access
 			-- Is at "go" state?
 
 	is_wall_following: BOOLEAN
-			-- Is at "wall following" state
+			-- Is at "wall following" state?
 
 	is_transiting: BOOLEAN
-			-- Is at "transiting" state
+			-- Is at "transiting" state?
+
+	is_waiting: BOOLEAN
+			-- Is at "waiting" state?
 
 	set_is_goal_reached
 			-- Set is_goal_reached value to True
@@ -68,6 +71,13 @@ feature -- Access
 			is_transiting := True
 		end
 
+	set_is_waiting
+			-- Set is waiting value equal to True
+		do
+			clear_all_states
+			is_waiting := True
+		end
+
 	clear_all_states
 			-- Set all states to False.
 		do
@@ -76,6 +86,7 @@ feature -- Access
 			is_transiting := False
 			is_goal_reached := False
 			is_goal_unreachable := False
+			is_waiting := False
 		end
-		
+
 end -- class

@@ -253,6 +253,13 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 		end
 
+	wait_when_intermediate_goal_reached ()
+			-- Stop if intermediate goal reached.
+		require
+		do
+
+		end
+
 	stop_when_goal_reached (state_sig: separate STATE_SIGNALER; o_sig: separate ODOMETRY_SIGNALER;
 								s_sig: separate STOP_SIGNALER; drive: separate DIFFERENTIAL_DRIVE;
 								algorithm_params: separate TANGENT_BUG_PARAMETERS; path_planner: separate PATH_PLANNER)
