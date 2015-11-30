@@ -35,6 +35,7 @@ feature {NONE} -- Initialization
 												params.goal_y,
 												params.goal_z)
 
+
 			create destinations.make_filled (create {POINT_MSG}.make_empty, 1, params.number_of_destinations)
 			destinations.put(create {POINT_MSG}.make_with_values(params.start_x,
 															     params.start_y,
@@ -50,6 +51,8 @@ feature {NONE} -- Initialization
 --																 params.viapoint2_y,
 --																 params.viapoint2_z), 3)
 
+			cur_wait_point_index := 2
+
 			search_strategy := s_strategy
 			create planned_path.make
 		end
@@ -57,11 +60,13 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	get_final_goal : POINT_MSG
+			-- Get position of the final goal.
 		do
 			Result := destinations [destinations.count]
 		end
 
 	get_start : POINT_MSG
+			-- Get position of the start.
 		do
 			Result := destinations [1]
 		end
@@ -71,6 +76,18 @@ feature -- Access
 			-- TODO: consider adding contract here
 		do
 			Result := planned_path.item
+		end
+
+	get_cur_wait_point : POINT_MSG
+			-- Get position of the next wait point.
+		do
+			Result := destinations [cur_wait_point_index]
+		end
+
+	move_to_next_wait_point
+			-- Advance cursor to the next wait poin.
+		do
+			cur_wait_point_index := cur_wait_point_index + 1
 		end
 
 	jump_to_next_closest_goal (cur_position: separate POINT_MSG)
@@ -130,6 +147,8 @@ feature -- Access
 		end
 
 feature {NONE} -- Implementation
+
+	cur_wait_point_index : INTEGER
 
 	convert_coord_to_node (x, y, z: REAL_64) : SPATIAL_GRAPH_NODE
 			-- Find graph node that corresponds to the given x, y, z coordinate.

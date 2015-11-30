@@ -13,7 +13,7 @@ create
 
 feature {NONE} -- Initialization
 
-	make_with_attributes (robot: separate ROBOT; planner: separate PATH_PLANNER; tangent_bug_params: TANGENT_BUG_PARAMETERS)
+	make_with_attributes (robot: separate ROBOT; planner: PATH_PLANNER; tangent_bug_params: TANGENT_BUG_PARAMETERS)
 			-- Create current with given attributes.
 		do
 			path_planner := planner
@@ -30,6 +30,7 @@ feature {NONE} -- Initialization
 
 			create robot_state_pub.make_with_topic ("/robot_state")
 			robot_state_pub.advertize (1, True)
+			create objrec_state_signaler.make_with_topic ("/objrec_state")
 
 			create vleave_pub.make_with_attributes ("vleave_point")
 			create cur_goal_pub.make_with_attributes ("cur_goal")
@@ -47,18 +48,18 @@ feature -- Access
 		local
 			a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER
 		do
-			separate path_planner as pp do
-				pp.search_path
-			end
+			path_planner.search_path
 
 			create a.make (stop_sig, controller_params)
 			create b.make (stop_sig, controller_params)
 			create c.make (stop_sig, controller_params)
 			create d.make (stop_sig, controller_params)
 			create e.make (stop_sig, controller_params)
+			create f.make (stop_sig, controller_params)
+			create g.make (stop_sig, controller_params)
 
 			sep_stop (stop_sig, False)
-			sep_start (a, b, c, d, e)
+			sep_start (a, b, c, d, e, f, g)
 		end
 
 	stop
@@ -90,19 +91,22 @@ feature {NONE} -- Implementation
 	r_sens_wrapper: separate RANGE_GROUP_WRAPPER
 			-- Wrapper on range sensors.
 
-	path_planner: separate PATH_PLANNER
+	path_planner: PATH_PLANNER
 			-- Path planner for optimal path.
 
 	robot_state_pub: ROS_PUBLISHER [BOOL_MSG]
 			-- If robot should wait for object recognition.
 
-	cur_goal_pub: separate POINT_MSG_PUBLISHER
+	objrec_state_signaler: BOOL_SIGNALER
+			-- If objrec has finished recognition process.
+
+	cur_goal_pub: POINT_MSG_PUBLISHER
 			-- The current goal in go state
 
-	search_vleave_pub : separate POINT_MSG_PUBLISHER
+	search_vleave_pub : POINT_MSG_PUBLISHER
 			-- The current searched vleave point to go to
 
-	vleave_pub : separate POINT_MSG_PUBLISHER
+	vleave_pub : POINT_MSG_PUBLISHER
 			-- The vleave point transiting to
 
 	algorithm_params: TANGENT_BUG_PARAMETERS
@@ -114,7 +118,7 @@ feature {NONE} -- Implementation
 	controller_parser: PARSER[CONTROLLER_PARAMETERS]
 			-- Parser for pid controller parameters.
 
-	sep_start (a, b, c, d, e: separate MOVING_TO_GOAL_CONTROLLER)
+	sep_start (a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER)
 			-- Start controllers asynchronously.
 		do
 			a.repeat_until_stop_requested (
@@ -170,6 +174,18 @@ feature {NONE} -- Implementation
 												 diff_drive,
 												 algorithm_params,
 												 path_planner))
+
+			f.repeat_until_stop_requested (
+				agent f.wait_when_intermediate_goal_reached (state_sig,
+																odometry_sig,
+																stop_sig,
+																diff_drive,
+																algorithm_params,
+																path_planner,
+																robot_state_pub))
+
+			g.repeat_until_stop_requested (
+				agent g.continue_after_task_finished (state_sig, stop_sig, objrec_state_signaler, robot_state_pub))
 		end
 
 	sep_stop (s_sig: separate STOP_SIGNALER; val: BOOLEAN)

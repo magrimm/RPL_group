@@ -27,11 +27,10 @@ feature  -- Initialization
 
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_desired_wall_distance()), "desired_wall_distance")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_unreachable_distance_threshold()), "goal_unreachable_distance_threshold")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_angle_looped_around_threshold_unreachable()), "angle_looped_around_threshold_unreachable")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_vleave_reached_distance_threshold()), "vleave_reached_distance_threshold")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_reached_distance_threshold()), "goal_reached_distance_threshold")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_wait_point_distance_threshold()), "wait_point_distance_threshold")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_obstacle_vanished_time_threshold()), "obstacle_vanished_time_threshold")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_angle_looped_around_threshold()), "angle_looped_around_threshold")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_move_to_next_goal_threshold()), "move_to_next_goal_threshold")
 
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_go_vx()), "go_vx")
@@ -51,10 +50,9 @@ feature -- Access
 	follow_wall_vx: REAL_64
 	transit_vx: REAL_64
 	desired_wall_distance: REAL_64
-	goal_unreachable_distance_threshold: REAL_64
-	angle_looped_around_threshold_unreachable: REAL_64
-	vleave_reached_distance_threshold, goal_reached_distance_threshold: REAL_64
-	obstacle_vanished_time_threshold, angle_looped_around_threshold: REAL_64
+	goal_reached_distance_threshold, goal_unreachable_distance_threshold: REAL_64
+	vleave_reached_distance_threshold, wait_point_distance_threshold: REAL_64
+	obstacle_vanished_time_threshold: REAL_64
 	move_to_next_goal_threshold: REAL_64
 
 	set_algorithm_name (alg : STRING)
@@ -85,11 +83,6 @@ feature -- Access
 			obstacle_vanished_time_threshold := a_val
 		end
 
-	set_angle_looped_around_threshold (a_val: REAL_64)
-		do
-			angle_looped_around_threshold := a_val
-		end
-
 	set_move_to_next_goal_threshold (a_val: REAL_64)
 		do
 			move_to_next_goal_threshold := a_val
@@ -105,9 +98,9 @@ feature -- Access
 			goal_reached_distance_threshold := a_val
 		end
 
-	set_angle_looped_around_threshold_unreachable (a_val: REAL_64)
+	set_wait_point_distance_threshold (a_val: REAL_64)
 		do
-			angle_looped_around_threshold_unreachable := a_val
+			wait_point_distance_threshold := a_val
 		end
 
 	set_goal_unreachable_distance_threshold (a_val: REAL_64)
