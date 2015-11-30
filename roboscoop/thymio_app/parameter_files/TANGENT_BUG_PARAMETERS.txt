@@ -1,6 +1,6 @@
 ALGORITHM_NAME : TANGENT_BUG  
 CONTROLLER_NAME : PID   
-CONTROLLER_FILE_NAME : parameter_files/PID_PARAMETERS.txt   
+CONTROLLER_FILE_NAME : parameter_files/PID_PARAMETERS.txt
 
 desired_wall_distance: 0.10
 obstacle_vanished_time_threshold: 6.5
