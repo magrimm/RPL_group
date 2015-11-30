@@ -28,13 +28,13 @@ feature {NONE} -- Initialization
 			create stop_sig.make
 			create moving_to_goal_sig.make
 
-			create robot_state_pub.make_with_topic ("/robot_state")
+			create robot_state_pub.make_with_topic ({MAP_TOPICS}.robot_state)
 			robot_state_pub.advertize (1, True)
-			create objrec_state_signaler.make_with_topic ("/objrec_state")
+			create objrec_state_signaler.make_with_topic ({MAP_TOPICS}.object_recognition_state)
 
-			create vleave_pub.make_with_attributes ("vleave_point")
-			create cur_goal_pub.make_with_attributes ("cur_goal")
-			create search_vleave_pub.make_with_attributes ("search_vleave_point")
+			create vleave_pub.make_with_attributes ({MAP_TOPICS}.vleave)
+			create cur_goal_pub.make_with_attributes ({MAP_TOPICS}.current_goal)
+			create search_vleave_pub.make_with_attributes ({MAP_TOPICS}.search_vleave)
 
 			create controller_params.make
 			create controller_parser
