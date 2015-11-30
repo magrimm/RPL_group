@@ -16,4 +16,6 @@ go_vx: 0.1
 follow_wall_vx: 0.05
 transit_vx: 0.05
 
+search_vleave_pub_duration: 1000
+vleave_pub_duration: 1000
 
