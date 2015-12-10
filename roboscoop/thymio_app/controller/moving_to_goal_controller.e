@@ -29,7 +29,21 @@ feature {NONE} -- Initialization
 											   controller_params.k_d_vleave)
 		end
 
-feature {MOVING_TO_GOAL_BEHAVIOR} -- Control	
+feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
+
+	localize (state_sig: separate STATE_SIGNALER; s_sig: separate STOP_SIGNALER;
+				drive: separate DIFFERENTIAL_DRIVE; path_planner: separate PATH_PLANNER;
+				algorithm_params: separate TANGENT_BUG_PARAMETERS)
+			-- Move rebot for localization process.
+		require
+			state_sig.is_localizing or s_sig.is_stop_requested
+		do
+			if s_sig.is_stop_requested then
+				drive.stop
+			else
+				drive.set_velocity (0, algorithm_params.localize_vtheta)
+			end
+		end
 
 	go (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
 		o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
@@ -266,6 +280,14 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			elseif euclidean_distance (wait_point, robot_point) < algorithm_params.wait_point_distance_threshold then
 				-- Check if distance to wait point is less than tolerance
 				state_sig.set_is_waiting
+
+				-- Turn to the right orientation
+				from
+				until
+					(path_planner.get_cur_wait_angle - o_sig.theta).abs < algorithm_params.wait_point_angle_threshold
+				loop
+					drive.set_velocity (0, (path_planner.get_cur_wait_angle - o_sig.theta) / (path_planner.get_cur_wait_angle - o_sig.theta).abs * algorithm_params.wait_point_angle_threshold)
+				end
 				drive.stop
 				path_planner.move_to_next_wait_point
 				robot_state_pub.publish (create {BOOL_MSG}.make_with_values(True))

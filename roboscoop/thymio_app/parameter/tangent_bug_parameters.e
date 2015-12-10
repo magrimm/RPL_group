@@ -29,12 +29,14 @@ feature {NONE} -- Initialization
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_vleave_reached_distance_threshold()), "vleave_reached_distance_threshold")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_reached_distance_threshold()), "goal_reached_distance_threshold")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_wait_point_distance_threshold()), "wait_point_distance_threshold")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_wait_point_angle_threshold()), "wait_point_angle_threshold")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_obstacle_vanished_time_threshold()), "obstacle_vanished_time_threshold")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_move_to_next_goal_threshold()), "move_to_next_goal_threshold")
 
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_go_vx()), "go_vx")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_follow_wall_vx()), "follow_wall_vx")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_transit_vx()), "transit_vx")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_localize_vtheta()), "localize_vtheta")
 
 			variable_name_setter_map.put (agent convert_set_INT64(? , agent set_search_vleave_pub_duration()), "searh_vleave_pub_duration")
 			variable_name_setter_map.put (agent convert_set_INT64(? , agent set_vleave_pub_duration()), "vleave_pub_duration")
@@ -51,9 +53,10 @@ feature -- Access
 	go_vx: REAL_64
 	follow_wall_vx: REAL_64
 	transit_vx: REAL_64
+	localize_vtheta: REAL_64
 	desired_wall_distance: REAL_64
-	goal_reached_distance_threshold, goal_unreachable_distance_threshold: REAL_64
-	vleave_reached_distance_threshold, wait_point_distance_threshold: REAL_64
+	goal_reached_distance_threshold, goal_unreachable_distance_threshold, vleave_reached_distance_threshold: REAL_64
+	wait_point_distance_threshold, wait_point_angle_threshold: REAL_64
 	obstacle_vanished_time_threshold: REAL_64
 	move_to_next_goal_threshold: REAL_64
 	vleave_pub_duration: INTEGER_64
@@ -104,6 +107,11 @@ feature -- Access
 			wait_point_distance_threshold := a_val
 		end
 
+	set_wait_point_angle_threshold (a_val: REAL_64)
+		do
+			wait_point_angle_threshold := a_val
+		end
+
 	set_goal_unreachable_distance_threshold (a_val: REAL_64)
 		do
 			goal_unreachable_distance_threshold := a_val
@@ -132,6 +140,11 @@ feature -- Access
 	set_transit_vx (a_val: REAL_64)
 		do
 			transit_vx := a_val
+		end
+
+	set_localize_vtheta (a_val: REAL_64)
+		do
+			localize_vtheta := a_val
 		end
 
 end -- class
