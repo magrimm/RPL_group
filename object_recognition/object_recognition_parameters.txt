@@ -6,10 +6,7 @@ robot_topic = /robot_state
 camera_frame_id = /camera_rgb_optical_frame
 
 # Each label should have a corresponding <label>_dir and <label>_color field.
-labels = duck firefighter man woman
-
-duck_dir = ../data/objects/duck/
-duck_color = 0.0 0.0 1.0
+labels = firefighter man woman
 
 firefighter_dir = ../data/objects/firefighter/
 firefighter_color = 0.0 1.0 0.0
@@ -19,5 +16,3 @@ man_color = 0.0 1.0 0.0
 
 woman_dir = ../data/objects/woman/
 woman_color = 0.0 1.0 0.0
-
-unknown_color = 1.0 0.0 0.0
