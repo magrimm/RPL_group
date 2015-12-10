@@ -21,17 +21,21 @@ feature {NONE} -- Initialization
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_start_x()), "start_x")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_start_y()), "start_y")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_start_z()), "start_z")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_start_theta()), "start_theta")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_x()), "goal_x")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_y()), "goal_y")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_z()), "goal_z")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_theta()), "goal_theta")
 
 			variable_name_setter_map.put (agent convert_set_INT64(? , agent set_number_of_destinations()), "number_of_destinations")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint1_x()), "viapoint1_x")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint1_y()), "viapoint1_y")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint1_z()), "viapoint1_z")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint1_theta()), "viapoint1_theta")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint2_x()), "viapoint2_x")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint2_y()), "viapoint2_y")
 			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint2_z()), "viapoint2_z")
+			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint2_theta()), "viapoint2_theta")
 
 
 			variable_name_setter_map.put (agent convert_set_INT64(? , agent set_cur_wait_point_index()), "cur_wait_point_index")
@@ -109,6 +113,14 @@ feature -- Access
 			start_z := a_val
 		end
 
+	start_theta : REAL_64
+		-- angle of start position.
+
+	set_start_theta (a_val: REAL_64)
+		do
+			start_theta := a_val
+		end
+
 	goal_x : REAL_64
 		-- x coordinate of goal position.
 
@@ -131,6 +143,14 @@ feature -- Access
 	set_goal_z (a_val: REAL_64)
 		do
 			goal_z := a_val
+		end
+
+	goal_theta : REAL_64
+		-- angle of goal position.
+
+	set_goal_theta (a_val: REAL_64)
+		do
+			goal_theta := a_val
 		end
 
 	number_of_destinations : INTEGER_32
@@ -164,6 +184,14 @@ feature -- Access
 			viapoint1_z := a_val
 		end
 
+	viapoint1_theta : REAL_64
+		-- angle of viapoint1 position.
+
+	set_viapoint1_theta (a_val: REAL_64)
+		do
+			viapoint1_theta := a_val
+		end
+
 	viapoint2_x : REAL_64
 		-- x coordinate of goal position.
 
@@ -186,6 +214,14 @@ feature -- Access
 	set_viapoint2_z (a_val: REAL_64)
 		do
 			viapoint2_z := a_val
+		end
+
+	viapoint2_theta : REAL_64
+		-- angle of viapoint2 position.
+
+	set_viapoint2_theta (a_val: REAL_64)
+		do
+			viapoint2_theta := a_val
 		end
 
 	jump_in_number_of_nodes: INTEGER

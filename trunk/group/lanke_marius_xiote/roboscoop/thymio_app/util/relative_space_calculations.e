@@ -60,7 +60,7 @@ feature -- Access
 	get_heading_vector(p1,p2 : POINT_MSG) : POINT_MSG
 			-- Generate a difference vector heading from p1 to p2 in the form of a point msg from two point msgs.
 		do
-			RESULT := create {POINT_MSG}.make_with_values (p2.x-p1.x, p2.y-p1.y, p2.z-p1.z)
+			Result := create {POINT_MSG}.make_with_values (p2.x-p1.x, p2.y-p1.y, p2.z-p1.z)
 		end
 
 	to_local_coordinates2D(global_vector : POINT_MSG; current_orientation_yaw_angle : REAL_64 ) : POINT_MSG
@@ -73,13 +73,13 @@ feature -- Access
 				create local_coord.make_with_values (global_vector.x * cosine (-yaw) - global_vector.y * sine (-yaw),
 													 global_vector.x * sine (-yaw) + global_vector.y * cosine (-yaw),
 														 0.0)
-				RESULT := local_coord
+				Result := local_coord
 			end
 
 	get_dot_product(p1,p2 : POINT_MSG) : REAL_64
 			-- Find the dot product between two point msg types
 		do
-			RESULT := p1.x+p2.x+p1.y+p2.y+p1.z+p2.z
+			Result := p1.x+p2.x+p1.y+p2.y+p1.z+p2.z
 		end
 
 end -- class

@@ -36,20 +36,26 @@ feature {NONE} -- Initialization
 												params.goal_z)
 
 
-			create destinations.make_filled (create {POINT_MSG}.make_empty, 1, params.number_of_destinations)
-			destinations.put(create {POINT_MSG}.make_with_values(params.start_x,
+			create destination_points.make_filled (create {POINT_MSG}.make_empty, 1, params.number_of_destinations)
+			destination_points.put(create {POINT_MSG}.make_with_values(params.start_x,
 															     params.start_y,
 															     params.start_z), 1)
-			destinations.put(create {POINT_MSG}.make_with_values(params.goal_x,
+			destination_points.put(create {POINT_MSG}.make_with_values(params.goal_x,
 																 params.goal_y,
 																 params.goal_z),
 																 params.number_of_destinations)
-			destinations.put(create {POINT_MSG}.make_with_values(params.viapoint1_x,
+			destination_points.put(create {POINT_MSG}.make_with_values(params.viapoint1_x,
 																 params.viapoint1_y,
 																 params.viapoint1_z), 2)
-			destinations.put(create {POINT_MSG}.make_with_values(params.viapoint2_x,
+			destination_points.put(create {POINT_MSG}.make_with_values(params.viapoint2_x,
 																 params.viapoint2_y,
 																 params.viapoint2_z), 3)
+
+			create destination_angles.make_filled (0, 1, params.number_of_destinations)
+			destination_angles.put (params.start_theta, 1)
+			destination_angles.put (params.viapoint1_theta, 2)
+			destination_angles.put (params.viapoint2_theta, 3)
+			destination_angles.put (params.goal_theta, 4)
 
 			cur_wait_point_index := params.cur_wait_point_index
 
@@ -62,32 +68,37 @@ feature -- Access
 	get_final_goal : POINT_MSG
 			-- Get position of the final goal.
 		do
-			Result := destinations [destinations.count]
+			Result := destination_points [destination_points.count]
 		end
 
 	get_start : POINT_MSG
 			-- Get position of the start.
 		do
-			Result := destinations [1]
+			Result := destination_points [1]
 		end
 
 	get_cur_goal : POINT_MSG
 			-- Find the current position to go to, given a path in a list of points format
-			-- TODO: consider adding contract here
 		do
 			Result := planned_path.item
+		end
+
+	get_cur_wait_angle : REAL_64
+			-- Get angle of the next wait point.
+		do
+			Result := destination_angles [cur_wait_point_index]
 		end
 
 	get_cur_wait_point : POINT_MSG
 			-- Get position of the next wait point.
 		do
-			Result := destinations [cur_wait_point_index]
+			Result := destination_points [cur_wait_point_index]
 		end
 
 	move_to_next_wait_point
 			-- Advance cursor to the next wait poin.
 		do
-			if cur_wait_point_index < destinations.upper then
+			if cur_wait_point_index < destination_points.upper then
 				cur_wait_point_index := cur_wait_point_index + 1
 			else
 				cur_wait_point_index := 1
@@ -135,11 +146,11 @@ feature -- Access
 			path : LINKED_LIST [POINT_MSG]
 		do
 			from
-				i := destinations.lower
+				i := destination_points.lower
 			until
-				i >= destinations.upper
+				i >= destination_points.upper
 			loop
-				path := search_strategy.search_path (grid_graph, convert_pt_to_node(destinations[i]), convert_pt_to_node(destinations[i + 1]))
+				path := search_strategy.search_path (grid_graph, convert_pt_to_node(destination_points[i]), convert_pt_to_node(destination_points[i + 1]))
 				planned_path.append (path)
 				i := i + 1
 			end
@@ -185,8 +196,11 @@ feature {NONE}
 	planned_path : LINKED_LIST [POINT_MSG]
 			-- Planned path.
 
-	destinations : ARRAY [POINT_MSG]
+	destination_points : ARRAY [POINT_MSG]
 			-- List of positions need to be visited.
+
+	destination_angles : ARRAY [REAL_64]
+			-- Angles that correspond to each destination.
 
 	start_node, goal_node : SPATIAL_GRAPH_NODE
 			-- Graph nodes of the start position and the goal position

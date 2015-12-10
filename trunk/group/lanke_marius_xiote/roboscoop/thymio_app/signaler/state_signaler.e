@@ -11,9 +11,9 @@ create
 feature {NONE} -- Initialization
 
 	make
-		-- Set the initial state to "go" state.
+		-- Set the initial state to "localizing" state.
 		do
-			is_go := True
+			is_localizing := True
 		end
 
 feature -- Access
@@ -35,6 +35,9 @@ feature -- Access
 
 	is_waiting: BOOLEAN
 			-- Is at "waiting" state?
+
+	is_localizing: BOOLEAN
+			-- Is at "localizing" state?
 
 	set_is_goal_reached
 			-- Set is_goal_reached value to True
@@ -72,10 +75,17 @@ feature -- Access
 		end
 
 	set_is_waiting
-			-- Set is waiting value equal to True
+			-- Set is_waiting value equal to True
 		do
 			clear_all_states
 			is_waiting := True
+		end
+
+	set_is_localizing
+			-- Set is_localizing value equal to True
+		do
+			clear_all_states
+			is_localizing := True
 		end
 
 	clear_all_states
@@ -87,6 +97,7 @@ feature -- Access
 			is_goal_reached := False
 			is_goal_unreachable := False
 			is_waiting := False
+			is_localizing := False
 		end
 
 end -- class

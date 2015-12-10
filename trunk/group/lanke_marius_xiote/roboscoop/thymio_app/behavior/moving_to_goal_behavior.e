@@ -46,7 +46,7 @@ feature -- Access
 	start
 			-- Start the behaviour.
 		local
-			a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER
+			a, b, c, d, e, f, g, h: separate MOVING_TO_GOAL_CONTROLLER
 		do
 			path_planner.search_path
 
@@ -57,9 +57,10 @@ feature -- Access
 			create e.make (stop_sig, controller_params)
 			create f.make (stop_sig, controller_params)
 			create g.make (stop_sig, controller_params)
+			create h.make (stop_sig, controller_params)
 
 			sep_stop (stop_sig, False)
-			sep_start (a, b, c, d, e, f, g)
+			sep_start (a, b, c, d, e, f, g, h)
 		end
 
 	stop
@@ -118,7 +119,7 @@ feature {NONE} -- Implementation
 	controller_parser: PARSER[CONTROLLER_PARAMETERS]
 			-- Parser for pid controller parameters.
 
-	sep_start (a, b, c, d, e, f, g: separate MOVING_TO_GOAL_CONTROLLER)
+	sep_start (a, b, c, d, e, f, g, h: separate MOVING_TO_GOAL_CONTROLLER)
 			-- Start controllers asynchronously.
 		do
 			a.repeat_until_stop_requested (
@@ -192,6 +193,13 @@ feature {NONE} -- Implementation
 													   stop_sig,
 													   objrec_state_signaler,
 													   robot_state_pub))
+
+			h.repeat_until_stop_requested (
+				agent h.localize (state_sig,
+									stop_sig,
+									diff_drive,
+									path_planner,
+									algorithm_params))
 		end
 
 	sep_stop (s_sig: separate STOP_SIGNALER; val: BOOLEAN)
