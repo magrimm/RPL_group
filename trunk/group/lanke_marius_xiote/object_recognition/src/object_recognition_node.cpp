@@ -25,10 +25,10 @@ typedef pcl::Histogram<153> FeatureT;
 typedef pcl::PointCloud<PointT> PointCloud;
 
 objrec::Parameters params;
-ros::Publisher markerPub;
-ros::Publisher objrecPub;
+ros::Publisher marker_pub;
+ros::Publisher objrec_pub;
 
-size_t objectCounts; 
+size_t object_counts; 
 // Total objects being recognized.
 bool objrec_permitted;
 // Whether object recognition should be allowed.
@@ -69,29 +69,25 @@ void recCallback(const PointCloud::ConstPtr& msg) {
       }
 
       visualization_msgs::Marker marker;
-      if (cluster_result.empty() || highest_result.score == 0.0) {
-        std::cerr << "Unknown object." << std::endl;
-        objrec::createMarkerMsg(params.get("camera_frame_id"), highest_result.cloud, ++objectCounts, params.get_color_r("unknown"), params.get_color_g("unknown"), params.get_color_b("unknown"), marker);
-      }
-      else {
+      if (highest_result.score != 0.0){
         std::cerr << "Winner is " << highest_result.label << " with score of " << highest_result.score << std::endl;
-        objrec::createMarkerMsg(params.get("camera_frame_id"), highest_result.cloud, ++objectCounts, params.get_color_r(highest_result.label), params.get_color_g(highest_result.label), params.get_color_b(highest_result.label), marker);
+        objrec::createMarkerMsg(params.get("camera_frame_id"), highest_result.cloud, ++object_counts, params.get_color_r(highest_result.label), params.get_color_g(highest_result.label), params.get_color_b(highest_result.label), marker);
       }
       marker_msgs.push_back(marker);
     }
 
-    objrec::publishMarkerMsgs(markerPub, marker_msgs);
+    objrec::publishMarkerMsgs(marker_pub, marker_msgs);
     objrec_permitted = false;
 
     if (ros::ok) {
       std_msgs::Bool msg;
       msg.data = true;
-      objrecPub.publish(msg);
+      objrec_pub.publish(msg);
       ros::spinOnce();
 
       usleep(1);
       msg.data = false;
-      objrecPub.publish(msg);
+      objrec_pub.publish(msg);
       ros::spinOnce();
     }
   }
@@ -134,15 +130,14 @@ int main(int argc, char** argv)
     params.from_file(argv[1]);
 
   loadPCDFiles();
-
 	ros::init(argc, argv, params.get("node_name"));
   ros::NodeHandle nh;
 
-  ros::Subscriber startSub = nh.subscribe<std_msgs::Bool>(params.get("robot_topic"), 1, startCallback);
-  ros::Subscriber cameraSub = nh.subscribe<PointCloud>(params.get("camera_topic"), 1, recCallback);
+  ros::Subscriber start_sub = nh.subscribe<std_msgs::Bool>(params.get("robot_topic"), 1, startCallback);
+  ros::Subscriber camera_sub = nh.subscribe<PointCloud>(params.get("camera_topic"), 1, recCallback);
 
-  markerPub = nh.advertise<visualization_msgs::Marker>(params.get("marker_topic"), 1, true);
-  objrecPub = nh.advertise<std_msgs::Bool>(params.get("objrec_topic"), 2, true);
+  marker_pub = nh.advertise<visualization_msgs::Marker>(params.get("marker_topic"), 1, true);
+  objrec_pub = nh.advertise<std_msgs::Bool>(params.get("objrec_topic"), 2, true);
 
   ros::spin();
   
