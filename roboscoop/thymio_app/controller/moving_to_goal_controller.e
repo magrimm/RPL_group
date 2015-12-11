@@ -44,9 +44,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				drive.stop
 			elseif loc_state_signaler.data.data then
 				-- Already localized.
-				robot_loc_state_pub.publish (create {BOOL_MSG}.make_with_values(False))
 				m_sig.set_localized_time_absolute_pose (loc_result_signaler.data)
 				m_sig.set_localized_time_relative_pose (create {POSE_2D_MSG}.make_with_values (o_sig.x, o_sig.y, o_sig.theta))
+				robot_loc_state_pub.publish (create {BOOL_MSG}.make_with_values(False))
 				state_sig.set_is_go
 			else
 				-- Still localizing.
