@@ -1,7 +1,6 @@
 note
-	description: "Signaler for communication."
+	description: "Signaler for boolean state communication."
 	author: "Xiaote Zhu"
-	date: "29.11.15"
 
 class
 	BOOL_SIGNALER
@@ -40,7 +39,7 @@ feature {NONE} -- Implementation
 
 	subscribe_state (a_sub: separate ROS_SUBSCRIBER [BOOL_MSG];
 							a_listener: separate BOOL_LISTENER; a_topic: separate STRING)
-			-- Subscriber for odometry update.
+			-- Subscriber for state update.
 		do
 			a_sub.subscribe (a_topic, agent a_listener.update_state)
 		end

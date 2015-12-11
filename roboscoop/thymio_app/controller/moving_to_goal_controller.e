@@ -31,16 +31,26 @@ feature {NONE} -- Initialization
 
 feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
-	localize (state_sig: separate STATE_SIGNALER; s_sig: separate STOP_SIGNALER;
+	localize (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
+				o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 				drive: separate DIFFERENTIAL_DRIVE; path_planner: separate PATH_PLANNER;
-				algorithm_params: separate TANGENT_BUG_PARAMETERS)
+				algorithm_params: separate TANGENT_BUG_PARAMETERS; robot_loc_state_pub: separate ROS_PUBLISHER [BOOL_MSG];
+				loc_state_signaler: separate BOOL_SIGNALER; loc_result_signaler: separate POSE_2D_SIGNALER)
 			-- Move rebot for localization process.
 		require
 			state_sig.is_localizing or s_sig.is_stop_requested
 		do
 			if s_sig.is_stop_requested then
 				drive.stop
+			elseif loc_state_signaler.data.data then
+				-- Already localized.
+				robot_loc_state_pub.publish (create {BOOL_MSG}.make_with_values(False))
+				m_sig.set_localized_time_absolute_pose (loc_result_signaler.data)
+				m_sig.set_localized_time_relative_pose (create {POSE_2D_MSG}.make_with_values (o_sig.x, o_sig.y, o_sig.theta))
+				state_sig.set_is_go
 			else
+				-- Still localizing.
+				robot_loc_state_pub.publish (create {BOOL_MSG}.make_with_values(True))
 				drive.set_velocity (0, algorithm_params.localize_vtheta)
 			end
 		end
@@ -55,10 +65,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		local
 			vtheta, heading_error: REAL_64
 			cur_goal_point, robot_point: POINT_MSG
+			robot_orientation: REAL_64
 		do
-			create robot_point.make_with_values (o_sig.x + path_planner.get_start.x,
-												 o_sig.y + path_planner.get_start.y,
-												 o_sig.z + path_planner.get_start.z)
+			create robot_point.make_from_separate (m_sig.convert_robot_frame_coord_to_absolute_coord (o_sig.x, o_sig.y))
+			robot_orientation := m_sig.convert_robot_frame_orientation_to_absolute_orientation (o_sig.theta)
 
 			if s_sig.is_stop_requested then
 				drive.stop
@@ -87,9 +97,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				end
 
 				-- Calculate angular velocity.
-				heading_error := get_heading_error (o_sig.x + path_planner.get_start.x,
-													o_sig.y + path_planner.get_start.y,
-													o_sig.theta,
+				heading_error := get_heading_error (robot_point.x,
+													robot_point.y,
+													robot_orientation,
 													cur_goal_point.x,
 													cur_goal_point.y)
 				vtheta := pid_controller.get_control_output (heading_error,
@@ -155,9 +165,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		do
 			vleave_d_min := {REAL_64}.positive_infinity
 			create goal_point.make_from_separate (path_planner.get_final_goal)
-			create robot_point.make_with_values (o_sig.x + path_planner.get_start.x,
-												 o_sig.y + path_planner.get_start.y,
-												 o_sig.z + path_planner.get_start.z)
+			create robot_point.make_from_separate (m_sig.convert_robot_frame_coord_to_absolute_coord (o_sig.x, o_sig.y))
 			create vleave_point.make_empty
 
 			cur_distance := euclidean_distance (goal_point, robot_point)
@@ -221,9 +229,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 
 		do
 			create vleave.make_from_separate (m_sig.v_leave)
-			create robot_point.make_with_values (o_sig.x + path_planner.get_start.x,
-												 o_sig.y + path_planner.get_start.y,
-												 o_sig.z + path_planner.get_start.z)
+			create robot_point.make_from_separate (m_sig.convert_robot_frame_coord_to_absolute_coord (o_sig.x, o_sig.y))
 
 			if s_sig.is_stop_requested then
 				drive.stop
@@ -259,19 +265,18 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 		end
 
-	wait_when_intermediate_goal_reached (state_sig: separate STATE_SIGNALER;  o_sig: separate ODOMETRY_SIGNALER;
-											s_sig: separate STOP_SIGNALER; drive: separate DIFFERENTIAL_DRIVE;
-											algorithm_params: separate TANGENT_BUG_PARAMETERS; path_planner: separate PATH_PLANNER;
-											robot_state_pub: separate ROS_PUBLISHER [BOOL_MSG])
+	wait_when_intermediate_goal_reached (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
+											o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+											drive: separate DIFFERENTIAL_DRIVE; algorithm_params: separate TANGENT_BUG_PARAMETERS;
+											path_planner: separate PATH_PLANNER; robot_state_pub: separate ROS_PUBLISHER [BOOL_MSG])
 			-- Stop if intermediate goal reached.
 		require
 			(not state_sig.is_waiting and not state_sig.is_goal_reached) or s_sig.is_stop_requested
 		local
 			robot_point, wait_point: POINT_MSG
+			robot_orientation: REAL_64
 		do
-			create robot_point.make_with_values (o_sig.x + path_planner.get_start.x,
-												 o_sig.y + path_planner.get_start.y,
-												 o_sig.z + path_planner.get_start.z)
+			create robot_point.make_from_separate (m_sig.convert_robot_frame_coord_to_absolute_coord (o_sig.x, o_sig.y))
 			create wait_point.make_from_separate (path_planner.get_cur_wait_point)
 
 			if s_sig.is_stop_requested then
@@ -281,12 +286,14 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Check if distance to wait point is less than tolerance
 				state_sig.set_is_waiting
 
-				-- Turn to the right orientation
+				-- Turn to the correct orientation
 				from
+					robot_orientation := m_sig.convert_robot_frame_orientation_to_absolute_orientation (o_sig.theta)
 				until
-					(path_planner.get_cur_wait_angle - o_sig.theta).abs < algorithm_params.wait_point_angle_threshold
+					(path_planner.get_cur_wait_angle - robot_orientation).abs < algorithm_params.wait_point_angle_threshold
 				loop
-					drive.set_velocity (0, (path_planner.get_cur_wait_angle - o_sig.theta) / (path_planner.get_cur_wait_angle - o_sig.theta).abs * algorithm_params.wait_point_angle_threshold)
+					drive.set_velocity (0, (path_planner.get_cur_wait_angle - robot_orientation) / (path_planner.get_cur_wait_angle - robot_orientation).abs * algorithm_params.wait_point_angle_threshold)
+					robot_orientation := m_sig.convert_robot_frame_orientation_to_absolute_orientation (o_sig.theta)
 				end
 				drive.stop
 				path_planner.move_to_next_wait_point
@@ -311,18 +318,17 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			end
 		end
 
-	stop_when_goal_reached (state_sig: separate STATE_SIGNALER; o_sig: separate ODOMETRY_SIGNALER;
-								s_sig: separate STOP_SIGNALER; drive: separate DIFFERENTIAL_DRIVE;
-								algorithm_params: separate TANGENT_BUG_PARAMETERS; path_planner: separate PATH_PLANNER)
+	stop_when_goal_reached (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
+								o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
+								drive: separate DIFFERENTIAL_DRIVE; algorithm_params: separate TANGENT_BUG_PARAMETERS;
+								path_planner: separate PATH_PLANNER)
 			-- Stop if goal reached.
 		require
 			o_sig.is_moving or s_sig.is_stop_requested
 		local
 			robot_point, goal_point: POINT_MSG
 		do
-			create robot_point.make_with_values (o_sig.x + path_planner.get_start.x,
-												 o_sig.y + path_planner.get_start.y,
-												 o_sig.z + path_planner.get_start.z)
+			create robot_point.make_from_separate (m_sig.convert_robot_frame_coord_to_absolute_coord (o_sig.x, o_sig.y))
 			create goal_point.make_from_separate (path_planner.get_final_goal)
 
 			if s_sig.is_stop_requested then

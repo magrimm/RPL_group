@@ -28,9 +28,13 @@ feature {NONE} -- Initialization
 			create stop_sig.make
 			create moving_to_goal_sig.make
 
-			create robot_state_pub.make_with_topic ({MAP_TOPICS}.robot_state)
-			robot_state_pub.advertize (1, True)
+			create robot_objrec_state_pub.make_with_topic ({MAP_TOPICS}.robot_objrec_state)
+			robot_objrec_state_pub.advertize (1, True)
+			create robot_loc_state_pub.make_with_topic ({MAP_TOPICS}.robot_loc_state)
+			robot_loc_state_pub.advertize (1, True)
 			create objrec_state_signaler.make_with_topic ({MAP_TOPICS}.object_recognition_state)
+			create loc_state_signaler.make_with_topic ({MAP_TOPICS}.localization_state)
+			create loc_result_signaler.make_with_topic ({MAP_TOPICS}.localization_result)
 
 			create vleave_pub.make_with_attributes ({MAP_TOPICS}.vleave)
 			create cur_goal_pub.make_with_attributes ({MAP_TOPICS}.current_goal)
@@ -95,11 +99,20 @@ feature {NONE} -- Implementation
 	path_planner: PATH_PLANNER
 			-- Path planner for optimal path.
 
-	robot_state_pub: ROS_PUBLISHER [BOOL_MSG]
+	robot_objrec_state_pub: ROS_PUBLISHER [BOOL_MSG]
 			-- If robot should wait for object recognition.
+
+	robot_loc_state_pub: ROS_PUBLISHER [BOOL_MSG]
+			-- If robot are in localization state.
 
 	objrec_state_signaler: BOOL_SIGNALER
 			-- If objrec has finished recognition process.
+
+	loc_state_signaler: BOOL_SIGNALER
+			-- If localization has finished recognition process.
+
+	loc_result_signaler: POSE_2D_SIGNALER
+			-- Receive result of localizaton.
 
 	cur_goal_pub: POINT_MSG_TO_MARKER_MSG
 			-- The current goal in go state
@@ -171,6 +184,7 @@ feature {NONE} -- Implementation
 			e.repeat_until_stop_requested (
 					-- Terminate task at goal.
 				agent e.stop_when_goal_reached (state_sig,
+												 moving_to_goal_sig,
 												 odometry_sig,
 												 stop_sig,
 												 diff_drive,
@@ -180,26 +194,32 @@ feature {NONE} -- Implementation
 			f.repeat_until_stop_requested (
 					-- Wait at intermediate goal.
 				agent f.wait_when_intermediate_goal_reached (state_sig,
+																moving_to_goal_sig,
 																odometry_sig,
 																stop_sig,
 																diff_drive,
 																algorithm_params,
 																path_planner,
-																robot_state_pub))
+																robot_objrec_state_pub))
 
 			g.repeat_until_stop_requested (
 					-- Continue after waiting at intermediate goal.
 				agent g.continue_after_task_finished (state_sig,
 													   stop_sig,
 													   objrec_state_signaler,
-													   robot_state_pub))
+													   robot_objrec_state_pub))
 
 			h.repeat_until_stop_requested (
 				agent h.localize (state_sig,
+									moving_to_goal_sig,
+									odometry_sig,
 									stop_sig,
 									diff_drive,
 									path_planner,
-									algorithm_params))
+									algorithm_params,
+									robot_loc_state_pub,
+									loc_state_signaler,
+									loc_result_signaler))
 		end
 
 	sep_stop (s_sig: separate STOP_SIGNALER; val: BOOLEAN)
