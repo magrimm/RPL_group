@@ -61,12 +61,10 @@ void localization_processor::Callback_map (const nav_msgs::OccupancyGrid::ConstP
 
 void localization_processor::Callback_odom (const nav_msgs::OdometryConstPtr& odom_msg)
 {
-	// After call set sig_odom == false to sequentially synchronize the callback on
-	// odometry and the laser scan
+	// Execute initially the odometry callback first
 	if (sig_odom == true)
 	{
-		// Update previous odometry and get new current odometry
-//		control.odometry[0] = control.odometry[1];
+		// Update current odometry
 		control.odometry[1].position.x = odom_msg->pose.pose.position.x;
 		control.odometry[1].position.y = odom_msg->pose.pose.position.y;
 		control.odometry[1].position.z = odom_msg->pose.pose.position.z;
@@ -89,22 +87,19 @@ void localization_processor::Callback_odom (const nav_msgs::OdometryConstPtr& od
 
 		//Set signaler such that callbacks of odom and scan wait for each other
 		sig_scan = true;
-//		sig_odom = false;
 	}
 }
 
 void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr& scan_msg)
 {
 	// Wait unitl odometry first changed
-	if ((control.odometry[0].position.x == control.odometry[1].position.x) && (control.odometry[0].position.y == control.odometry[1].position.y))
+	if ((control.odometry[0].position.x == control.odometry[1].position.x) &&
+		(control.odometry[0].position.y == control.odometry[1].position.y))
 	{
 		sig_scan = false;
-//		sig_odom	 = true;
-//		break;
 	}
 
-	// After call set sig_scan == false to sequentially synchronize the callback on
-	// odometry and the laser scan
+	// Wait until odometry first changed and do the odometry callback first
 	if (sig_scan == true)
 	{
 		// Construct motion_update
@@ -192,10 +187,6 @@ void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr
 		pub_points.publish(points_particle);
 
 //		----------------------------------------------------------------------------------------
-
-		//Set signaler such that callbacks of odom and scan wait for each other
-//		sig_scan = false;
-//		sig_odom = true;
 
 		// Update odometry control of period t-1
 		control.odometry[0] = control.odometry[1];
