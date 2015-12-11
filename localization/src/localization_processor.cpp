@@ -38,6 +38,7 @@ localization_processor::localization_processor (ros::NodeHandle nodehandle, para
 	control.odometry[0].orientation.y = parameter.control_odom_prev_orient_y;
 	control.odometry[0].orientation.z = parameter.control_odom_prev_orient_z;
 	control.odometry[0].orientation.w = parameter.control_odom_prev_orient_w;
+	control.odometry[0].theta = parameter.control_odom_prev_theta;
 
 	control.odometry[1].position.x = parameter.control_odom_cur_pos_x;
 	control.odometry[1].position.y = parameter.control_odom_cur_pos_y;
@@ -46,6 +47,7 @@ localization_processor::localization_processor (ros::NodeHandle nodehandle, para
 	control.odometry[1].orientation.y = parameter.control_odom_cur_orient_y;
 	control.odometry[1].orientation.z = parameter.control_odom_cur_orient_z;
 	control.odometry[1].orientation.w = parameter.control_odom_cur_orient_w;
+	control.odometry[1].theta = parameter.control_odom_cur_theta;
 }
 
 void localization_processor::Callback_map (const nav_msgs::OccupancyGrid::ConstPtr& map_msg)
@@ -75,10 +77,10 @@ void localization_processor::Callback_odom (const nav_msgs::OdometryConstPtr& od
 {
 	// After call set sig_odom == false to sequentially synchronize the callback on
 	// odometry and the laser scan
-	while (sig_odom == true)
+	if (sig_odom == true)
 	{
 		// Update previous odometry and get new current odometry
-		control.odometry[0] = control.odometry[1];
+//		control.odometry[0] = control.odometry[1];
 		control.odometry[1].position.x = odom_msg->pose.pose.position.x;
 		control.odometry[1].position.y = odom_msg->pose.pose.position.y;
 		control.odometry[1].position.z = odom_msg->pose.pose.position.z;
@@ -87,26 +89,38 @@ void localization_processor::Callback_odom (const nav_msgs::OdometryConstPtr& od
 		control.odometry[1].orientation.z = odom_msg->pose.pose.orientation.z;
 		control.odometry[1].orientation.w = odom_msg->pose.pose.orientation.w;
 
-		// Set signaler such that callbacks of odom and scan wait for each other
+		// Transform quaternion orientation to theta (yaw)
+		tf::Quaternion q(control.odometry[1].orientation.x,
+						 control.odometry[1].orientation.y,
+						 control.odometry[1].orientation.z,
+						 control.odometry[1].orientation.w);
+
+		tf::Matrix3x3 m(q);
+		double roll, pitch, yaw;
+		m.getRPY(roll, pitch, yaw);
+
+		control.odometry[1].theta = (float) yaw;
+
+		//Set signaler such that callbacks of odom and scan wait for each other
 		sig_scan = true;
-		sig_odom = false;
+//		sig_odom = false;
 	}
 }
 
 void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr& scan_msg)
 {
+	// Wait unitl odometry first changed
+	if ((control.odometry[0].position.x == control.odometry[1].position.x) && (control.odometry[0].position.y == control.odometry[1].position.y))
+	{
+		sig_scan = false;
+//			sig_odom	 = true;
+//		break;
+	}
+
 	// After call set sig_scan == false to sequentially synchronize the callback on
 	// odometry and the laser scan
-	while (sig_scan == true)
+	if (sig_scan == true)
 	{
-		// Wait unitl odometry first changed
-		if ((control.odometry[0].position.x == control.odometry[1].position.x) && (control.odometry[0].position.y == control.odometry[1].position.y))
-		{
-			sig_scan = false;
-			sig_odom = true;
-			break;
-		}
-
 		// Construct motion_update
 		motion_update motion_upd(parameter.motion_update, parameter.distribution);
 
@@ -193,9 +207,12 @@ void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr
 
 //		----------------------------------------------------------------------------------------
 
-		// Set signaler such that callbacks of odom and scan wait for each other
-		sig_scan = false;
-		sig_odom = true;
+		//Set signaler such that callbacks of odom and scan wait for each other
+//		sig_scan = false;
+//		sig_odom = true;
+
+		// Update odometry control of period t-1
+		control.odometry[0] = control.odometry[1];
 	}
 }
 
@@ -203,10 +220,10 @@ void localization_processor::get_particles ()
 {
 	int count;
 	// Put particles in x-coordinate in each it_cell_x cell
-	for (int i = 0; i < map.width; i += parameter.it_cell_x)//(int i = 130; i < 200; i += 10)//
+	for (int i = 130; i < 200; i += 10)//(int i = 0; i < map.width; i += parameter.it_cell_x)//
 	{
 		// Put particles in y-coordinate in each it_cell_y cell
-		for (int j = 0; j < map.height; j += parameter.it_cell_y)//(int j = 0; j < 90; j += 10)//
+		for (int j = 0; j < 90; j += 10)//(int j = 0; j < map.height; j += parameter.it_cell_y)//
 		{
 			// Distribute particles with different theta orientation
 			for (float theta = 0; theta < 2*M_PI; theta += 2*M_PI/parameter.it_theta)
@@ -219,6 +236,9 @@ void localization_processor::get_particles ()
 					a_particle.position.x = i*map.resolution;
 					a_particle.position.y = j*map.resolution;
 					a_particle.position.z = 0;
+
+					// Save theta of particles
+					a_particle.theta = theta;
 
 					// Convert theta to quaternion
 					a_particle.orientation.x = tf::createQuaternionFromYaw(theta).getX();

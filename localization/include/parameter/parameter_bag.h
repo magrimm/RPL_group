@@ -31,8 +31,10 @@ struct parameter_bag
 	float pose_empty_orient_x, pose_empty_orient_y, pose_empty_orient_z, pose_empty_orient_w;
 	float control_odom_prev_pos_x, control_odom_prev_pos_y, control_odom_prev_pos_z;
 	float control_odom_prev_orient_x, control_odom_prev_orient_y, control_odom_prev_orient_z, control_odom_prev_orient_w;
+	float control_odom_prev_theta;
 	float control_odom_cur_pos_x, control_odom_cur_pos_y, control_odom_cur_pos_z, control_odom_cur_pos_w;
 	float control_odom_cur_orient_x, control_odom_cur_orient_y, control_odom_cur_orient_z, control_odom_cur_orient_w;
+	float control_odom_cur_theta;
 
 	distribution_bag distribution;
 	resample_bag resample;

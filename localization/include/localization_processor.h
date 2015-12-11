@@ -14,16 +14,19 @@
 #include <parameter/motion_update_bag.h>
 #include <parameter/sensor_update_bag.h>
 #include <parameter/visualization_bag.h>
+
 #include <ros/ros.h>
 #include <motion_update.h>
 #include <sensor_update.h>
 #include <resample.h>
 #include <visualization.h>
+
 #include <nav_msgs/Odometry.h>
 #include <nav_msgs/OccupancyGrid.h>
 #include <sensor_msgs/LaserScan.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Polygon.h>
+
 #include <math.h>
 #include <numeric>
 
@@ -47,6 +50,8 @@ struct pose
 {
 	position3D position;
 	orientation_quat orientation;
+
+	float theta;
 };
 
 struct robot_control

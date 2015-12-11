@@ -27,6 +27,8 @@ float sensor_update::get_particle_weight(const sensor_msgs::LaserScanConstPtr& s
 	// Clean the particle weights such that particles are highly unlikely to be outside of the map
 	clean_weight_of_particle(particle_weight, particle, map);
 
+//	std::cout << "particle_weight: " << particle_weight << std::endl;
+
 	return particle_weight;
 }
 
@@ -48,19 +50,9 @@ void sensor_update::convert_sensor_measurement_to_points (const sensor_msgs::Las
 			point_scan.y = range * sinf(angle);
 			point_scan.z = 0.0;
 
-			// Transform quaternion orientation of particle to theta (yaw)
-			tf::Quaternion q(particle.orientation.x,
-		             	 	 particle.orientation.y,
-							 particle.orientation.z,
-							 particle.orientation.w);
-
-			tf::Matrix3x3 m(q);
-			double roll, pitch, yaw;
-			m.getRPY(roll, pitch, yaw);
-
 			// Calculate rotational part
-			rotation.x = point_scan.x * cosf((float) yaw) - point_scan.y * sinf((float) yaw);
-			rotation.y = point_scan.x * sinf((float) yaw) + point_scan.y * cosf((float) yaw);
+			rotation.x = point_scan.x * cosf(particle.theta) - point_scan.y * sinf(particle.theta);
+			rotation.y = point_scan.x * sinf(particle.theta) + point_scan.y * cosf(particle.theta);
 			rotation.z = 0.0;
 
 			// Calculate translational part
