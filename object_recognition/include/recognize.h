@@ -17,6 +17,11 @@
 #include <pcl/common/file_io.h>
 #include <pcl/recognition/cg/geometric_consistency.h>
 
+#include <common.h>
+#include <extract_feature.h>
+#include <segment.h>
+#include <select_keypoint.h>
+
 namespace objrec {
 
 template <typename PointT>
