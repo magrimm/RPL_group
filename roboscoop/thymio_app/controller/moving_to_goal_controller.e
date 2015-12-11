@@ -27,6 +27,7 @@ feature {NONE} -- Initialization
 			create pid_controller_vleave.make (controller_params.k_p_vleave,
 											   controller_params.k_i_vleave,
 											   controller_params.k_d_vleave)
+
 		end
 
 feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
