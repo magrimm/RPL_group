@@ -3,6 +3,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/features/spin_image.h>
+#include <common.h>
 
 namespace objrec {
 
