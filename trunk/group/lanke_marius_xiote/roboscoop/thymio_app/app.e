@@ -20,17 +20,17 @@ feature {NONE} -- Initialization
 			ros_spinner: separate ROS_SPINNER
 			thymio: separate THYMIO_ROBOT
 
-			app_parser: PARSER[APP_PARAMETERS]
+			app_parser: APP_PARAMETERS_PARSER
 			app_params: APP_PARAMETERS
 			app_params_path: separate STRING
 
-			robot_parser: PARSER[ROBOT_PARAMETERS]
+			robot_parser: ROBOT_PARAMETERS_PARSER
 			robot_params: ROBOT_PARAMETERS
 
-			path_planning_parser: PARSER[PATH_PLANNER_PARAMETER]
+			path_planning_parser: PATH_PLANNER_PARAMETERS_PARSER
 			path_planner_params: PATH_PLANNER_PARAMETER
 
-			tangent_bug_parser: PARSER[TANGENT_BUG_PARAMETERS]
+			tangent_bug_parser: TANGENT_BUG_PARAMETERS_PARSER
 			tangent_bug_params: TANGENT_BUG_PARAMETERS
 
 			conn_strategy: GRID_CONNECTIVITY_STRATEGY
@@ -63,10 +63,10 @@ feature {NONE} -- Initialization
 
 			app_params_path := Arguments.argument (1).to_string_8
 
-			app_parser.parse_file (create {STRING}.make_from_separate (app_params_path), app_params)
-			robot_parser.parse_file(app_params.robot_file_name, robot_params)
-			tangent_bug_parser.parse_file (app_params.algorithm_file_name, tangent_bug_params)
-			path_planning_parser.parse_file(app_params.path_planner_file_name, path_planner_params)
+			app_params := app_parser.parse_txt_file (create {STRING}.make_from_separate (app_params_path))
+			robot_params := robot_parser.parse_txt_file(app_params.robot_file_name)
+			tangent_bug_params := tangent_bug_parser.parse_txt_file (app_params.algorithm_file_name)
+			path_planner_params := path_planning_parser.parse_txt_file(app_params.path_planner_file_name)
 
 			-- Create a robot object.
 			create thymio.make (robot_params)

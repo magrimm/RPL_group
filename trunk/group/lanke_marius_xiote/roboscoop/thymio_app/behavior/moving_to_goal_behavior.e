@@ -14,7 +14,7 @@ create
 feature {NONE} -- Initialization
 
 	make_with_attributes (robot: separate ROBOT; planner: PATH_PLANNER; tangent_bug_params: TANGENT_BUG_PARAMETERS)
-			-- Create current with given attributes.
+			-- Create current with given attributes.	
 		do
 			path_planner := planner
 			algorithm_params := tangent_bug_params
@@ -42,7 +42,7 @@ feature {NONE} -- Initialization
 
 			create controller_params.make
 			create controller_parser
-			controller_parser.parse_file (algorithm_params.controller_file_name, controller_params)
+			controller_params := controller_parser.parse_txt_file (algorithm_params.controller_file_name)
 		end
 
 feature -- Access
@@ -129,7 +129,7 @@ feature {NONE} -- Implementation
 	controller_params: CONTROLLER_PARAMETERS
 			-- Parameters for pid controller.
 
-	controller_parser: PARSER[CONTROLLER_PARAMETERS]
+	controller_parser: CONTROLLER_PARAMETERS_PARSER
 			-- Parser for pid controller parameters.
 
 	sep_start (a, b, c, d, e, f, g, h: separate MOVING_TO_GOAL_CONTROLLER)
