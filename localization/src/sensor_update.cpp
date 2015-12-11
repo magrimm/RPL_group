@@ -78,8 +78,6 @@ int sensor_update::correlation_particle_map (std::vector<position3D>& points, ma
 	{
 		int map_index = int(points.at(i).x/map.resolution) + int(points.at(i).y*map.width/map.resolution);
 
-//		std::cout << "map_index: " << map_index << std::endl;
-
 		// Count correlations if point is within the map
 		if (map_index < map.data.size())
 		{

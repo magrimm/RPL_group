@@ -82,18 +82,20 @@ private:
 	ros::NodeHandle nh;
 	parameter_bag parameter;
 
-	ros::Publisher pub, pub_points;
+	ros::Publisher pub, pub_points, pub_particle;
 	map_grid map;
 	std::vector<pose> particles;
 	std::vector<float> weights;
 	std::vector<float> norm_weights;
 
 	robot_control control;
-	pose pose_empty;
-	std::vector<robot_control> control_vec;
 
 	// Signaler for communication bettween odom msg and laser scan msg
 	bool sig_odom, sig_scan;
+
+	// TEST DEBUG
+	geometry_msgs::Pose test_particle_geo;
+
 };
 
 #endif /* _LOCALIZATION_PROCESSOR_H_ */
