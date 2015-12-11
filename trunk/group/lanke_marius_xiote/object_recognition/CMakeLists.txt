@@ -90,7 +90,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast ")
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+  INCLUDE_DIRS include
 #  LIBRARIES object_recognition
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
@@ -100,6 +100,7 @@ catkin_package(
 ## Build ##
 ###########
 
+include_directories(include)
 include_directories(
   ${PCL_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
