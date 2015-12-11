@@ -15,8 +15,12 @@ feature -- Constants
 	odometry_frame: STRING_8 = "/odometry_link"
 	base_frame: STRING_8 = "/base_link"
 
-	robot_state: STRING_8 = "/robot_state"
+	robot_objrec_state: STRING_8 = "/robot_objrec_state"
+	robot_loc_state: STRING_8 = "/robot_loc_state"
 	object_recognition_state: STRING_8 = "/objrec_state"
+	localization_state: STRING_8 = "/loc_state"
+	localization_result: STRING_8 = "/loc_result"
+
 	vleave: STRING_8 = "vleave_point"
 	search_vleave: STRING_8 = "search_vleave_point"
 
