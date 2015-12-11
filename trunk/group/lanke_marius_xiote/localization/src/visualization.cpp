@@ -50,7 +50,7 @@ void visualization::visualize_points (visualization_msgs::Marker::Ptr a_marker, 
 											float a_scale_x, float a_scale_y, float a_scale_z)
 {
 	// SET MARKER
-	a_marker->header.frame_id = visual_param.frame_id;
+	a_marker->header.frame_id = "points_tf";//visual_param.frame_id;
 	a_marker->header.stamp = ros::Time();
 	a_marker->ns = visual_param.ns;
 	a_marker->id = a_marker_id;
@@ -76,7 +76,7 @@ void visualization::visualize_particle_pose (geometry_msgs::PoseArray::Ptr poseA
 
 	// Set the header
 	poseArray->header.stamp = ros::Time::now();
-	poseArray->header.frame_id = "odometry_link";
+	poseArray->header.frame_id = "particles_tf";//"odometry_link";
 
 	// Get Pose_array for particles
 	for (int i = 0; i < particles.size(); ++i)

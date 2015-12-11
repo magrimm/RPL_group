@@ -11,7 +11,6 @@
 #include <parameter/sensor_update_bag.h>
 #include <sensor_msgs/LaserScan.h>
 #include <localization_processor.h>
-#include <tf/LinearMath/Transform.h>
 
 // Forward declaration
 struct pose;

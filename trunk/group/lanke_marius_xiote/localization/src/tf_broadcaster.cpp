@@ -20,13 +20,21 @@ int main(int argc, char** argv)
 
   ros::Rate rate(10.0);
   while (node.ok()){
-    transform_map.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
-    transform_map.setRotation( tf::Quaternion(0, 0, 0.7071, 0.7071) );
-    br.sendTransform(tf::StampedTransform(transform_map, ros::Time::now(), "/particles_tf", "odometry_link"));
+//    transform_map.setOrigin( tf::Vector3(1.0, 2.0, 0.0) );
+//    transform_map.setRotation( tf::Quaternion(0, 0, -0.7071, 0.7071) );
+//    br.sendTransform(tf::StampedTransform(transform_map, ros::Time::now(), "odometry_link", "particles_tf"));
+//
+//    transform.setOrigin( tf::Vector3(1.0, 2.0, 0.0) );
+//    transform.setRotation( tf::Quaternion(0, 0, -0.7071, 0.7071) );
+//    br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "odometry_link", "points_tf"));
 
-//    transform.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
-//    transform.setRotation( tf::Quaternion(0, 0, 0, 1) );
-//    br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "base_link", "camera_link"));
+	    transform_map.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
+	    transform_map.setRotation( tf::Quaternion(0, 0, 0, 1) );
+	    br.sendTransform(tf::StampedTransform(transform_map, ros::Time::now(), "odometry_link", "particles_tf"));
+
+	    transform.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
+	    transform.setRotation( tf::Quaternion(0, 0, 0, 1) );
+	    br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "odometry_link", "points_tf"));
 
     ros::spinOnce();
     rate.sleep();
