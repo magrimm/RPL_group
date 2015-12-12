@@ -25,7 +25,10 @@ public:
 	motion_update(motion_update_bag motion_update_params, distribution_bag dist_params);
 
 	// Update the particle odometry
-	void particle_motion(robot_control a_control, pose& a_particle);
+	void particle_motion(pose& a_particle);
+
+	// Recover the perturbed relative motion parameters
+	void get_motion_parameters (robot_control& control);
 
 	// Get the approx. position of the robot
 	pose approximate_robot_pose(std::vector<pose>& the_particles);
@@ -33,6 +36,10 @@ public:
 private:
 	motion_update_bag motion_update_params;
 	distribution_bag dist_params;
+
+	// Relative motion parameters
+	float delta_rot1, delta_trans, delta_rot2;
+	float rot1_sq, trans_sq, rot2_sq;
 };
 
 
