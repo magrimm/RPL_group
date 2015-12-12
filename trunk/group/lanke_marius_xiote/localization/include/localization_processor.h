@@ -86,7 +86,6 @@ private:
 	map_grid map;
 	std::vector<pose> particles;
 	std::vector<float> weights;
-	std::vector<float> norm_weights;
 
 	robot_control control;
 
@@ -95,6 +94,9 @@ private:
 
 	// TEST DEBUG
 	geometry_msgs::Pose test_particle_geo;
+
+	// Count iterations
+	int count;
 
 };
 
