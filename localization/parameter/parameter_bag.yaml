@@ -41,11 +41,11 @@ control_odom_prev_orient_z: 0
 control_odom_prev_orient_w: 1.0
 control_odom_prev_theta: 0.0
 
-control_odom_cur_pos_x: 0
-control_odom_cur_pos_y: 0
-control_odom_cur_pos_z: 0
-control_odom_cur_orient_x: 0
-control_odom_cur_orient_y: 0
-control_odom_cur_orient_z: 0
-control_odom_cur_orient_w: 1.0
-control_odom_cur_theta: 0.0
+#control_odom_cur_pos_x: 0
+#control_odom_cur_pos_y: 0
+#control_odom_cur_pos_z: 0
+#control_odom_cur_orient_x: 0
+#control_odom_cur_orient_y: 0
+#control_odom_cur_orient_z: 0
+#control_odom_cur_orient_w: 1.0
+#control_odom_cur_theta: 0.0

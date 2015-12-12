@@ -13,27 +13,10 @@ motion_update::motion_update(motion_update_bag motion_update_parameter, distribu
 	dist_params = dist_parameter;
 }
 
-void motion_update::particle_motion(robot_control control, pose& particle)
+void motion_update::particle_motion(pose& particle)
 {
-	// Recover relative motion parameters from control
-	float delta_rot1 = float (atan2f(control.odometry[1].position.y - control.odometry[0].position.y,
-							         control.odometry[1].position.x - control.odometry[0].position.x) -
-			 	 	 	 	  control.odometry[0].theta);
-	float delta_trans = float (sqrtf(powf(control.odometry[0].position.x - control.odometry[1].position.x, 2) +
-			 	 	 	 	 	 	 powf(control.odometry[0].position.y - control.odometry[1].position.y, 2)));
-	float delta_rot2 = float (control.odometry[1].theta - control.odometry[0].theta - delta_rot1);
-
 	// Construct random distributions class
 	normal_distribution_approximation norm_dist_approx(dist_params);
-
-	// Perturb the motion parameters by noise in robot motion
-	float rot1_sq = (motion_update_params.alpha1 * powf(delta_rot1, 2)) +
-			        (motion_update_params.alpha2 * powf(delta_trans, 2));
-	float trans_sq = (motion_update_params.alpha3 * powf(delta_trans, 2)) +
-					 (motion_update_params.alpha4 * powf(delta_rot1, 2)) +
-					 (motion_update_params.alpha4 * powf(delta_rot2, 2));
-	float rot2_sq = (motion_update_params.alpha1 * powf(delta_rot2, 2)) +
- 	   	   	   	   	(motion_update_params.alpha2 * powf(delta_trans, 2));
 
 	// Noise
 	float sample_rot1 = norm_dist_approx.sample_distribution(rot1_sq);
@@ -58,6 +41,26 @@ void motion_update::particle_motion(robot_control control, pose& particle)
 	particle.orientation.y = tf::createQuaternionFromYaw(particle.theta).getY();
 	particle.orientation.z = tf::createQuaternionFromYaw(particle.theta).getZ();
 	particle.orientation.w = tf::createQuaternionFromYaw(particle.theta).getW();
+}
+
+void motion_update::get_motion_parameters (robot_control& control)
+{
+	// Recover relative motion parameters from control
+	delta_rot1 = float (atan2f(control.odometry[1].position.y - control.odometry[0].position.y,
+							   control.odometry[1].position.x - control.odometry[0].position.x) -
+			 	 	 	control.odometry[0].theta);
+	delta_trans = float (sqrtf(powf(control.odometry[0].position.x - control.odometry[1].position.x, 2) +
+			 	 	 	 	   powf(control.odometry[0].position.y - control.odometry[1].position.y, 2)));
+	delta_rot2 = float (control.odometry[1].theta - control.odometry[0].theta - delta_rot1);
+
+	// Perturb the motion parameters by noise in robot motion
+	rot1_sq = (motion_update_params.alpha1 * powf(delta_rot1, 2)) +
+			  (motion_update_params.alpha2 * powf(delta_trans, 2));
+	trans_sq = (motion_update_params.alpha3 * powf(delta_trans, 2)) +
+			   (motion_update_params.alpha4 * powf(delta_rot1, 2)) +
+			   (motion_update_params.alpha4 * powf(delta_rot2, 2));
+	rot2_sq = (motion_update_params.alpha1 * powf(delta_rot2, 2)) +
+ 	   	   	  (motion_update_params.alpha2 * powf(delta_trans, 2));
 }
 
 pose motion_update::approximate_robot_pose(std::vector<pose>& particles)
