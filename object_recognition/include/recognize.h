@@ -1,3 +1,6 @@
+// Xiaote Zhu
+// Classes for object recognition.
+
 #ifndef RECOGNIZE_H_INCLUDED
 #define RECOGNIZE_H_INCLUDED
 
@@ -47,9 +50,23 @@ template <typename PointT, typename FeatureT>
 class GCGRecognizer : public Recognizer<PointT, FeatureT> {
 // Recognizer class based on Geometric Consistency Grouping. 
 public:
+  GCGRecognizer(double matching_similarity_threshold = 0.25, int gc_threshold = 25, double gc_size = 0.01) : _matching_similarity_threshold(matching_similarity_threshold), _gc_threshold(gc_threshold), _gc_size(gc_size){}
+
   GCGRecognizer(const SegmentationStrategy<PointT> *segmenter, const KeypointSelector<PointT> *selector, const FeatureExtractor<PointT, FeatureT> *feature_extractor,
     double matching_similarity_threshold = 0.25, int gc_threshold = 25, double gc_size = 0.01) : _matching_similarity_threshold(matching_similarity_threshold), _gc_threshold(gc_threshold), _gc_size(gc_size),
     _segmenter(segmenter), _selector(selector), _feature_extractor(feature_extractor) {}
+  
+  void setSegmenter(const SegmentationStrategy<PointT> *segmenter) {
+    _segmenter = segmenter;
+  }
+
+  void setSelector(const KeypointSelector<PointT> *selector) {
+    _selector = selector;
+  }
+
+  void setFeatureExtractor(const FeatureExtractor<PointT, FeatureT> *feature_extractor) {
+    _feature_extractor = feature_extractor;
+  }
 
   void addModelClouds(const typename std::map<std::string, std::vector<typename pcl::PointCloud<PointT>::Ptr> >& model_clouds) {
     // Compute and store features for each model clouds.

@@ -27,6 +27,7 @@ typedef pcl::PointXYZ PointT;
 typedef pcl::Histogram<153> FeatureT;
 typedef pcl::PointCloud<PointT> PointCloud;
 
+objrec::GCGRecognizer<PointT, FeatureT> recognizer;
 objrec::Parameters params;
 ros::Publisher marker_pub;
 ros::Publisher objrec_pub;
@@ -42,20 +43,6 @@ void recCallback(const PointCloud::ConstPtr& msg) {
 // Callback function for when image is received.
   if (objrec_permitted) {
   	std::cerr << "Cloud: width = " << msg->width << " height = " << msg->height << std::endl;
-
-    objrec::RegionGrowingSegmentation<pcl::PointXYZ> segmenter;
-
-    // Add preprocessing steps.
-    segmenter.addPreprocessStep(new objrec::DepthFilter<pcl::PointXYZ>());
-    segmenter.addPreprocessStep(new objrec::StatisticalOutlierFilter<pcl::PointXYZ>());
-    segmenter.addPreprocessStep(new objrec::PlanarForegroundSelector<pcl::PointXYZ>());
-
-    objrec::UniformKeypointSelector<pcl::PointXYZ> selector;
-    objrec::SpinImageFeatureExtractor<pcl::PointXYZ> feature_extractor;
-    objrec::GCGRecognizer<PointT, FeatureT> recognizer(&segmenter, &selector, &feature_extractor);
-
-    // Add model files to recognizer
-    recognizer.addModelClouds(_model_clouds);
 
     // Object recognition.
     std::vector<std::vector<objrec::RecognizerResult<PointT> > > results;
@@ -133,6 +120,23 @@ int main(int argc, char** argv)
     params.from_file(argv[1]);
 
   loadPCDFiles();
+
+  objrec::RegionGrowingSegmentation<pcl::PointXYZ> segmenter;
+  // Add preprocessing steps.
+  segmenter.addPreprocessStep(new objrec::DepthFilter<pcl::PointXYZ>());
+  segmenter.addPreprocessStep(new objrec::StatisticalOutlierFilter<pcl::PointXYZ>());
+  segmenter.addPreprocessStep(new objrec::PlanarForegroundSelector<pcl::PointXYZ>());
+
+  objrec::UniformKeypointSelector<pcl::PointXYZ> selector;
+  objrec::SpinImageFeatureExtractor<pcl::PointXYZ> feature_extractor;
+
+  recognizer.setSegmenter(&segmenter);
+  recognizer.setSelector(&selector);
+  recognizer.setFeatureExtractor(&feature_extractor);
+
+  // Add model files to recognizer
+  recognizer.addModelClouds(_model_clouds);
+
 	ros::init(argc, argv, params.get("node_name"));
   ros::NodeHandle nh;
 

@@ -40,9 +40,7 @@ add_definitions(${PCL_DEFINITIONS})
 set(CMAKE_CXX_FLAGS "-g ${CMAKE_CXX_FLAGS}")
 
 add_executable(object_recognition_node
-	src/common.cpp 
 	src/parameters.cpp
-	src/extract_feature.cpp
 	src/object_recognition_node.cpp)
 add_executable(tf_broadcaster src/tf_broadcaster.cpp)
 

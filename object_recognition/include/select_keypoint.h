@@ -1,3 +1,6 @@
+// Xiaote Zhu
+// Classes for keypoint selection.
+
 #ifndef SELECT_KEYPOINT_H_INCLUDED
 #define SELECT_KEYPOINT_H_INCLUDED
 

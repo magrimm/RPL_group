@@ -1,3 +1,6 @@
+// Xiaote Zhu
+// Classes for image segmentation.
+
 #ifndef SEGMENT_H_INCLUDED
 #define SEGMENT_H_INCLUDED
 
