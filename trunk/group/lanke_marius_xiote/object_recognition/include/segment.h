@@ -10,7 +10,7 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/region_growing_rgb.h>
 
-#include "../include/preprocess.h"
+#include "preprocess.h"
 
 namespace objrec {
 
