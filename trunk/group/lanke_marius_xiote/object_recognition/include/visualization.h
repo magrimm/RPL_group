@@ -1,3 +1,6 @@
+// Xiaote Zhu
+// Functions for visualization.
+
 #ifndef VISUALIZATION_H_INCLUDED
 #define VISUALIZATION_H_INCLUDED
 

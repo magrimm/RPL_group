@@ -1,3 +1,6 @@
+// Xiaote Zhu
+// Classes for preprocessing steps.
+
 #ifndef PREPROCESS_H_INCLUDED
 #define PREPROCESS_H_INCLUDED
 
