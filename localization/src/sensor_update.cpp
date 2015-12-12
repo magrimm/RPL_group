@@ -76,16 +76,32 @@ int sensor_update::correlation_particle_map (std::vector<position3D>& points, ma
 
 	for (int i = 0; i < points.size(); ++i)
 	{
-		int map_index = int(points.at(i).x/map.resolution) + int(points.at(i).y*map.width/map.resolution);
+		int ind_i = int(points.at(i).x/map.resolution);
+		int ind_j = int(points.at(i).y/map.resolution);
 
-		// Count correlations if point is within the map
-		if (map_index < map.data.size())
+		int map_index = ind_i + ind_j*map.width;
+
+		if (ind_i > 0 && ind_i < map.height && ind_j > 0 && ind_j < map.width )
 		{
 			if (map.data.at(map_index) == sensor_update_param.map_obstacle)
 			{
 				correlation += 1;
+//				std::cout << "At map index " << map_index << " point is at " << points.at(i).x  <<" "<< points.at(i).y << std::endl;
 			}
 		}
+
+//			int map_index = ;
+//
+//		// Count correlations if point is within the map
+//		if (map_index < map.data.size())
+//		{
+//			if (map.data.at(map_index) == sensor_update_param.map_obstacle)
+//			{
+//				correlation += 1;
+//				std::cout << "At map index " << map_index << " point is at " << points.at(i).x  <<" "<< points.at(i).y << std::endl;
+//			}
+//		}
+
 	}
 
 	return correlation;
@@ -93,10 +109,14 @@ int sensor_update::correlation_particle_map (std::vector<position3D>& points, ma
 
 void sensor_update::clean_weight_of_particle(float& particle_weight, pose& particle, map_grid& map)
 {
-	int map_index = int(particle.position.x/map.resolution) + int(particle.position.y*map.width/map.resolution);
+	int ind_i = int(particle.position.x/map.resolution);
+	int ind_j = int(particle.position.y/map.resolution);
+
+	int map_index = ind_i + ind_j*map.width;
 
 	if (particle.position.x > map.width*map.resolution || particle.position.x < 0.0 ||
-		particle.position.y > map.height*map.resolution || particle.position.y < 0.0)// || map.data.at(map_index) == sensor_update_param.map_obstacle)
+		particle.position.y > map.height*map.resolution || particle.position.y < 0.0 ||
+		map.data.at(map_index) == sensor_update_param.map_obstacle || particle_weight == 0)
 	{
 		// Assign low correlation/ particle weight
 		particle_weight = sensor_update_param.clean_particle_weight;

@@ -61,6 +61,11 @@ void localization_processor::Callback_map (const nav_msgs::OccupancyGrid::ConstP
 
 void localization_processor::Callback_odom (const nav_msgs::OdometryConstPtr& odom_msg)
 {
+//	if (sig_scan == true)
+//	{
+//		control.odometry[0] = control.odometry[1];
+//	}
+
 	// Execute initially the odometry callback first
 	if (sig_odom == true)
 	{
@@ -147,6 +152,8 @@ void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr
 		norm_weights.resize(weights.size());
 		std::transform(weights.begin(), weights.end(), norm_weights.begin(), std::bind1st(std::multiplies<float>(), (1/sum_of_weights)));
 
+		std::cout << "sum of weights: " << sum_of_weights  << std::endl;
+
 		// Resample the particles
 		roulette_samp.resample_distribution(particles, norm_weights);
 
@@ -156,7 +163,7 @@ void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr
 
 		// Publish the marker array of the particles
 		pub.publish(pose_array);
-
+//		exit(0);
 //		------------------------------------------------------------------------------------
 
 		// Create points seen by the particle with the highest weight
@@ -185,11 +192,28 @@ void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr
 
 		// Publish the points seen by the particle with the highest weight
 		pub_points.publish(points_particle);
+		if (most_important_particle.position.x > 1e12 || most_important_particle.position.y > 1e12
+			||most_important_particle.position.x < 0 ||most_important_particle.position.y < 0)
+		{
+
+			exit(0);
+		}
+
+
+//		std::cout << " Best particle is at : " << most_important_particle.position.x
+//		<< " "
+//		<< most_important_particle.position.y <<
+//				" " <<
+//				most_important_particle.theta
+//
+//		<< std::endl;
 
 //		----------------------------------------------------------------------------------------
 
 		// Update odometry control of period t-1
 		control.odometry[0] = control.odometry[1];
+
+//		sig_scan = false;
 	}
 }
 
@@ -197,41 +221,41 @@ void localization_processor::get_particles ()
 {
 	int count;
 	// Put particles in x-coordinate in each it_cell_x cell
-//	for (int i = 130; i < 200; i += 10)//(int i = 0; i < map.width; i += parameter.it_cell_x)//
-//	{
-//		// Put particles in y-coordinate in each it_cell_y cell
-//		for (int j = 0; j < 90; j += 10)//(int j = 0; j < map.height; j += parameter.it_cell_y)//
-//		{
-//			// Distribute particles with different theta orientation
-//			for (float theta = 0; theta < 2*M_PI; theta += 2*M_PI/parameter.it_theta)
-//			{
-//				if (map.data.at(i+j*map.width) == 0)
-//				{
-//					pose a_particle;
-//
-//					// Get particle position from grid
-//					a_particle.position.x = i*map.resolution;
-//					a_particle.position.y = j*map.resolution;
-//					a_particle.position.z = 0;
-//
-//					// Save theta of particles
-//					a_particle.theta = theta;
-//
-//					// Convert theta to quaternion
-//					a_particle.orientation.x = tf::createQuaternionFromYaw(theta).getX();
-//					a_particle.orientation.y = tf::createQuaternionFromYaw(theta).getY();
-//					a_particle.orientation.z = tf::createQuaternionFromYaw(theta).getZ();
-//					a_particle.orientation.w = tf::createQuaternionFromYaw(theta).getW();
-//
-//					// Add particle to set of particles
-//					particles.push_back(a_particle);
-//
-//					// Count number of particles
-//					count += 1;
-//				}
-//			}
-//		}
-//	}
+	for (int i = 0; i < map.height; i += parameter.it_cell_x)//(int i = 130; i < 200; i += 10)//
+	{
+		// Put particles in y-coordinate in each it_cell_y cell
+		for (int j = 0; j < map.width; j += parameter.it_cell_y)//(int j = 0; j < 90; j += 10)//
+		{
+			// Distribute particles with different theta orientation
+			for (float theta = 0.0; theta < 2*M_PI; theta += 2*M_PI/parameter.it_theta)
+			{
+				if (map.data.at(i+j*map.width) == 0)
+				{
+					pose a_particle;
+
+					// Get particle position from grid
+					a_particle.position.x = i*map.resolution;
+					a_particle.position.y = j*map.resolution;
+					a_particle.position.z = 0.0;
+
+					// Save theta of particles
+					a_particle.theta = theta;
+
+					// Convert theta to quaternion
+					a_particle.orientation.x = tf::createQuaternionFromYaw(theta).getX();
+					a_particle.orientation.y = tf::createQuaternionFromYaw(theta).getY();
+					a_particle.orientation.z = tf::createQuaternionFromYaw(theta).getZ();
+					a_particle.orientation.w = tf::createQuaternionFromYaw(theta).getW();
+
+					// Add particle to set of particles
+					particles.push_back(a_particle);
+
+					// Count number of particles
+					count += 1;
+				}
+			}
+		}
+	}
 
 
 	// TEST DEBUG
@@ -292,33 +316,33 @@ void localization_processor::get_particles ()
 //	// Add particle to set of particles
 //	particles.push_back(a_particle);
 
-	for (int i = 0; i < 5; ++i)
-	{
-		for (int j = 0; j < 5; ++j)
-		{
-			for (float theta = 0.0; theta < 2*M_PI; theta += 2*M_PI/16)
-			{
-				pose a_particle;
-
-				// Get particle position from grid
-				a_particle.position.x = 1.4 + i*0.1;//1.6;
-				a_particle.position.y = 0.15 + j*0.1;//0.35;
-				a_particle.position.z = 0.0;
-
-				// Save theta of particles
-				a_particle.theta = theta;//M_PI*0.68;
-
-				// Convert theta to quaternion
-				a_particle.orientation.x = tf::createQuaternionFromYaw(a_particle.theta).getX();
-				a_particle.orientation.y = tf::createQuaternionFromYaw(a_particle.theta).getY();
-				a_particle.orientation.z = tf::createQuaternionFromYaw(a_particle.theta).getZ();
-				a_particle.orientation.w = tf::createQuaternionFromYaw(a_particle.theta).getW();
-
-				// Add particle to set of particles
-				particles.push_back(a_particle);
-			}
-		}
-	}
+//	for (int i = 0; i < 10; ++i)
+//	{
+//		for (int j = 0; j < 5; ++j)
+//		{
+//			for (float theta = 0.0; theta < 2*M_PI; theta += 2*M_PI/16)
+//			{
+//				pose a_particle;
+//
+//				// Get particle position from grid
+//				a_particle.position.x = 1.4 + i*0.1;//1.6;
+//				a_particle.position.y = 0.15 + j*0.1;//0.35;
+//				a_particle.position.z = 0.0;
+//
+//				// Save theta of particles
+//				a_particle.theta = theta;//M_PI*0.68;
+//
+//				// Convert theta to quaternion
+//				a_particle.orientation.x = tf::createQuaternionFromYaw(a_particle.theta).getX();
+//				a_particle.orientation.y = tf::createQuaternionFromYaw(a_particle.theta).getY();
+//				a_particle.orientation.z = tf::createQuaternionFromYaw(a_particle.theta).getZ();
+//				a_particle.orientation.w = tf::createQuaternionFromYaw(a_particle.theta).getW();
+//
+//				// Add particle to set of particles
+//				particles.push_back(a_particle);
+//			}
+//		}
+//	}
 
 }
 
