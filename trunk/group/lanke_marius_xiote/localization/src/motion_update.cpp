@@ -45,7 +45,12 @@ void motion_update::particle_motion(robot_control control, pose& particle)
 	float delta_trans_perturbed = delta_trans - sample_trans;
 	float delta_rot2_perturbed = delta_rot2 - sample_rot2;
 
-//	std::cout << "d_rot1: " << delta_rot1 << " | "
+//	std::cout << "Delta Y is : " << control.odometry[1].position.y - control.odometry[0].position.y <<
+//			" and Delta X is : " << control.odometry[1].position.x - control.odometry[0].position.x <<
+//			" and the theta " << control.odometry[0].theta << std::endl;
+//
+//
+//			std::cout << "d_rot1: " << delta_rot1 << " | "
 //			  << "d_rot1_pur: " << delta_rot1_perturbed << " | "
 //			  << "d_trans: " << delta_trans << " | "
 //			  << "d_trans_pur: " << delta_trans_perturbed << " | "
