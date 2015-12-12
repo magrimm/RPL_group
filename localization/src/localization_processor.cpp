@@ -11,6 +11,7 @@ localization_processor::localization_processor (ros::NodeHandle nodehandle, para
 {
 	nh = nodehandle;
 	parameter = params_bag;
+
 	// First run odometry callback
 	sig_odom = false;
 	sig_scan = false;
@@ -79,7 +80,7 @@ void localization_processor::Callback_odom (const nav_msgs::OdometryConstPtr& od
 
 	control.odometry[1].theta = (float) yaw;
 
-	//Set signaler such that callbacks of odom and scan wait for each other
+	//Set signaler such that scan callback can be executed
 	sig_scan = true;
 }
 
@@ -107,12 +108,11 @@ void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr
 		// Construct visualization class
 		visualization vis(parameter.visualization);
 
-		// Clear the weights
-		weights.clear();
-		norm_weights.clear();
-
 		// Recover motion parameters
 		motion_upd.get_motion_parameters(control);
+
+		// Clear the weights
+		weights.clear();
 
 		for (int i = 0; i < particles.size(); ++i)
 		{
@@ -130,11 +130,10 @@ void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr
 		float sum_of_weights = std::accumulate(weights.begin(), weights.end(), 0.0);
 
 		// Normalize weights
-		norm_weights.resize(weights.size());
-		std::transform(weights.begin(), weights.end(), norm_weights.begin(), std::bind1st(std::multiplies<float>(), (1/sum_of_weights)));
+		std::transform(weights.begin(), weights.end(), weights.begin(), std::bind1st(std::multiplies<float>(), (1/sum_of_weights)));
 
 		// Resample the particles
-		roulette_samp.resample_distribution(particles, norm_weights);
+		roulette_samp.resample_distribution(particles, weights);
 
 		// Create particle visualization
 		geometry_msgs::PoseArray::Ptr pose_array (new geometry_msgs::PoseArray);
@@ -143,9 +142,8 @@ void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr
 		// Publish the marker array of the particles
 		pub.publish(pose_array);
 
-//		------------------------------------------------------------------------------------
-
-		// Create points seen by the particle with the highest weight
+		// Visualize laserscan points projected on particle with hightest weight
+/*		// Create points seen by the particle with the highest weight
 		visualization_msgs::Marker::Ptr points_particle (new visualization_msgs::Marker);
 		std::vector<position3D> points;
 
@@ -171,11 +169,7 @@ void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr
 
 		// Publish the points seen by the particle with the highest weight
 		pub_points.publish(points_particle);
-
-//		----------------------------------------------------------------------------------------
-
-		// Update odometry control of period t-1
-//		control.odometry[0] = control.odometry[1];
+*/
 
 		// Update signalers
 		sig_scan = false;
