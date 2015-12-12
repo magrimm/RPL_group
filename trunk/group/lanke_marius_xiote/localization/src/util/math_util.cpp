@@ -34,3 +34,4 @@ float math_util::random_uniform_sampling_positive(float b_max)
 
 	return num;
 }
+

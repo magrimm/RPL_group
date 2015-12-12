@@ -4,6 +4,10 @@ project(localization)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
+
+find_package(catkin REQUIRED cmake_modules)
+find_package(Eigen REQUIRED)
+
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
@@ -104,6 +108,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast") ##-std=c++0x -O3
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
+
 #  LIBRARIES localization
 #  CATKIN_DEPENDS roscpp std_msgs
 #  DEPENDS system_lib
@@ -118,6 +123,7 @@ catkin_package(
 include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${EIGEN_INCLUDE_DIR}
 )
 
 ## Declare a C++ library
