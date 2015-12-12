@@ -27,8 +27,6 @@ float sensor_update::get_particle_weight(const sensor_msgs::LaserScanConstPtr& s
 	// Clean the particle weights such that particles are highly unlikely to be outside of the map
 	clean_weight_of_particle(particle_weight, particle, map);
 
-//	std::cout << "particle_weight: " << particle_weight << std::endl;
-
 	return particle_weight;
 }
 
@@ -86,22 +84,8 @@ int sensor_update::correlation_particle_map (std::vector<position3D>& points, ma
 			if (map.data.at(map_index) == sensor_update_param.map_obstacle)
 			{
 				correlation += 1;
-//				std::cout << "At map index " << map_index << " point is at " << points.at(i).x  <<" "<< points.at(i).y << std::endl;
 			}
 		}
-
-//			int map_index = ;
-//
-//		// Count correlations if point is within the map
-//		if (map_index < map.data.size())
-//		{
-//			if (map.data.at(map_index) == sensor_update_param.map_obstacle)
-//			{
-//				correlation += 1;
-//				std::cout << "At map index " << map_index << " point is at " << points.at(i).x  <<" "<< points.at(i).y << std::endl;
-//			}
-//		}
-
 	}
 
 	return correlation;
