@@ -10,7 +10,7 @@
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/segmentation/sac_segmentation.h>
 
-#include <common.h>
+#include "common.h"
 
 namespace objrec {
 

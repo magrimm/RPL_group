@@ -1,3 +1,6 @@
+// Xiaote Zhu
+// Main class for object recognition application
+
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -12,13 +15,13 @@
 
 #include <std_msgs/Bool.h>
 
-#include <extract_feature.h>
-#include <parameters.h>
-#include <preprocess.h>
-#include <recognize.h>
-#include <segment.h>
-#include <select_keypoint.h>
-#include <visualization.h>
+#include "extract_feature.h"
+#include "parameters.h"
+#include "preprocess.h"
+#include "recognize.h"
+#include "segment.h"
+#include "select_keypoint.h"
+#include "visualization.h"
 
 typedef pcl::PointXYZ PointT;
 typedef pcl::Histogram<153> FeatureT;
