@@ -31,6 +31,18 @@ feature -- Access
 			Result := absolute_coord
 		end
 
+	convert_angle_to_range (theta: REAL_64): REAL_64
+			-- Convert the angle to the equivalent angle between -pi and pi.
+		do
+			Result := atan2(sine(theta),cosine(theta))
+		end
+
+	calculate_angle_diff (theta1, theta2: REAL_64): REAL_64
+			-- Calculate the difference between two angles.
+		do
+			Result := (convert_angle_to_range (theta2 - theta1)).abs
+		end
+
 	get_distance_to_line (p1, p2: POINT_MSG): REAL_64
 			-- Calculate the distance from (0,0) to the line represented by the given two points.
 		do
@@ -45,16 +57,6 @@ feature -- Access
 			v_theta_x := desired_distance * (p2.x - p1.x) + (current_distance - desired_distance) * (p2.y - p1.y)
 			v_theta_y := desired_distance * (p2.y - p1.y) + (current_distance - desired_distance) * (p1.x - p2.x)
 			Result := atan2 (v_theta_y, v_theta_x)
-		end
-
-	transform_coordinates_with_startpoint_offset (point, start_point: POINT_MSG): POINT_MSG
-		local
-			transformed_point: POINT_MSG
-		do
-			create transformed_point.make_with_values (point.x+start_point.x,
-													   point.y+start_point.y,
-													   point.z+start_point.z)
-			Result := transformed_point
 		end
 
 	get_heading_vector(p1,p2 : POINT_MSG) : POINT_MSG
