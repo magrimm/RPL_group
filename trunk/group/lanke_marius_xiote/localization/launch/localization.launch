@@ -1,5 +1,8 @@
 <launch>
-
+  
+  <node name="depthimage_to_laserscan" pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" > 
+    <remap from="image" to="/camera/depth/image_raw"/>
+  </node>
   <node name="localization_node" pkg="localization" type="localization" clear_params="true" output="screen" />
   <node name="tf_broadcaster_node" pkg="localization" type="tf_broadcaster_loc" clear_params="true" output="screen" />
   
