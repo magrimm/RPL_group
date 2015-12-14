@@ -3,7 +3,7 @@
   <node name="localization_node" pkg="localization" type="localization" clear_params="true" output="screen" />
   <node name="tf_broadcaster_node" pkg="localization" type="tf_broadcaster_loc" clear_params="true" output="screen" />
   
-  <node pkg="rosbag" type="play" name="player" args="--clock /home/marius/data/localization/localization.bag" />
+  <node pkg="rosbag" type="play" name="player" args="--clock /home/frank/Desktop/data/localization/localization.bag" />
   
   <!--include file="$(find object_recognition)/launch/object_recognition.launch"/-->   
 	
