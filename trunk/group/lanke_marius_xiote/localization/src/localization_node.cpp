@@ -78,7 +78,7 @@ int main (int argc, char** argv)
 	// Construct class localization_processor with ros::NodeHandle and parameter structure
 	localization_processor localization (nh, parameter);
 
-	// Create ROS subscriber for the map, odometry and scan
+	// Create ROS subscriber for the map, odometry, scan and localization toggle
 	ros::Subscriber sub_map = nh.subscribe(parameter.subscribed_rostopic_map,
 									   parameter.queue_size_subscriber_map,
 									   &localization_processor::Callback_map,
@@ -91,6 +91,9 @@ int main (int argc, char** argv)
 									   parameter.queue_size_subscriber_scan,
 									   &localization_processor::Callback_scan,
 									   &localization);
+	ros::Subscriber sub_localization_toggle = nh.subscribe("robot_loc_state",1,
+	                                   &localization_processor::Callback_localize_switch,
+	                                   &localization);
 	// Spin
 	ros::spin ();
 }
