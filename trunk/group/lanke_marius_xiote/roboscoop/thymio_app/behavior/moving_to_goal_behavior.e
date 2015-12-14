@@ -36,6 +36,8 @@ feature {NONE} -- Initialization
 			create loc_state_signaler.make_with_topic ({MAP_TOPICS}.localization_state)
 			create loc_result_signaler.make_with_topic ({MAP_TOPICS}.localization_result)
 
+			create robot_pose_pub.make_with_topic ("/robot_pose")
+			robot_pose_pub.advertize (1, True)
 			create vleave_pub.make_with_attributes ({MAP_TOPICS}.vleave)
 			create cur_goal_pub.make_with_attributes ({MAP_TOPICS}.current_goal)
 			create search_vleave_pub.make_with_attributes ({MAP_TOPICS}.search_vleave)
@@ -104,6 +106,9 @@ feature {NONE} -- Implementation
 
 	robot_loc_state_pub: ROS_PUBLISHER [BOOL_MSG]
 			-- If robot are in localization state.
+
+	robot_pose_pub: ROS_PUBLISHER [POSE_STAMPED_MSG]
+			-- Current robot pose in the map frame.
 
 	objrec_state_signaler: BOOL_SIGNALER
 			-- If objrec has finished recognition process.
@@ -189,7 +194,8 @@ feature {NONE} -- Implementation
 												 stop_sig,
 												 diff_drive,
 												 algorithm_params,
-												 path_planner))
+												 path_planner,
+												 robot_pose_pub))
 
 			f.repeat_until_stop_requested (
 					-- Wait at intermediate goal.

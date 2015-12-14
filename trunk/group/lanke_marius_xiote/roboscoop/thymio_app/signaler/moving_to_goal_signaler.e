@@ -99,12 +99,12 @@ feature -- Access
 			relative_coord : POINT_MSG
 		do
 			create relative_coord.make_with_values (x - localized_time_relative_pose.x, y - localized_time_relative_pose.y, 0)
-			Result := convert_relative_coordinates_to_absolute_coordinates (localized_time_absolute_point, relative_coord, localized_time_relative_pose.theta - localized_time_absolute_pose.theta)
+			Result := convert_relative_coordinates_to_absolute_coordinates (localized_time_absolute_point, relative_coord, localized_time_absolute_pose.theta - localized_time_relative_pose.theta)
 		end
 
 	convert_robot_frame_orientation_to_absolute_orientation (theta: REAL_64) : REAL_64
 		do
-			Result := theta + localized_time_absolute_pose.theta - localized_time_relative_pose.theta
+			Result := convert_angle_to_range (theta + localized_time_absolute_pose.theta - localized_time_relative_pose.theta)
 		end
 
 end -- class

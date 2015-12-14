@@ -291,9 +291,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				from
 					robot_orientation := m_sig.convert_robot_frame_orientation_to_absolute_orientation (o_sig.theta)
 				until
-					(path_planner.get_cur_wait_angle - robot_orientation).abs < algorithm_params.wait_point_angle_threshold
+					calculate_angle_diff (path_planner.get_cur_wait_angle, robot_orientation) < algorithm_params.wait_point_angle_threshold
 				loop
-					drive.set_velocity (0, (path_planner.get_cur_wait_angle - robot_orientation) / (path_planner.get_cur_wait_angle - robot_orientation).abs * algorithm_params.wait_point_angle_threshold)
+					drive.set_velocity (0, algorithm_params.wait_point_angle_threshold)
 					robot_orientation := m_sig.convert_robot_frame_orientation_to_absolute_orientation (o_sig.theta)
 				end
 				drive.stop
@@ -322,16 +322,23 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 	stop_when_goal_reached (state_sig: separate STATE_SIGNALER; m_sig: separate MOVING_TO_GOAL_SIGNALER;
 								o_sig: separate ODOMETRY_SIGNALER; s_sig: separate STOP_SIGNALER;
 								drive: separate DIFFERENTIAL_DRIVE; algorithm_params: separate TANGENT_BUG_PARAMETERS;
-								path_planner: separate PATH_PLANNER)
+								path_planner: separate PATH_PLANNER; robot_pose_pub: separate ROS_PUBLISHER [POSE_STAMPED_MSG])
 			-- Stop if goal reached.
 		require
 			o_sig.is_moving or s_sig.is_stop_requested
 		local
+			robot_angle: REAL_64
 			robot_point, goal_point: POINT_MSG
+			robot_pose_msg: POSE_STAMPED_MSG
+			robot_orientation_msg : QUATERNION_MSG
 		do
 			create robot_point.make_from_separate (m_sig.convert_robot_frame_coord_to_absolute_coord (o_sig.x, o_sig.y))
 			create goal_point.make_from_separate (path_planner.get_final_goal)
 
+			robot_angle := m_sig.convert_robot_frame_orientation_to_absolute_orientation (o_sig.theta)
+			create robot_orientation_msg.make_with_values (0, 0, sine (robot_angle/2), cosine (robot_angle/2))
+			create robot_pose_msg.make_with_values (create {HEADER_MSG}.make_now ({MAP_TOPICS}.odometry_frame), create {POSE_MSG}.make_with_values (robot_point, robot_orientation_msg))
+			robot_pose_pub.publish (robot_pose_msg)
 			if s_sig.is_stop_requested then
 				drive.stop
 
