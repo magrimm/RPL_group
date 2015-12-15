@@ -1,12 +1,18 @@
 <launch>
 
-  <node name="object_recognition_node" pkg="object_recognition" type="object_recognition" clear_params="true" output="screen" />
-  <node name="tf_broadcaster_node" pkg="localization" type="tf_broadcaster" clear_params="true" output="screen" />
+	<!-- Object recognition -->
+    <node name="object_recognition_node" pkg="object_recognition" type="object_recognition_node" clear_params="true" output="screen" />
+    
+    <!-- Transformation broadcaster for the camera -->
+    <node name="tf_broadcaster_node" pkg="object_recognition" type="tf_broadcaster" clear_params="true" output="screen" />
      
-  <node name="rviz_node" pkg="rviz" type="rviz" />
+    <!-- Run Rviz -->
+    <node name="rviz_node" pkg="rviz" type="rviz" />
+  
+  	<!-- Run map server -->
+    <!--node name="map_server" pkg="map_server" type="map_server" args="/home/marius/data/testenvironment.yaml"/-->
  
-  <!--rosparam command="load" file="$(find localization)/parameter/distribution_bag.yaml" /-->
-  
-  <!--param name="object_files_path" type="str" value="$(find localization)/object_files.txt" /-->    
-  
+ 	<!-- Ros parameter files -->
+    <rosparam command="load" file="$(find object_recognition)/parameter/parameter_bag.yaml" />  
+    
 </launch>
