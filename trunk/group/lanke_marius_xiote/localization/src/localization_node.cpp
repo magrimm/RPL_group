@@ -46,6 +46,7 @@ int main (int argc, char** argv)
 	nh.getParam("control_odom_prev_orient_y", parameter.control_odom_prev_orient_y);
 	nh.getParam("control_odom_prev_orient_z", parameter.control_odom_prev_orient_z);
 	nh.getParam("control_odom_prev_orient_w", parameter.control_odom_prev_orient_w);
+	nh.getParam("control_odom_prev_theta", parameter.control_odom_prev_theta);
 
 	nh.getParam("control_odom_cur_pos_x", parameter.control_odom_cur_pos_x);
 	nh.getParam("control_odom_cur_pos_y", parameter.control_odom_cur_pos_y);

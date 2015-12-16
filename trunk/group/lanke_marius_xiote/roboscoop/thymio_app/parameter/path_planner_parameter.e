@@ -224,6 +224,38 @@ feature -- Access
 			viapoint2_theta := a_val
 		end
 
+	viapoint3_x : REAL_64
+		-- x coordinate of goal position.
+
+	set_viapoint3_x (a_val: REAL_64)
+		do
+			viapoint3_x := a_val
+		end
+
+	viapoint3_y : REAL_64
+		-- y coordinate of goal position.
+
+	set_viapoint3_y (a_val: REAL_64)
+		do
+			viapoint3_y := a_val
+		end
+
+	viapoint3_z : REAL_64
+		-- z coordinate of goal position.
+
+	set_viapoint3_z (a_val: REAL_64)
+		do
+			viapoint3_z := a_val
+		end
+
+	viapoint3_theta : REAL_64
+		-- angle of viapoint2 position.
+
+	set_viapoint3_theta (a_val: REAL_64)
+		do
+			viapoint3_theta := a_val
+		end
+
 	jump_in_number_of_nodes: INTEGER
 
 	set_jump_in_number_of_nodes (number: INTEGER)

@@ -45,6 +45,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				drive.stop
 			elseif loc_state_signaler.data.data then
 				-- Already localized.
+				io.putstring ("Thinks it is localized")
 				m_sig.set_localized_time_absolute_pose (loc_result_signaler.data)
 				m_sig.set_localized_time_relative_pose (create {POSE_2D_MSG}.make_with_values (o_sig.x, o_sig.y, o_sig.theta))
 				robot_loc_state_pub.publish (create {BOOL_MSG}.make_with_values(False))
@@ -52,7 +53,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			else
 				-- Still localizing.
 				robot_loc_state_pub.publish (create {BOOL_MSG}.make_with_values(True))
-				drive.set_velocity (0, algorithm_params.localize_vtheta)
+				drive.set_velocity (0.0, algorithm_params.localize_vtheta)
 			end
 		end
 
@@ -158,6 +159,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			not s_sig.is_stop_requested
 		local
 			goal_point, robot_point, sensor_max_range_rel_point, sensor_max_range_abs_point: POINT_MSG
+			robot_orientation: REAL_64
 			vleave_point: separate POINT_MSG
 			cur_distance, vleave_d_min, sensor_max_range_d_min: REAL_64
 
@@ -167,6 +169,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 			vleave_d_min := {REAL_64}.positive_infinity
 			create goal_point.make_from_separate (path_planner.get_final_goal)
 			create robot_point.make_from_separate (m_sig.convert_robot_frame_coord_to_absolute_coord (o_sig.x, o_sig.y))
+			robot_orientation := m_sig.convert_robot_frame_orientation_to_absolute_orientation (o_sig.theta)
 			create vleave_point.make_empty
 
 			cur_distance := euclidean_distance (goal_point, robot_point)
@@ -179,10 +182,10 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Find the sensor whose max range is reachable and
 				-- whose max range's distance to goal is less than d_min.
 				if r_sens.is_enough_space_for_moving_to_the_max_range (i) then
-					 create sensor_max_range_rel_point.make_from_separate (r_sens_wrapper.get_relative_coordinates_with_sensor (r_sens.sensors[i].max_range, i))
+					 create sensor_max_range_rel_point.make_from_separate (r_sens_wrapper.get_relative_coordinates_with_sensor (r_sens.sensors[i].max_range-0.08, i))
 					 sensor_max_range_abs_point := convert_relative_coordinates_to_absolute_coordinates (robot_point,
 					 																					 sensor_max_range_rel_point,
-					 																					 o_sig.theta)
+					 																					 robot_orientation)
 					 sensor_max_range_d_min := euclidean_distance (goal_point,
 					 												sensor_max_range_abs_point)
 
@@ -227,10 +230,11 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 		local
 			heading_error, vtheta: REAL_64
 			vleave, robot_point: POINT_MSG
-
+			robot_orientation: REAL_64
 		do
 			create vleave.make_from_separate (m_sig.v_leave)
 			create robot_point.make_from_separate (m_sig.convert_robot_frame_coord_to_absolute_coord (o_sig.x, o_sig.y))
+			robot_orientation := m_sig.convert_robot_frame_orientation_to_absolute_orientation (o_sig.theta)
 
 			if s_sig.is_stop_requested then
 				drive.stop
@@ -243,9 +247,9 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				m_sig.set_need_to_reset_cur_goal (True)
 
 			else
-				heading_error := get_heading_error (o_sig.x + path_planner.get_start.x,
-													o_sig.y + path_planner.get_start.y,
-													o_sig.theta, vleave.x, vleave.y)
+				heading_error := get_heading_error (robot_point.x,
+													robot_point.y,
+													robot_orientation, vleave.x, vleave.y)
 				vtheta := pid_controller_vleave.get_control_output (heading_error,
 																    o_sig.timestamp)
 

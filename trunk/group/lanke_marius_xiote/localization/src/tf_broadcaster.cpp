@@ -10,7 +10,7 @@
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "tf_broadcaster_node");
+  ros::init(argc, argv, "tf_broadcaster_loc_node");
   ros::NodeHandle node;
 
   tf::TransformBroadcaster br;
@@ -28,16 +28,27 @@ int main(int argc, char** argv)
 //    transform.setRotation( tf::Quaternion(0, 0, -0.7071, 0.7071) );
 //    br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "odometry_link", "points_tf"));
 
-	    transform_map.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
-	    transform_map.setRotation( tf::Quaternion(0, 0, 0, 1) );
-	    br.sendTransform(tf::StampedTransform(transform_map, ros::Time::now(), "odometry_link", "particles_tf"));
+      transform_map.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
+      transform_map.setRotation( tf::Quaternion(0, 0, 0, 1) );
+      br.sendTransform(tf::StampedTransform(transform_map, ros::Time::now(), "odometry_link", "particles_tf"));
 
-	    transform.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
-	    transform.setRotation( tf::Quaternion(0, 0, 0, 1) );
-	    br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "odometry_link", "points_tf"));
+      transform.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
+      transform.setRotation( tf::Quaternion(0, 0, 0, 1) );
+      br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "odometry_link", "points_tf"));
 
+
+      transform_map.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
+      transform_map.setRotation( tf::Quaternion(0, 0, 0, 1) );
+      br.sendTransform(tf::StampedTransform(transform_map, ros::Time::now(), "odometry_link", "/map"));
+
+      transform.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
+      transform.setRotation( tf::Quaternion(0, 0, 0, 1) );
+      br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "base_link", "camera_link"));
+
+//        br.sendTransform(tf::StampedTransform(transform,ros::Time::now(),"camera_depth_optical_frame","camera_rgb_optical_frame"));
     ros::spinOnce();
     rate.sleep();
+//    ros::spin();
   }
   return 0;
 }
