@@ -11,7 +11,7 @@
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "my_tf_broadcaster");
+  ros::init(argc, argv, "tf_broadcaster_node");
   ros::NodeHandle node;
 
   tf::TransformBroadcaster br;
@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 
   ros::Rate rate(10.0);
   while (node.ok()){
-    transform_map.setOrigin( tf::Vector3(-0.5, -0.5, 0.0) );
+    transform_map.setOrigin( tf::Vector3(-0.0, -0.0, 0.0) );
     transform_map.setRotation( tf::Quaternion(0, 0, 0, 1) );
     br.sendTransform(tf::StampedTransform(transform_map, ros::Time::now(), "odometry_link", "/map"));
 

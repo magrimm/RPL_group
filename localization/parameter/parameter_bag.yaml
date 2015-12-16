@@ -24,28 +24,28 @@ it_cell_x: 10                                                  # Cell/Grid itera
 it_cell_y: 10                                                  # Cell/Grid iterator
 it_theta: 16                                                   # Iterator of theta angle between 0 and 2*pi in steps of 2*pi/it_theta
 
-pose_empty_pos_x: 0
-pose_empty_pos_y: 0
-pose_empty_pos_z: 0
-pose_empty_orient_x: 0
-pose_empty_orient_y: 0
-pose_empty_orient_z: 0
+pose_empty_pos_x: 0.0
+pose_empty_pos_y: 0.0
+pose_empty_pos_z: 0.0
+pose_empty_orient_x: 0.0
+pose_empty_orient_y: 0.0
+pose_empty_orient_z: 0.0
 pose_empty_orient_w: 1.0
 
-control_odom_prev_pos_x: 0
-control_odom_prev_pos_y: 0
-control_odom_prev_pos_z: 0
-control_odom_prev_orient_x: 0
-control_odom_prev_orient_y: 0
-control_odom_prev_orient_z: 0
+control_odom_prev_pos_x: 0.0
+control_odom_prev_pos_y: 0.0
+control_odom_prev_pos_z: 0.0
+control_odom_prev_orient_x: 0.0
+control_odom_prev_orient_y: 0.0
+control_odom_prev_orient_z: 0.0
 control_odom_prev_orient_w: 1.0
 control_odom_prev_theta: 0.0
 
-#control_odom_cur_pos_x: 0
-#control_odom_cur_pos_y: 0
-#control_odom_cur_pos_z: 0
-#control_odom_cur_orient_x: 0
-#control_odom_cur_orient_y: 0
-#control_odom_cur_orient_z: 0
+#control_odom_cur_pos_x: 0.0
+#control_odom_cur_pos_y: 0.0
+#control_odom_cur_pos_z: 0.0
+#control_odom_cur_orient_x: 0.0
+#control_odom_cur_orient_y: 0.0
+#control_odom_cur_orient_z: 0.0
 #control_odom_cur_orient_w: 1.0
 #control_odom_cur_theta: 0.0

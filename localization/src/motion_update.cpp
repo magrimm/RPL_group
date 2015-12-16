@@ -61,6 +61,9 @@ void motion_update::get_motion_parameters (robot_control& control)
 			   (motion_update_params.alpha4 * powf(delta_rot2, 2));
 	rot2_sq = (motion_update_params.alpha1 * powf(delta_rot2, 2)) +
  	   	   	  (motion_update_params.alpha2 * powf(delta_trans, 2));
+//	std::cout << "Rotation 1 : " << delta_rot1
+//		<< " Rotation 2: " << delta_rot2
+//		<< " Translation : " << trans_sq << std::endl;
 }
 
 pose motion_update::approximate_robot_pose(std::vector<pose>& particles)

@@ -84,6 +84,14 @@ feature
 			parsed_parameters.set_viapoint2_y (parse_string2double(str2set))
 			elseif variable_name.is_equal ("viapoint2_z")	then
 			parsed_parameters.set_viapoint2_z (parse_string2double(str2set))
+			elseif variable_name.is_equal ("viapoint3_theta")	then
+			parsed_parameters.set_viapoint3_theta (parse_string2double(str2set))
+			elseif variable_name.is_equal ("viapoint3_x")	then
+			parsed_parameters.set_viapoint3_x (parse_string2double(str2set))
+			elseif variable_name.is_equal ("viapoint3_y")	then
+			parsed_parameters.set_viapoint3_y (parse_string2double(str2set))
+			elseif variable_name.is_equal ("viapoint3_z")	then
+			parsed_parameters.set_viapoint3_z (parse_string2double(str2set))
 			end
 
 			end

@@ -51,11 +51,16 @@ feature {NONE} -- Initialization
 																 params.viapoint2_y,
 																 params.viapoint2_z), 3)
 
+			destination_points.put(create {POINT_MSG}.make_with_values(params.viapoint3_x,
+																 params.viapoint3_y,
+																 params.viapoint3_z), 4)
+
 			create destination_angles.make_filled (0, 1, params.number_of_destinations)
 			destination_angles.put (params.start_theta, 1)
 			destination_angles.put (params.viapoint1_theta, 2)
 			destination_angles.put (params.viapoint2_theta, 3)
-			destination_angles.put (params.goal_theta, 4)
+			destination_angles.put (params.viapoint3_theta, 4)
+			destination_angles.put (params.goal_theta, 5)
 
 			cur_wait_point_index := params.cur_wait_point_index
 

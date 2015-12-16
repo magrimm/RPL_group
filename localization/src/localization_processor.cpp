@@ -95,14 +95,16 @@ void localization_processor::Callback_odom (const nav_msgs::OdometryConstPtr& od
 
 void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr& scan_msg)
 {
-	if(need_to_localize) {
 
+	if(need_to_localize) {
+//		std::cout << is_localized << " localization status" << std::endl;
 		std_msgs::Bool localize_status;
-		localize_status.data = true;
+		localize_status.data = false;
 		pub_loc_state.publish(localize_status);
 		// Wait unitl odometry first changed
 		if ((control.odometry[0].position.x == control.odometry[1].position.x) &&
-			(control.odometry[0].position.y == control.odometry[1].position.y)) {
+			(control.odometry[0].position.y == control.odometry[1].position.y) &&
+			(control.odometry[0].theta == control.odometry[1].theta)) {
 			sig_scan = false;
 		}
 
@@ -212,10 +214,13 @@ void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr
 void localization_processor::get_particles ()
 {
 	// Put particles in x-coordinate in each it_cell_x cell
-	for (int i = 0; i < map.height; i += parameter.it_cell_x)//(int i = 130; i < 200; i += 10)//
+//	for (int i = 0; i < map.height; i += parameter.it_cell_x)//
+//	for (int i = 130; i < 200; i += 10)//
+	for(int i = 30; i < 70; i += 5)
 	{
 		// Put particles in y-coordinate in each it_cell_y cell
-		for (int j = 0; j < map.width; j += parameter.it_cell_y)//(int j = 0; j < 90; j += 10)//
+//		for (int j = 0; j < map.width; j += parameter.it_cell_y)//
+		for(int j = 30; j < 70; j += 5)//
 		{
 			// Distribute particles with different theta orientation
 			for (float theta = 0.0; theta < 2*M_PI; theta += 2*M_PI/parameter.it_theta)
@@ -252,7 +257,7 @@ void localization_processor::check_is_localized(const sensor_msgs::LaserScanCons
 {
 	sensor_update sensor_upd(parameter.sensor_update);
 
-	if (effective_scan_size > 500 || is_localized)
+	if (effective_scan_size > 560 || is_localized)
 	{
 
 		float x_var, y_var, theta_var, weight_var;
@@ -266,8 +271,8 @@ void localization_processor::check_is_localized(const sensor_msgs::LaserScanCons
 		// If the point cloud is low in variance i.e. one tight cluster
 		if ( x_var * pop_1_over_N_sqrd < 1.5e-11 &&
 			y_var * pop_1_over_N_sqrd < 1.5e-11 &&
-			theta_var * pop_1_over_N_sqrd < 5.0e-10 &&
-			weight_var * pop_1_over_N_sqrd < 1.0e-14 &&
+			theta_var * pop_1_over_N_sqrd < 5.0e-9 &&
+			weight_var * pop_1_over_N_sqrd < 1.0e-12 &&
 			weights.at(MVP_index) * weights.size() > 1.1
 			 || is_localized)
 			{
@@ -289,7 +294,7 @@ void localization_processor::check_is_localized(const sensor_msgs::LaserScanCons
 			// greater than the value in the if condition
 			if (sensor_upd.get_particle_weight(scan_msg, MVP_particle, map)
 				>
-				500 && !is_localized) {
+				560 && !is_localized) {
 
 				// Furthermore if the resultant point cloud is not one dimensional
 				// ... This prevents us from localizing at flat walls which dont have much angle information
@@ -297,7 +302,7 @@ void localization_processor::check_is_localized(const sensor_msgs::LaserScanCons
 				is_localized = true;
 				std_msgs::Bool ros_localize_status;
 				ros_localize_status.data = true;
-				std::cout << "Localized ";
+				std::cout << "Localized \n\n\n\n\n\n\n";
 				pub_loc_state.publish(ros_localize_status);
 
 			}
@@ -308,6 +313,9 @@ void localization_processor::check_is_localized(const sensor_msgs::LaserScanCons
 				best_pose.y = MVP_particle.position.y;
 				best_pose.theta = MVP_particle.theta;
 				pub_pose.publish(best_pose);
+				std_msgs::Bool ros_localize_status;
+				ros_localize_status.data = true;
+				pub_loc_state.publish(ros_localize_status);
 			}
 		}
 		else {
@@ -327,6 +335,9 @@ void localization_processor::Callback_localize_switch(const std_msgs::Bool local
 {
 	if (localization_toggle.data == false)
 	{need_to_localize = false;}
+	else if(localization_toggle.data == true){
+		need_to_localize = true;
+	}
 
 }
 
