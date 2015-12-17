@@ -53,7 +53,6 @@ int main(int argc, char** argv)
   nh.getParam("score_lower_bound", parameter.score_lower_bound);
   nh.getParam("dir", parameter.dir);
   nh.getParam("color", parameter.color);
-  nh.getParam("loop_time", parameter.visualization.loop_time);
 
   // Get color data for objects/ labels
   for (std::vector<std::string>::iterator it = parameter.labels.begin(); it != parameter.labels.end(); ++it)
@@ -75,6 +74,7 @@ int main(int argc, char** argv)
   nh.getParam("box_diag_multiplier", parameter.visualization.box_diag_multiplier);
   nh.getParam("marker_transparancy", parameter.visualization.marker_transparancy);
   nh.getParam("marker_namespace", parameter.visualization.marker_namespace);
+  nh.getParam("loop_time", parameter.visualization.loop_time);
 
   // Construct object recognition processor class
   object_recognition_processor object_recog (nh, parameter, recognizer);
