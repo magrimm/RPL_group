@@ -1,4 +1,4 @@
-=== XML Tangent Bug + Path Planning + Object Recognition ===
+=== XML Tangent Bug + Path Planning + Object Recognition + Localization ===
 Contributors: Xiaote, Marius, Lanke
 SVN link: https://svn.inf.ethz.ch/svn/meyer/rpl2015/trunk/group/lanke_marius_xiote/
 Tags: Obstacle Avoidance, PID CONTROL, Path Planning A-STAR, 3-D Spin Image, Object Recognition, Localization , Search and Rescue
