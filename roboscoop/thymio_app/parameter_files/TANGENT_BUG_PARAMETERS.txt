@@ -5,7 +5,7 @@ CONTROLLER_FILE_NAME : parameter_files/PID_PARAMETERS.txt
 desired_wall_distance: 0.10
 obstacle_vanished_time_threshold: 6.5
 angle_looped_around_threshold: 1.5
-vleave_reached_distance_threshold: 0.08
+vleave_reached_distance_threshold: 0.05
 goal_reached_distance_threshold: 0.07
 wait_point_distance_threshold: 0.2
 wait_point_angle_threshold: 0.2
