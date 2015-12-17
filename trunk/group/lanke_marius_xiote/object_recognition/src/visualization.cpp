@@ -77,7 +77,7 @@ void visualization::publishMarkerMsgs(ros::Publisher markerPub, std::vector<visu
 {
 // Publish all marker msgs given.
   std::cerr << "Publish..." << std::endl;
-  ros::Rate loop_rate(4);
+  ros::Rate loop_rate(vis_parameter.loop_time);
 
   if (ros::ok())
   {
