@@ -41,6 +41,8 @@ public:
     si.compute(*descriptors);
   }
 
+  virtual ~SpinImageFeatureExtractor() {};
+
 private:
   double _radius;
   // Radius of the support cylinder.

@@ -12,6 +12,8 @@
 #include <vector>
 #include <map>
 
+#include "parameter/visualization_bag.h"
+
 struct parameter_bag
 {
 	std::string node_name, camera_topic, marker_topic, objrec_topic, robot_topic, camera_frame_id;
@@ -29,8 +31,14 @@ struct parameter_bag
 	std::vector<double> woman_color;
 
 	std::map<std::string, std::vector<float> > obj_color_map;
+	std::map<std::string, std::string> obj_dir_map;
 
 	int histogram_size;
+	float score_lower_bound;
+
+	std::string dir, color;
+
+	visualization_bag visualization;
 };
 
 #endif /* _PARAMETER_BAG_H_ */

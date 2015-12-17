@@ -61,7 +61,9 @@ public:
     _num_neighbors(num_neighbors) {}
 
   void segment(const typename pcl::PointCloud<PointT>::ConstPtr& cloud_in, std::vector<typename pcl::PointCloud<PointT>::ConstPtr >& clusters_cloud) const {
+
     typename pcl::PointCloud<PointT>::Ptr preprocessed(new pcl::PointCloud<PointT>());
+
     this->runPreprocessSteps(cloud_in, preprocessed);
 
     pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>());
