@@ -18,28 +18,6 @@ feature {NONE} -- Initialization
 			CONTROLLER_NAME := "NULL"
 			CONTROLLER_FILE_NAME := "NULL"
 
-			create variable_name_setter_map.make(12)
-
-			variable_name_setter_map.put(agent set_algorithm_name() , "ALGORITHM_NAME")
-			variable_name_setter_map.put(agent set_controller_name() , "CONTROLLER_NAME")
-			variable_name_setter_map.put(agent set_controller_filename() , "CONTROLLER_FILE_NAME")
-
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_desired_wall_distance()), "desired_wall_distance")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_unreachable_distance_threshold()), "goal_unreachable_distance_threshold")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_vleave_reached_distance_threshold()), "vleave_reached_distance_threshold")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_reached_distance_threshold()), "goal_reached_distance_threshold")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_wait_point_distance_threshold()), "wait_point_distance_threshold")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_wait_point_angle_threshold()), "wait_point_angle_threshold")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_obstacle_vanished_time_threshold()), "obstacle_vanished_time_threshold")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_move_to_next_goal_threshold()), "move_to_next_goal_threshold")
-
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_go_vx()), "go_vx")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_follow_wall_vx()), "follow_wall_vx")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_transit_vx()), "transit_vx")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_localize_vtheta()), "localize_vtheta")
-
-			variable_name_setter_map.put (agent convert_set_INT64(? , agent set_search_vleave_pub_duration()), "searh_vleave_pub_duration")
-			variable_name_setter_map.put (agent convert_set_INT64(? , agent set_vleave_pub_duration()), "vleave_pub_duration")
 		end
 
 

@@ -15,49 +15,13 @@ feature {NONE} -- Initialization
 
 	make
 		do
-			create variable_name_setter_map.make(5)
 
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_inflate_radius()), "inflate_radius")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_start_x()), "start_x")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_start_y()), "start_y")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_start_z()), "start_z")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_start_theta()), "start_theta")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_x()), "goal_x")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_y()), "goal_y")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_z()), "goal_z")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_goal_theta()), "goal_theta")
-
-			variable_name_setter_map.put (agent convert_set_INT64(? , agent set_number_of_destinations()), "number_of_destinations")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint1_x()), "viapoint1_x")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint1_y()), "viapoint1_y")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint1_z()), "viapoint1_z")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint1_theta()), "viapoint1_theta")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint2_x()), "viapoint2_x")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint2_y()), "viapoint2_y")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint2_z()), "viapoint2_z")
-			variable_name_setter_map.put (agent convert_set_REAL64(? , agent set_viapoint2_theta()), "viapoint2_theta")
-
-
-			variable_name_setter_map.put (agent convert_set_INT64(? , agent set_cur_wait_point_index()), "cur_wait_point_index")
-
-			variable_name_setter_map.put (agent set_connectivity(), "GRID_CONNECTIVITY_STRATEGY")
-			variable_name_setter_map.put (agent set_four_connect(), "FOUR_CONNECTIVITY_STRATEGY")
-			variable_name_setter_map.put (agent set_eight_connect(), "EIGHT_CONNECTIVITY_STRATEGY")
-			variable_name_setter_map.put (agent convert_set_INT64(? , agent set_jump_in_number_of_nodes()), "jump_in_number_of_nodes")
 		end
 
 feature -- Access
 
 	connect_four, connect_eight : BOOLEAN
 		-- connectivity strategy boolean
-
-	set_connectivity(str : STRING)
-		-- Set the connectivity using one of the below functions
-		do
-			if attached variable_name_setter_map.at (str) as setter then
-				setter.call
-			end
-		end
 
 	set_four_connect()
 		-- Set to using four connectivity

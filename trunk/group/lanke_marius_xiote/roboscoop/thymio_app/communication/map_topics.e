@@ -23,5 +23,6 @@ feature -- Constants
 
 	vleave: STRING_8 = "vleave_point"
 	search_vleave: STRING_8 = "search_vleave_point"
+	single_buffer: INTEGER = 1
 
 end -- class

@@ -8,8 +8,6 @@ deferred class
 
 feature -- access
 
-	variable_name_setter_map : HASH_TABLE [ PROCEDURE[ANY,TUPLE] , STRING ]
-
 	convert_set_REAL64(a_string : STRING; setter : PROCEDURE[ANY,TUPLE])
 				--
 		do
