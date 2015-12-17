@@ -15,6 +15,7 @@ struct visualization_bag
 	float box_diag_multiplier;
 	float marker_transparancy;
 	std::string marker_namespace;
+	int loop_time;
 };
 
 
