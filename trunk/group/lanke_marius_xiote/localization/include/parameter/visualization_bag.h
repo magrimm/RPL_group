@@ -12,8 +12,9 @@
 
 struct visualization_bag
 {
-	std::string frame_id, ns, mesh_resource;
+	std::string frame_id, ns, mesh_resource , class_header_frame;
 	float color_alpha;
+	float color_r,color_g,color_b;
 };
 
 
