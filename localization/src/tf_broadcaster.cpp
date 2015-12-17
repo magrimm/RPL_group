@@ -46,28 +46,28 @@ int main(int argc, char** argv) {
 
   while (node.ok()){
     transform_map.setOrigin( tf::Vector3(parameter.translation_map_x,
-                       parameter.translation_map_y,
-                     parameter.translation_map_z) );
+                       	   	   	   	   	 parameter.translation_map_y,
+										 parameter.translation_map_z) );
     transform_map.setRotation( tf::Quaternion(parameter.rotation_map_x,
-                          parameter.rotation_map_y,
-                        parameter.rotation_map_z,
-                        parameter.rotation_map_w) );
+    										  parameter.rotation_map_y,
+											  parameter.rotation_map_z,
+											  parameter.rotation_map_w) );
     br.sendTransform(tf::StampedTransform(transform_map,
-                    ros::Time::now(),
-                  parameter.tf1_from,
-                  parameter.tf1_to));
+                    					  ros::Time::now(),
+										  parameter.tf1_from,
+										  parameter.tf1_to));
 
     transform.setOrigin( tf::Vector3(parameter.translation_camera_x,
-                     parameter.translation_camera_y,
-                   parameter.translation_camera_z) );
+                     	 	 	 	 parameter.translation_camera_y,
+									 parameter.translation_camera_z) );
     transform.setRotation( tf::Quaternion(parameter.rotation_camera_x,
-                        parameter.rotation_camera_y,
-                      parameter.rotation_camera_z,
-                      parameter.rotation_camera_w) );
+                        				  parameter.rotation_camera_y,
+										  parameter.rotation_camera_z,
+										  parameter.rotation_camera_w) );
     br.sendTransform(tf::StampedTransform(transform,
-                    ros::Time::now(),
-                  parameter.tf2_from,
-                  parameter.tf2_to));
+                    					  ros::Time::now(),
+										  parameter.tf2_from,
+										  parameter.tf2_to));
 
     ros::spinOnce();
     rate.sleep();
