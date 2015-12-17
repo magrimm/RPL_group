@@ -50,7 +50,6 @@ feature {NONE} -- Initialization
 			destination_points.put(create {POINT_MSG}.make_with_values(params.viapoint2_x,
 																 params.viapoint2_y,
 																 params.viapoint2_z), 3)
-
 			destination_points.put(create {POINT_MSG}.make_with_values(params.viapoint3_x,
 																 params.viapoint3_y,
 																 params.viapoint3_z), 4)

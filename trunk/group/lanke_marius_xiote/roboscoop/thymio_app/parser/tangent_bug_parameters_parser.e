@@ -1,8 +1,7 @@
 note
-	description: "Summary description for {TANGENT_BUG_PARAMETERS_PARSER}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "To parse tangent bug parameters"
+	author: "Fu Lanke"
+	date: "11.12.15"
 
 class
 	TANGENT_BUG_PARAMETERS_PARSER
@@ -29,10 +28,10 @@ feature
 		end
 
 		from
-    			input_file.read_line
-    		until
-    			input_file.exhausted
-    		loop
+    		input_file.read_line
+    	until
+    		input_file.exhausted
+    	loop
 
     		if not input_file.last_string.is_empty then
 
@@ -41,41 +40,41 @@ feature
 			variable_name := string_tokens.at (1)
 			variable_name.adjust
 			string_tokens.at (2).adjust
-			if variable_name.is_equal ("ALGORITHM_NAME")  then
-			parsed_parameters.set_algorithm_name (string_tokens.at (2))
-			elseif variable_name.is_equal ( "CONTROLLER_FILE_NAME")	then
-			parsed_parameters.set_controller_filename (string_tokens.at (2))
-			elseif variable_name.is_equal (  "CONTROLLER_NAME"	)then
-			parsed_parameters.set_controller_name ((string_tokens.at (2)))
-			elseif variable_name.is_equal (  "desired_wall_distance")	then
-			parsed_parameters.set_desired_wall_distance (parse_string2double(string_tokens.at (2)))
-			elseif variable_name.is_equal (  "follow_wall_vx")	then
-			parsed_parameters.set_follow_wall_vx (parse_string2double(string_tokens.at (2)))
-			elseif variable_name.is_equal (  "go_vx") then
-			parsed_parameters.set_go_vx (parse_string2double(string_tokens.at (2)))
-			elseif variable_name.is_equal (  "goal_reached_distance_threshold" )then
-			parsed_parameters.set_goal_reached_distance_threshold (parse_string2double(string_tokens.at (2)))
-			elseif variable_name.is_equal (  "goal_unreachable_distance_threshold") then
-			parsed_parameters.set_goal_unreachable_distance_threshold (parse_string2double(string_tokens.at (2)))
-			elseif variable_name.is_equal (  "localize_vtheta" )then
-			parsed_parameters.set_localize_vtheta (parse_string2double(string_tokens.at (2)))
-			elseif variable_name.is_equal (  "move_to_next_goal_threshold") then
-			parsed_parameters.set_move_to_next_goal_threshold (parse_string2double(string_tokens.at (2)))
-			elseif variable_name.is_equal (  "obstacle_vanished_time_threshold") then
-			parsed_parameters.set_obstacle_vanished_time_threshold (parse_string2double(string_tokens.at (2)))
-			elseif variable_name.is_equal (  "searh_vleave_pub_duration") then
-			parsed_parameters.set_search_vleave_pub_duration (parse_string2integer(string_tokens.at (2)))
-			elseif variable_name.is_equal (  "transit_vx" )then
-			parsed_parameters.set_transit_vx (parse_string2double(string_tokens.at (2)))
-			elseif variable_name.is_equal (  "vleave_pub_duration") then
-			parsed_parameters.set_vleave_pub_duration (parse_string2integer(string_tokens.at (2)))
-			elseif variable_name.is_equal (  "vleave_reached_distance_threshold") then
-			parsed_parameters.set_vleave_reached_distance_threshold (parse_string2double(string_tokens.at (2)))
-			elseif variable_name.is_equal (  "wait_point_angle_threshold") then
-			parsed_parameters.set_wait_point_angle_threshold (parse_string2double(string_tokens.at (2)))
-			elseif variable_name.is_equal (  "wait_point_distance_threshold") then
-			parsed_parameters.set_wait_point_distance_threshold (parse_string2double(string_tokens.at (2)))
-			end
+				if variable_name.is_equal ("ALGORITHM_NAME")  then
+				parsed_parameters.set_algorithm_name (string_tokens.at (2))
+				elseif variable_name.is_equal ( "CONTROLLER_FILE_NAME")	then
+				parsed_parameters.set_controller_filename (string_tokens.at (2))
+				elseif variable_name.is_equal (  "CONTROLLER_NAME"	)then
+				parsed_parameters.set_controller_name ((string_tokens.at (2)))
+				elseif variable_name.is_equal (  "desired_wall_distance")	then
+				parsed_parameters.set_desired_wall_distance (parse_string2double(string_tokens.at (2)))
+				elseif variable_name.is_equal (  "follow_wall_vx")	then
+				parsed_parameters.set_follow_wall_vx (parse_string2double(string_tokens.at (2)))
+				elseif variable_name.is_equal (  "go_vx") then
+				parsed_parameters.set_go_vx (parse_string2double(string_tokens.at (2)))
+				elseif variable_name.is_equal (  "goal_reached_distance_threshold" )then
+				parsed_parameters.set_goal_reached_distance_threshold (parse_string2double(string_tokens.at (2)))
+				elseif variable_name.is_equal (  "goal_unreachable_distance_threshold") then
+				parsed_parameters.set_goal_unreachable_distance_threshold (parse_string2double(string_tokens.at (2)))
+				elseif variable_name.is_equal (  "localize_vtheta" )then
+				parsed_parameters.set_localize_vtheta (parse_string2double(string_tokens.at (2)))
+				elseif variable_name.is_equal (  "move_to_next_goal_threshold") then
+				parsed_parameters.set_move_to_next_goal_threshold (parse_string2double(string_tokens.at (2)))
+				elseif variable_name.is_equal (  "obstacle_vanished_time_threshold") then
+				parsed_parameters.set_obstacle_vanished_time_threshold (parse_string2double(string_tokens.at (2)))
+				elseif variable_name.is_equal (  "searh_vleave_pub_duration") then
+				parsed_parameters.set_search_vleave_pub_duration (parse_string2integer(string_tokens.at (2)))
+				elseif variable_name.is_equal (  "transit_vx" )then
+				parsed_parameters.set_transit_vx (parse_string2double(string_tokens.at (2)))
+				elseif variable_name.is_equal (  "vleave_pub_duration") then
+				parsed_parameters.set_vleave_pub_duration (parse_string2integer(string_tokens.at (2)))
+				elseif variable_name.is_equal (  "vleave_reached_distance_threshold") then
+				parsed_parameters.set_vleave_reached_distance_threshold (parse_string2double(string_tokens.at (2)))
+				elseif variable_name.is_equal (  "wait_point_angle_threshold") then
+				parsed_parameters.set_wait_point_angle_threshold (parse_string2double(string_tokens.at (2)))
+				elseif variable_name.is_equal (  "wait_point_distance_threshold") then
+				parsed_parameters.set_wait_point_distance_threshold (parse_string2double(string_tokens.at (2)))
+				end
 
 			end
 
@@ -86,6 +85,4 @@ feature
 
 		result := parsed_parameters
 	end
-
-
 end

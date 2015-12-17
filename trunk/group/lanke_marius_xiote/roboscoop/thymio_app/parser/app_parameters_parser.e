@@ -1,8 +1,7 @@
 note
-	description: "Summary description for {APP_PARAMETERS_PARSER}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "To parse app parameters"
+	author: "Fu Lanke"
+	date: "11.12.15"
 
 class
 	APP_PARAMETERS_PARSER
@@ -10,10 +9,8 @@ class
 inherit
 	PARSER[APP_PARAMETERS]
 
-
 feature
 	parse_txt_file(filename: separate STRING ) : APP_PARAMETERS
-
 
 	local
 		input_file: PLAIN_TEXT_FILE
@@ -30,37 +27,35 @@ feature
 		end
 
 		from
-    			input_file.read_line
+    		input_file.read_line
     	until
-    			input_file.exhausted
+    		input_file.exhausted
     	loop
 
-    				if not input_file.last_string.is_empty then
-    				string_tokens := input_file.last_string.split (':')
-					io.putstring (string_tokens.at (1))
-						-- Separate variable name from given value	
-					variable_name := string_tokens.at (1)
-					str2set := string_tokens.at (2)
-					variable_name.adjust
-					str2set.adjust
-					io.putstring (str2set)
-					string_tokens.at (2).adjust
-					if variable_name.is_equal ("ALGORITHM_FILE_NAME")  then
-					parsed_parameters.set_algorithm_filename (str2set)
-					elseif variable_name.is_equal ("ALGORITHM_NAME")	then
-					parsed_parameters.set_algorithm_name (str2set)
-					elseif variable_name.is_equal ("APP_NAME")	then
-					parsed_parameters.set_app_name (str2set)
-					elseif variable_name.is_equal ("PATH_PLANNER_FILE_NAME")	then
-					parsed_parameters.set_path_planner_file_name (str2set)
-					elseif variable_name.is_equal ("ROBOT_FILE_NAME")	then
-					parsed_parameters.set_robot_filename (str2set)
-					elseif variable_name.is_equal ("ROBOT_NAME") then
-					parsed_parameters.set_robot_name (str2set)
-					end
-
-    				end
-
+    		if not input_file.last_string.is_empty then
+    		string_tokens := input_file.last_string.split (':')
+			io.putstring (string_tokens.at (1))
+				-- Separate variable name from given value	
+			variable_name := string_tokens.at (1)
+			str2set := string_tokens.at (2)
+			variable_name.adjust
+			str2set.adjust
+			io.putstring (str2set)
+			string_tokens.at (2).adjust
+				if variable_name.is_equal ("ALGORITHM_FILE_NAME")  then
+				parsed_parameters.set_algorithm_filename (str2set)
+				elseif variable_name.is_equal ("ALGORITHM_NAME")	then
+				parsed_parameters.set_algorithm_name (str2set)
+				elseif variable_name.is_equal ("APP_NAME")	then
+				parsed_parameters.set_app_name (str2set)
+				elseif variable_name.is_equal ("PATH_PLANNER_FILE_NAME")	then
+				parsed_parameters.set_path_planner_file_name (str2set)
+				elseif variable_name.is_equal ("ROBOT_FILE_NAME")	then
+				parsed_parameters.set_robot_filename (str2set)
+				elseif variable_name.is_equal ("ROBOT_NAME") then
+				parsed_parameters.set_robot_name (str2set)
+				end
+    		end
 
 			input_file.read_line
 			-- Increment one line											
@@ -70,5 +65,4 @@ feature
 
 		result := parsed_parameters
 	end
-
-end
+end -- class
