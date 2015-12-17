@@ -24,8 +24,8 @@ struct parameter_bag
 
 	int it_cell_x, it_cell_y, it_theta;
 
-	std::string pub_topic_map, pub_topic_particles, pub_topic_scan, pub_topic_tf;
-	int queue_size_pub_map, queue_size_pub_particles, queue_size_pub_scan, queue_size_pub_tf;
+	std::string pub_topic_map, pub_topic_particles, pub_topic_scan, pub_topic_tf, pub_topic_points_particle, pub_topic_loc_state, pub_topic_loc_result;
+	int queue_size_pub_map, queue_size_pub_particles, queue_size_pub_scan, queue_size_pub_tf, queue_size_pub_points, queue_size_loc_state, queue_size_loc_result;
 
 	float pose_empty_pos_x, pose_empty_pos_y, pose_empty_pos_z;
 	float pose_empty_orient_x, pose_empty_orient_y, pose_empty_orient_z, pose_empty_orient_w;

@@ -76,6 +76,13 @@ int main (int argc, char** argv)
 	nh.getParam("mesh_resource", parameter.visualization.mesh_resource);
 	nh.getParam("color_alpha", parameter.visualization.color_alpha);
 
+	nh.getParam("pub_topic_points_particle", parameter.pub_topic_points_particle);
+	nh.getParam("queue_size_pub_points", parameter.queue_size_pub_points);
+	nh.getParam("pub_topic_loc_state", parameter.pub_topic_loc_state);
+	nh.getParam("queue_size_loc_state", parameter.queue_size_loc_state);
+	nh.getParam("pub_topic_loc_result", parameter.pub_topic_loc_result);
+	nh.getParam("queue_size_loc_result", parameter.queue_size_loc_result);
+
 	// Construct class localization_processor with ros::NodeHandle and parameter structure
 	localization_processor localization (nh, parameter);
 
