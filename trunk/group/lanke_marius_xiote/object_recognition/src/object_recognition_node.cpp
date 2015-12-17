@@ -75,10 +75,10 @@ void recCallback(const PointCloud::ConstPtr& msg) {
       objrec_pub.publish(msg);
       ros::spinOnce();
 
-      usleep(1000);
-      msg.data = false;
-      objrec_pub.publish(msg);
-      ros::spinOnce();
+//      usleep(1000);
+//      msg.data = false;
+//      objrec_pub.publish(msg);
+//      ros::spinOnce();
     }
   }
 }
@@ -144,7 +144,7 @@ int main(int argc, char** argv)
   ros::Subscriber camera_sub = nh.subscribe<PointCloud>(params.get("camera_topic"), 1, recCallback);
 
   marker_pub = nh.advertise<visualization_msgs::Marker>(params.get("marker_topic"), 1, true);
-  objrec_pub = nh.advertise<std_msgs::Bool>(params.get("objrec_topic"), 2, true);
+  objrec_pub = nh.advertise<std_msgs::Bool>(params.get("objrec_topic"), 1, false);
 
   ros::spin();
   

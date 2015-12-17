@@ -182,7 +182,7 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Find the sensor whose max range is reachable and
 				-- whose max range's distance to goal is less than d_min.
 				if r_sens.is_enough_space_for_moving_to_the_max_range (i) then
-					 create sensor_max_range_rel_point.make_from_separate (r_sens_wrapper.get_relative_coordinates_with_sensor (r_sens.sensors[i].max_range-0.08, i))
+					 create sensor_max_range_rel_point.make_from_separate (r_sens_wrapper.get_relative_coordinates_with_sensor (r_sens.sensors[i].max_range, i))
 					 sensor_max_range_abs_point := convert_relative_coordinates_to_absolute_coordinates (robot_point,
 					 																					 sensor_max_range_rel_point,
 					 																					 robot_orientation)
