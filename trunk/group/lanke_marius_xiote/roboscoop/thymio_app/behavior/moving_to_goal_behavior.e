@@ -29,15 +29,15 @@ feature {NONE} -- Initialization
 			create moving_to_goal_sig.make
 
 			create robot_objrec_state_pub.make_with_topic ({MAP_TOPICS}.robot_objrec_state)
-			robot_objrec_state_pub.advertize (1, True)
+			robot_objrec_state_pub.advertize ({MAP_TOPICS}.single_buffer, True)
 			create robot_loc_state_pub.make_with_topic ({MAP_TOPICS}.robot_loc_state)
-			robot_loc_state_pub.advertize (1, True)
+			robot_loc_state_pub.advertize ({MAP_TOPICS}.single_buffer, True)
 			create objrec_state_signaler.make_with_topic ({MAP_TOPICS}.object_recognition_state)
 			create loc_state_signaler.make_with_topic ({MAP_TOPICS}.localization_state)
 			create loc_result_signaler.make_with_topic ({MAP_TOPICS}.localization_result)
 
 			create robot_pose_pub.make_with_topic ({THYMIO_TOPICS}.publisher_topic)
-			robot_pose_pub.advertize (1, True)
+			robot_pose_pub.advertize ({MAP_TOPICS}.single_buffer, True)
 			create vleave_pub.make_with_attributes ({MAP_TOPICS}.vleave)
 			create cur_goal_pub.make_with_attributes ({MAP_TOPICS}.current_goal)
 			create search_vleave_pub.make_with_attributes ({MAP_TOPICS}.search_vleave)
