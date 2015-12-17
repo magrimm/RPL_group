@@ -19,17 +19,23 @@ localization_processor::localization_processor (ros::NodeHandle nodehandle, para
 	need_to_localize = true;
 
 	// Create a ROS publisher
-	pub = nh.advertise<geometry_msgs::PoseArray> ("particles_tf",//parameter.pub_topic_particles,
+	pub = nh.advertise<geometry_msgs::PoseArray> (parameter.pub_topic_particles,
 							  	  	  	  	  	  parameter.queue_size_pub_particles,
 												  true);
 	// Create a ROS publisher
-	pub_points = nh.advertise<visualization_msgs::Marker> ("points_particle", 1, true);
+	pub_points = nh.advertise<visualization_msgs::Marker> (parameter.pub_topic_points_particle,
+														   parameter.queue_size_pub_points,
+														   true);
 
 	// Create ROS publisher to signal when localization is done
-	pub_loc_state = nh.advertise<std_msgs::Bool> ("loc_state", 1, true);
+	pub_loc_state = nh.advertise<std_msgs::Bool> (parameter.pub_topic_loc_state,
+												  parameter.queue_size_loc_state,
+												  true);
 
 	// Create localized pose publisher
-	pub_pose = nh.advertise<geometry_msgs::Pose2D>("loc_result",1,true);
+	pub_pose = nh.advertise<geometry_msgs::Pose2D>(parameter.pub_topic_loc_result,
+												   parameter.queue_size_loc_result,
+												   true);
 
 
 	// Initialize robot control, initial and current pose
@@ -101,6 +107,7 @@ void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr
 		std_msgs::Bool localize_status;
 		localize_status.data = false;
 		pub_loc_state.publish(localize_status);
+
 		// Wait unitl odometry first changed
 		if ((control.odometry[0].position.x == control.odometry[1].position.x) &&
 			(control.odometry[0].position.y == control.odometry[1].position.y) &&

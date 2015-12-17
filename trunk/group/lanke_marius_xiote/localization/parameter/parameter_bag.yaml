@@ -11,7 +11,7 @@ queue_size_subscriber_scan: 1                                  # queue size of t
 pub_topic_map: map                                             # published topic for the map
 queue_size_pub_map: 1                                          # queue size of the map publisher
 
-pub_topic_particles: particles                                 # published topic for the odometry
+pub_topic_particles: particles_tf                               # published topic for the odometry
 queue_size_pub_particles: 1                                    # queue size of the odometry publisher
 
 pub_topic_scan: scan                                           # published topic for the laser_scan
@@ -19,6 +19,12 @@ queue_size_pub_scan: 1                                         # queue size of t
 
 pub_topic_tf: tf                                               # published topic for the tf
 queue_size_pub_tf: 1                                           # queue size of the tf publisher
+
+pub_topic_points_particle: points_particle
+queue_size_pub_points: 1
+
+pub_topic_loc_state: loc_state
+queue_size_loc_state: 1
 
 it_cell_x: 10                                                  # Cell/Grid iterator
 it_cell_y: 10                                                  # Cell/Grid iterator
