@@ -75,6 +75,7 @@ int main (int argc, char** argv)
 	nh.getParam("ns", parameter.visualization.ns);
 	nh.getParam("mesh_resource", parameter.visualization.mesh_resource);
 	nh.getParam("color_alpha", parameter.visualization.color_alpha);
+	nh.getParam("pose_orientation", parameter.visualization.pose_orientation);
 
 	nh.getParam("pub_topic_points_particle", parameter.pub_topic_points_particle);
 	nh.getParam("queue_size_pub_points", parameter.queue_size_pub_points);

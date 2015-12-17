@@ -21,13 +21,6 @@ void visualization::visualize_particle (std::vector<geometry_msgs::Pose> particl
 	{
 		visualization_msgs::Marker::Ptr a_marker;
 
-		if (i == 10)
-		{
-			a_marker->color.r = 0.0;
-			a_marker->color.g = 1.0;
-			a_marker->color.b = 0.0;
-		}
-
 		// SET MARKER
 		a_marker->header.frame_id = visual_param.frame_id;
 		a_marker->header.stamp = ros::Time();
@@ -57,7 +50,7 @@ void visualization::visualize_points (visualization_msgs::Marker::Ptr a_marker, 
 											float a_scale_x, float a_scale_y, float a_scale_z)
 {
 	// SET MARKER
-	a_marker->header.frame_id = visual_param.class_header_frame;//visual_param.frame_id;
+	a_marker->header.frame_id = visual_param.frame_id;
 	a_marker->header.stamp = ros::Time();
 	a_marker->ns = visual_param.ns;
 	a_marker->id = a_marker_id;
@@ -108,7 +101,7 @@ void visualization::visualize_particle_pose (geometry_msgs::PoseArray::Ptr poseA
 
 	// Set the header
 	poseArray->header.stamp = ros::Time::now();
-	poseArray->header.frame_id = visual_param.class_header_frame;
+	poseArray->header.frame_id = visual_param.frame_id;
 
 	// Get Pose_array for particles
 	for (int i = 0; i < particles.size(); ++i)

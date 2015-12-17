@@ -8,4 +8,4 @@ color_r:
 color_g:
 color_b:
 
-class_header_frame : particles_tf
+pose_orientation: 1.0
