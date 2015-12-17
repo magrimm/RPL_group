@@ -75,7 +75,7 @@ void recCallback(const PointCloud::ConstPtr& msg) {
       objrec_pub.publish(msg);
       ros::spinOnce();
 
-      usleep(1);
+      usleep(1000);
       msg.data = false;
       objrec_pub.publish(msg);
       ros::spinOnce();

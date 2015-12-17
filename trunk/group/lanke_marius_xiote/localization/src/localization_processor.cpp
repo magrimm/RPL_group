@@ -216,11 +216,11 @@ void localization_processor::get_particles ()
 	// Put particles in x-coordinate in each it_cell_x cell
 //	for (int i = 0; i < map.height; i += parameter.it_cell_x)//
 //	for (int i = 130; i < 200; i += 10)//
-	for(int i = 30; i < 70; i += 5)
+	for(int i = 30; i < 70; i += 4)
 	{
 		// Put particles in y-coordinate in each it_cell_y cell
 //		for (int j = 0; j < map.width; j += parameter.it_cell_y)//
-		for(int j = 30; j < 70; j += 5)//
+		for(int j = 30; j < 70; j += 4)//
 		{
 			// Distribute particles with different theta orientation
 			for (float theta = 0.0; theta < 2*M_PI; theta += 2*M_PI/parameter.it_theta)
@@ -269,8 +269,8 @@ void localization_processor::check_is_localized(const sensor_msgs::LaserScanCons
 		weight_var = math_tool.get_variance(weights);
 
 		// If the point cloud is low in variance i.e. one tight cluster
-		if ( x_var * pop_1_over_N_sqrd < 1.5e-11 &&
-			y_var * pop_1_over_N_sqrd < 1.5e-11 &&
+		if ( x_var * pop_1_over_N_sqrd < 2.0e-11 &&
+			y_var * pop_1_over_N_sqrd < 2.0e-11 &&
 			theta_var * pop_1_over_N_sqrd < 5.0e-9 &&
 			weight_var * pop_1_over_N_sqrd < 1.0e-12 &&
 			weights.at(MVP_index) * weights.size() > 1.1
@@ -310,7 +310,7 @@ void localization_processor::check_is_localized(const sensor_msgs::LaserScanCons
 			{
 				geometry_msgs::Pose2D best_pose;
 				best_pose.x = MVP_particle.position.x;
-				best_pose.y = MVP_particle.position.y;
+				best_pose.y = MVP_particle.position.y+0.1;
 				best_pose.theta = MVP_particle.theta;
 				pub_pose.publish(best_pose);
 				std_msgs::Bool ros_localize_status;
