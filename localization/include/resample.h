@@ -25,22 +25,6 @@ private:
 	resample_bag resample_params;
 };
 
-class stochastic_uniform_sampling : public resample
-{
-public:
-	// Constructor of the virtual class with bag-specific parameters
-	stochastic_uniform_sampling(resample_bag resample_params);
-
-	// Implementation of virtual method
-	void resample_distribution(std::vector<pose>& the_particles, std::vector<float>& the_weights);
-
-	// Virtual destructor
-	virtual ~stochastic_uniform_sampling() {};
-
-private:
-	resample_bag resample_params;
-};
-
 class roulette_sampling : public resample
 {
 public:
