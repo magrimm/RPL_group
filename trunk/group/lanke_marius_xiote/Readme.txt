@@ -1,12 +1,13 @@
 === XML Tangent Bug + Path Planning + Object Recognition ===
 Contributors: Xiaote, Marius, Lanke
 SVN link: https://svn.inf.ethz.ch/svn/meyer/rpl2015/trunk/group/lanke_marius_xiote/
-Tags: Obstacle Avoidance, PID CONTROL, Path Planning A-STAR, 3-D Spin Image, Object Recognition
+Tags: Obstacle Avoidance, PID CONTROL, Path Planning A-STAR, 3-D Spin Image, Object Recognition, Localization , Search and Rescue
 
 
-This implementation accomodates path finding in a spatial node graph, driving through way-points using a pid controller, obstacle avoidance using the tangent bug algorithm and object recognition using a correlation of 3d spin image features.
+This implementation performs localization and path finding in a spatial node graph, driving through way-points using a pid controller, obstacle avoidance using the tangent bug algorithm and object recognition using a correlation of 3d spin image features.
 
 == Description ==
+The localization of the robot is achieved through particle filters. The particle filters approximates a robot's state in a given map for a given set of state spaces. The approximation is done by approximating the distribution of the robot's state using sampling. The mean of the distribution is output as the predicted state of the robot.
 
 A thorough documentation of the theory of 3D spin images may be found at: http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=765655
 
@@ -27,18 +28,18 @@ The Algorithm works through the following states:
 == Structure ==
     Hierachy
 --------------------------------------------------------------------------------------------------------------------------------	   -------------------------------------------------------	
-   |---------|           |--------------------------|	       	       	 |----------|						|	   |
-   |   APP   |---------->|   Move to goal Behavior  |------------------->|  PLANNER |						|	   |	
-   |---------|     |     |--------------------------|	   		 |----------|						|	   |
-		   |                                                         |							|	   |
-		   |     |--------------------------|	       		     |							|	   |
-	           ----->|     Feature Behavior     |		             |							|	   |
-   		         |--------------------------|		             |							|	   |
-									     |							|	   |
-									     | 							|	   |
-									     \/							|	   |
+   |---------|           |--------------------------|	                      |----------|					|	   |              |------------|
+   |   APP   |---------->|   Move to goal Behavior  |------------------------>|  PLANNER |					|	   |	          |Localization| 
+   |---------|     |     |--------------------------|	                      |----------|					|	   |              |------------| 
+		   |                                                            |						|	   |			|
+		   |     |--------------------------|	       		        |						|	   |			| 
+	           ----->|     Feature Behavior     |		                |						|	   |			|
+   		         |--------------------------|		                |						|	   |			|
+									        |						|	   |			|
+									        | 						|	   |			|
+									        \/						|	   |		        \/
 									|----------|                     |-----------------|	|	   |		|--------------------|
-								     |  TANGENT_BUG |------------------->|  Blob Detected  | --------------|---->       | Object Recognition |
+								       |TANGENT_BUG|-------------------> |  Blob Detected  | --------------|---->       | Object Recognition |
 									|----------|			 |-----------------|    |	   |		|--------------------|
 									     |							|	   |		           |
 									     |							|	   |		           |
@@ -64,9 +65,16 @@ The Algorithm works through the following states:
 
 == Implementation ==
 
+Localization: Particle Filters
+The particle filter implementation uses sampling of random robot states to approximate the probabilistic distribution of the robot's state in a given environment. In this implementation, the robot states are uniformly initialized across the map and are then re-sampled with replacement according to their importance. The importance here is given by the correlation score between the scanned depth points and the projected obstacles from the given particle's state.
+
+Object Recognition: 3-D Spin Images.
+3-D spin images are used as features to recognize the objects encountered in this program. To obtain the dictionary of known features is loaded by the object_recognition_node and currently has the classes:
+duck, woman, fireman and man.
+
 The Tangent Bug algorithm utilizes simultaneous agents which handle independent tasks that allow it to navigate through the task. Below are agents used in the current edition
 
-The number references refer to the steps mentioned in the = Description = section.
+The number references refer to the steps mentioned in the Description section.
 
 - go
 	Perform 1. i.e. Go to goal.
@@ -84,19 +92,21 @@ The number references refer to the steps mentioned in the = Description = sectio
 == Usage ==
 
 To run the application please peform the following procedures:
-1) Enter input parameters of the execution of the thymio_app. This is should be the file path to the app parameters which in the provided repository is located in parameter_files folder.
-2) Run the separate object recognition node in catkin workspace using the command : "rosrun object_recognition_node object_recognition (path to pcd reference point clouds)"
-3) Run the separate tf frame converter also in the catkin workspace using the command : "rosrun objection_recognition_node tf_broadcaster"
-4) Run the mapserver for the given task.
-5) Make sure the corresponding task parameters are set properly. 
-6) Run Rviz through the command : "rviz"
-7) Connect to the controlled robot agent either wirelessly or by wire.
-8) Run the thymio_app.
+1) First load the map of the environment in the terminal, this allows the program to perform localization and thereafter path planning. 
+2) Having loaded the map, the search and rescue program can be started by running the search and rescue launch file through ros_launch.
+3) Enter input parameters of the execution of the thymio_app. This is should be the file path to the app parameters which in the provided repository is located in parameter_files folder.
+4) Run the separate object recognition node in catkin workspace using the command : "rosrun object_recognition_node object_recognition (path to pcd reference point clouds)"
+5) Run the separate tf frame converter also in the catkin workspace using the command : "rosrun objection_recognition_node tf_broadcaster"
+6) Run the mapserver for the given task.
+7) Make sure the corresponding task parameters are set properly. 
+8) Run Rviz through the command : "rviz"
+9) Connect to the controlled robot agent either wirelessly or by wire.
+10) Run the thymio_app.
 
 /Parameters
 The parameters play a huge role of defining the properties of the tasks as well as the algorithms which are used to achieve them. The files used to access the parameters can be found in the parameter_files_folder. Figure one shows the order in which these parameters are parsed. The access of a lower level file is achieved by entering its filename in the properties file of its parent. For example, the controller parameters file's name has to be placed in the parameters file of the planner. The parsing here is done using a hash table in which a string is associated to a corresponding setter that assigns a value to a parameter classes' variables once a certain string is encountered. 
 
-/PUblishers
+/Publishers
 A deferred publishing class has been created which allows for communication of task behaviors through the ROS framework. For instance, it is possible to view the results of the path planned through RVIZ by simply creating a publisher specific to the form that the message is represented in.
 
 /Setup
