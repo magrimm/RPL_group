@@ -16,7 +16,6 @@ feature {NONE} -- Initialization
 
 	make
 		do
-			create variable_name_setter_map.make(6)
 
 			APP_NAME := "NULL"
 			ROBOT_FILE_NAME := "NULL"
@@ -24,13 +23,6 @@ feature {NONE} -- Initialization
 			ALGORITHM_FILE_NAME := "NULL"
 			ALGORITHM_NAME := "NULL"
 			PATH_PLANNER_FILE_NAME := "NULL"
-
-			variable_name_setter_map.put(agent set_app_name() , "APP_NAME")
-			variable_name_setter_map.put(agent set_robot_name() , "ROBOT_NAME")
-			variable_name_setter_map.put(agent set_robot_filename() , "ROBOT_FILE_NAME")
-			variable_name_setter_map.put(agent set_algorithm_name() , "ALGORITHM_NAME")
-			variable_name_setter_map.put(agent set_algorithm_filename() , "ALGORITHM_FILE_NAME")
-			variable_name_setter_map.put(agent set_path_planner_file_name() , "PATH_PLANNER_FILE_NAME")
 		end
 
 feature	 -- Access

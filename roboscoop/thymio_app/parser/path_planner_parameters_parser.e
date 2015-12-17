@@ -42,7 +42,11 @@ feature
 			string_tokens.at (2).adjust
 			str2set := string_tokens.at (2)
 				if variable_name.is_equal ("GRID_CONNECTIVITY_STRATEGY" )  then
-				parsed_parameters.set_connectivity (str2set)
+					if str2set.is_equal ("FOUR_CONNECTIVITY_STRATEGY") then
+						parsed_parameters.set_four_connect
+					elseif str2set.is_equal ("EIGHT_CONNECTIVITY_STRATEGY") then
+						parsed_parameters.set_eight_connect
+					end
 				elseif variable_name.is_equal ("cur_wait_point_index")	then
 				parsed_parameters.set_cur_wait_point_index (parse_string2integer(str2set))
 				elseif variable_name.is_equal ("goal_theta")	then
