@@ -188,7 +188,10 @@ void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr
 			// Get points of most important particle
 			sensor_upd.convert_sensor_measurement_to_points(scan_msg, most_important_particle, points);
 
-			vis.visualize_points(points_particle, 0, 0.0, 1.0, 0.0, 0.01, 0.01, 0.01);
+			vis.visualize_points(points_particle, parameter.vis_marker_id,
+								 parameter.vis_color_b, parameter.vis_color_g,
+								 parameter.vis_color_r, parameter.vis_scale_x,
+								 parameter.vis_scale_y, parameter.vis_scale_z);
 
 			// Add points to geometry_msgs
 			for (int i = 0; i < points.size(); ++i) {
@@ -214,13 +217,10 @@ void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr
 void localization_processor::get_particles ()
 {
 	// Put particles in x-coordinate in each it_cell_x cell
-//	for (int i = 0; i < map.height; i += parameter.it_cell_x)//
-//	for (int i = 130; i < 200; i += 10)//
-	for(int i = 30; i < 70; i += 4)
+	for (int i = 0; i < map.height; i += parameter.it_cell_x)//
 	{
 		// Put particles in y-coordinate in each it_cell_y cell
-//		for (int j = 0; j < map.width; j += parameter.it_cell_y)//
-		for(int j = 30; j < 70; j += 4)//
+		for (int j = 0; j < map.width; j += parameter.it_cell_y)//
 		{
 			// Distribute particles with different theta orientation
 			for (float theta = 0.0; theta < 2*M_PI; theta += 2*M_PI/parameter.it_theta)
@@ -257,7 +257,7 @@ void localization_processor::check_is_localized(const sensor_msgs::LaserScanCons
 {
 	sensor_update sensor_upd(parameter.sensor_update);
 
-	if (effective_scan_size > 560 || is_localized)
+	if (effective_scan_size > parameter.correlation_count_threshold || is_localized)
 	{
 
 		float x_var, y_var, theta_var, weight_var;
@@ -269,32 +269,26 @@ void localization_processor::check_is_localized(const sensor_msgs::LaserScanCons
 		weight_var = math_tool.get_variance(weights);
 
 		// If the point cloud is low in variance i.e. one tight cluster
-		if ( x_var * pop_1_over_N_sqrd < 2.0e-11 &&
-			y_var * pop_1_over_N_sqrd < 2.0e-11 &&
-			theta_var * pop_1_over_N_sqrd < 5.0e-9 &&
-			weight_var * pop_1_over_N_sqrd < 1.0e-12 &&
-			weights.at(MVP_index) * weights.size() > 1.1
+		if ( x_var * pop_1_over_N_sqrd < parameter.x_variance_threshold &&
+			y_var * pop_1_over_N_sqrd < parameter.y_variance_threshold &&
+			theta_var * pop_1_over_N_sqrd < parameter.theta_variance_threshold &&
+			weight_var * pop_1_over_N_sqrd < parameter.weights_variance_threshold &&
+			weights.at(MVP_index) * weights.size() > parameter.single_weight_min
 			 || is_localized)
 			{
 			float mean_x = math_tool.get_weighted_mean(population_x, weights);
 			float mean_y = math_tool.get_weighted_mean(population_y, weights);
 			float mean_theta = math_tool.get_weighted_mean(population_theta, weights);
-			std::cout << "Localizing at point " << mean_x <<
-			"  " << mean_y << " " <<
-			mean_theta << std::endl;
 			MVP_particle.theta = mean_theta;
 			MVP_particle.position.x = mean_x;
 			MVP_particle.position.y = mean_y;
-			std::cout << "Average point scan score: " <<
-			sensor_upd.get_particle_weight(scan_msg, MVP_particle, map) <<
-			std::endl;
 
 
 			// Furthermore if the average of the current scans would result in a dense cloud
 			// greater than the value in the if condition
 			if (sensor_upd.get_particle_weight(scan_msg, MVP_particle, map)
 				>
-				560 && !is_localized) {
+				parameter.correlation_count_threshold && !is_localized) {
 
 				// Furthermore if the resultant point cloud is not one dimensional
 				// ... This prevents us from localizing at flat walls which dont have much angle information
@@ -302,7 +296,6 @@ void localization_processor::check_is_localized(const sensor_msgs::LaserScanCons
 				is_localized = true;
 				std_msgs::Bool ros_localize_status;
 				ros_localize_status.data = true;
-				std::cout << "Localized \n\n\n\n\n\n\n";
 				pub_loc_state.publish(ros_localize_status);
 
 			}
@@ -310,21 +303,13 @@ void localization_processor::check_is_localized(const sensor_msgs::LaserScanCons
 			{
 				geometry_msgs::Pose2D best_pose;
 				best_pose.x = MVP_particle.position.x;
-				best_pose.y = MVP_particle.position.y+0.1;
+				best_pose.y = MVP_particle.position.y;
 				best_pose.theta = MVP_particle.theta;
 				pub_pose.publish(best_pose);
 				std_msgs::Bool ros_localize_status;
 				ros_localize_status.data = true;
 				pub_loc_state.publish(ros_localize_status);
 			}
-		}
-		else {
-			std::cout << "Population max score criterion: " <<
-			weights.at(MVP_index) * weights.size() << std::endl;
-			std::cout << "Population weight variance criterion " << weight_var * pop_1_over_N_sqrd << std::endl;
-			std::cout << "Population x criternion : " << x_var * pop_1_over_N_sqrd << std::endl;
-			std::cout << "Population y criterion : " << y_var * pop_1_over_N_sqrd << std::endl;
-			std::cout << "Population theta criterion : " << theta_var * pop_1_over_N_sqrd << std::endl;
 		}
 
 	}
@@ -340,15 +325,3 @@ void localization_processor::Callback_localize_switch(const std_msgs::Bool local
 	}
 
 }
-
-//std::vector<position3D> hypothesis_points;
-//			std::vector<float> hyp_points_x, hyp_points_y;
-//			sensor_upd.convert_sensor_measurement_to_points(scan_msg, MVP_particle, hypothesis_points);
-//			for (size_t point_index = 0; point_index < hypothesis_points.size(); point_index++) {
-//				hyp_points_x.push_back(hypothesis_points.at(point_index).x);
-//				hyp_points_y.push_back(hypothesis_points.at(point_index).y);
-//			}
-//			std::cout << "hypothesis_x_variance : " << math_tool.get_variance(hyp_points_x) <<
-//			"hypothesis_y_variance : " <<
-//			math_tool.get_variance(hyp_points_y) << std::endl;
-

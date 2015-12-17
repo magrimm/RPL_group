@@ -35,6 +35,12 @@ struct parameter_bag
 	float control_odom_cur_pos_x, control_odom_cur_pos_y, control_odom_cur_pos_z, control_odom_cur_pos_w;
 	float control_odom_cur_orient_x, control_odom_cur_orient_y, control_odom_cur_orient_z, control_odom_cur_orient_w;
 	float control_odom_cur_theta;
+	float x_variance_threshold,y_variance_threshold,theta_variance_threshold,weights_variance_threshold,single_weight_min;
+	int correlation_count_threshold;
+
+	int vis_marker_id;
+	float vis_color_r,  vis_color_g,  vis_color_b;
+	float vis_scale_x,  vis_scale_y,  vis_scale_z;
 
 	distribution_bag distribution;
 	resample_bag resample;
