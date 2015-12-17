@@ -35,6 +35,7 @@ public:
 
   std::string label;
   double score;
+//  std::vector<float> color;
   typename pcl::PointCloud<PointT>::ConstPtr cloud;
 };
 
@@ -88,7 +89,9 @@ public:
 
   void recognize(const typename pcl::PointCloud<PointT>::ConstPtr& scene, std::vector<std::vector<RecognizerResult<PointT> > >& results) {
     std::vector<typename pcl::PointCloud<PointT>::ConstPtr> clusters;
+
     _segmenter->segment(scene, clusters);
+
     results.resize(clusters.size());
     std::cerr << "Clusters found: " << clusters.size () << std::endl;
 

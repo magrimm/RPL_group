@@ -26,3 +26,8 @@ woman_dir: ../data/objects/woman/
 woman_color: [0.0, 1.0, 0.0]
 
 histogram_size: 153
+
+score_lower_bound: 0.0
+
+dir: _dir
+color: _color
