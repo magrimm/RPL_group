@@ -28,8 +28,14 @@ private:
 class normal_distribution : public distribution
 {
 public:
+
+	// Construct children class
 	normal_distribution ();
+
+	// Get random number with normal distribution
 	float sample_distribution (float b_squared, float a_mean = 0.0, float a_st_dev = 1.0);
+
+	// Virtual destructor
 	virtual ~normal_distribution() {};
 
 private:
@@ -41,8 +47,14 @@ private:
 class normal_distribution_approximation : public distribution
 {
 public:
+
+	// Construct children class
 	normal_distribution_approximation (distribution_bag dist_params);
+
+	// Get random number with normal distribution approximation
 	float sample_distribution (float b_squared, float a_mean = 0.0, float a_st_dev = 0.0);
+
+	// Virtual destructor
 	virtual ~normal_distribution_approximation() {};
 
 private:
@@ -55,8 +67,14 @@ private:
 class triangular_distribution : public distribution
 {
 public:
+
+	// Construct children class
 	triangular_distribution ();
+
+	// Get random number with triangular distribution
 	float sample_distribution (float b_squared, float a_mean = 0.0, float a_st_dev = 1.0);
+
+	// Virtual destructor
 	virtual ~triangular_distribution() {};
 
 private:
@@ -68,8 +86,14 @@ private:
 class triangular_distribution_approximation : public distribution
 {
 public:
+
+	// Construct children class
 	triangular_distribution_approximation (distribution_bag dist_params);
+
+	// Get random number with triangular distribution approximation
 	float sample_distribution (float b_squared, float a_mean = 0.0, float a_st_dev = 1.0);
+
+	// Virtual destructor
 	virtual ~triangular_distribution_approximation() {};
 
 private:
