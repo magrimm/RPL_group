@@ -291,15 +291,6 @@ feature {MOVING_TO_GOAL_BEHAVIOR} -- Control
 				-- Check if distance to wait point is less than tolerance
 				state_sig.set_is_waiting
 
-				-- Turn to the correct orientation
---				from
---					robot_orientation := m_sig.convert_robot_frame_orientation_to_absolute_orientation (o_sig.theta)
---				until
---					calculate_angle_diff (path_planner.get_cur_wait_angle, robot_orientation) < algorithm_params.wait_point_angle_threshold
---				loop
---					drive.set_velocity (0, algorithm_params.wait_point_angle_threshold)
---					robot_orientation := m_sig.convert_robot_frame_orientation_to_absolute_orientation (o_sig.theta)
---				end
 				drive.stop
 				path_planner.move_to_next_wait_point
 				robot_state_pub.publish (create {BOOL_MSG}.make_with_values(True))

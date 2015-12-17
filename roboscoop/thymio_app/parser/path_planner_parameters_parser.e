@@ -1,8 +1,7 @@
 note
-	description: "Summary description for {PATH_PLANNER_PARAMETERS_PARSER}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "To parse path planner parameters"
+	author: "Fu Lanke"
+	date: "11.12.15"
 
 class
 	PATH_PLANNER_PARAMETERS_PARSER
@@ -29,10 +28,10 @@ feature
 		end
 
 		from
-    			input_file.read_line
-    		until
-    			input_file.exhausted
-    		loop
+    		input_file.read_line
+    	until
+    		input_file.exhausted
+    	loop
 
 			if not input_file.last_string.is_empty then
 
@@ -42,57 +41,57 @@ feature
 			variable_name.adjust
 			string_tokens.at (2).adjust
 			str2set := string_tokens.at (2)
-			if variable_name.is_equal ("GRID_CONNECTIVITY_STRATEGY" )  then
-			parsed_parameters.set_connectivity (str2set)
-			elseif variable_name.is_equal ("cur_wait_point_index")	then
-			parsed_parameters.set_cur_wait_point_index (parse_string2integer(str2set))
-			elseif variable_name.is_equal ("goal_theta")	then
-			parsed_parameters.set_goal_theta (parse_string2double(str2set))
-			elseif variable_name.is_equal ("goal_x")	then
-			parsed_parameters.set_goal_x (parse_string2double(str2set))
-			elseif variable_name.is_equal ("goal_y")	then
-			parsed_parameters.set_goal_y (parse_string2double(str2set))
-			elseif variable_name.is_equal ("goal_z")	then
-			parsed_parameters.set_goal_z (parse_string2double(str2set))
-			elseif variable_name.is_equal ("inflate_radius")	then
-			parsed_parameters.set_inflate_radius (parse_string2double(str2set))
-			elseif variable_name.is_equal ("jump_in_number_of_nodes")	then
-			parsed_parameters.set_jump_in_number_of_nodes (parse_string2integer(str2set))
-			elseif variable_name.is_equal ("number_of_destinations")	then
-			parsed_parameters.set_number_of_destinations (parse_string2integer(str2set))
-			elseif variable_name.is_equal ("start_theta")	then
-			parsed_parameters.set_start_theta (parse_string2double(str2set))
-			elseif variable_name.is_equal ("start_x")	then
-			parsed_parameters.set_start_x (parse_string2double(str2set))
-			elseif variable_name.is_equal ("start_y")	then
-			parsed_parameters.set_start_y (parse_string2double(str2set))
-			elseif variable_name.is_equal ("viapoint1_theta")	then
-			parsed_parameters.set_start_z (parse_string2double(str2set))
-			elseif variable_name.is_equal ("viapoint1_theta")	then
-			parsed_parameters.set_viapoint1_theta (parse_string2double(str2set))
-			elseif variable_name.is_equal ("viapoint1_y")	then
-			parsed_parameters.set_viapoint1_y (parse_string2double(str2set))
-			elseif variable_name.is_equal ("viapoint1_x")	then
-			parsed_parameters.set_viapoint1_x (parse_string2double(str2set))
-			elseif variable_name.is_equal ("viapoint1_z")	then
-			parsed_parameters.set_viapoint1_z (parse_string2double(str2set))
-			elseif variable_name.is_equal ("viapoint2_theta")	then
-			parsed_parameters.set_viapoint2_theta (parse_string2double(str2set))
-			elseif variable_name.is_equal ("viapoint2_x")	then
-			parsed_parameters.set_viapoint2_x (parse_string2double(str2set))
-			elseif variable_name.is_equal ("viapoint2_y")	then
-			parsed_parameters.set_viapoint2_y (parse_string2double(str2set))
-			elseif variable_name.is_equal ("viapoint2_z")	then
-			parsed_parameters.set_viapoint2_z (parse_string2double(str2set))
-			elseif variable_name.is_equal ("viapoint3_theta")	then
-			parsed_parameters.set_viapoint3_theta (parse_string2double(str2set))
-			elseif variable_name.is_equal ("viapoint3_x")	then
-			parsed_parameters.set_viapoint3_x (parse_string2double(str2set))
-			elseif variable_name.is_equal ("viapoint3_y")	then
-			parsed_parameters.set_viapoint3_y (parse_string2double(str2set))
-			elseif variable_name.is_equal ("viapoint3_z")	then
-			parsed_parameters.set_viapoint3_z (parse_string2double(str2set))
-			end
+				if variable_name.is_equal ("GRID_CONNECTIVITY_STRATEGY" )  then
+				parsed_parameters.set_connectivity (str2set)
+				elseif variable_name.is_equal ("cur_wait_point_index")	then
+				parsed_parameters.set_cur_wait_point_index (parse_string2integer(str2set))
+				elseif variable_name.is_equal ("goal_theta")	then
+				parsed_parameters.set_goal_theta (parse_string2double(str2set))
+				elseif variable_name.is_equal ("goal_x")	then
+				parsed_parameters.set_goal_x (parse_string2double(str2set))
+				elseif variable_name.is_equal ("goal_y")	then
+				parsed_parameters.set_goal_y (parse_string2double(str2set))
+				elseif variable_name.is_equal ("goal_z")	then
+				parsed_parameters.set_goal_z (parse_string2double(str2set))
+				elseif variable_name.is_equal ("inflate_radius")	then
+				parsed_parameters.set_inflate_radius (parse_string2double(str2set))
+				elseif variable_name.is_equal ("jump_in_number_of_nodes")	then
+				parsed_parameters.set_jump_in_number_of_nodes (parse_string2integer(str2set))
+				elseif variable_name.is_equal ("number_of_destinations")	then
+				parsed_parameters.set_number_of_destinations (parse_string2integer(str2set))
+				elseif variable_name.is_equal ("start_theta")	then
+				parsed_parameters.set_start_theta (parse_string2double(str2set))
+				elseif variable_name.is_equal ("start_x")	then
+				parsed_parameters.set_start_x (parse_string2double(str2set))
+				elseif variable_name.is_equal ("start_y")	then
+				parsed_parameters.set_start_y (parse_string2double(str2set))
+				elseif variable_name.is_equal ("viapoint1_theta")	then
+				parsed_parameters.set_start_z (parse_string2double(str2set))
+				elseif variable_name.is_equal ("viapoint1_theta")	then
+				parsed_parameters.set_viapoint1_theta (parse_string2double(str2set))
+				elseif variable_name.is_equal ("viapoint1_y")	then
+				parsed_parameters.set_viapoint1_y (parse_string2double(str2set))
+				elseif variable_name.is_equal ("viapoint1_x")	then
+				parsed_parameters.set_viapoint1_x (parse_string2double(str2set))
+				elseif variable_name.is_equal ("viapoint1_z")	then
+				parsed_parameters.set_viapoint1_z (parse_string2double(str2set))
+				elseif variable_name.is_equal ("viapoint2_theta")	then
+				parsed_parameters.set_viapoint2_theta (parse_string2double(str2set))
+				elseif variable_name.is_equal ("viapoint2_x")	then
+				parsed_parameters.set_viapoint2_x (parse_string2double(str2set))
+				elseif variable_name.is_equal ("viapoint2_y")	then
+				parsed_parameters.set_viapoint2_y (parse_string2double(str2set))
+				elseif variable_name.is_equal ("viapoint2_z")	then
+				parsed_parameters.set_viapoint2_z (parse_string2double(str2set))
+				elseif variable_name.is_equal ("viapoint3_theta")	then
+				parsed_parameters.set_viapoint3_theta (parse_string2double(str2set))
+				elseif variable_name.is_equal ("viapoint3_x")	then
+				parsed_parameters.set_viapoint3_x (parse_string2double(str2set))
+				elseif variable_name.is_equal ("viapoint3_y")	then
+				parsed_parameters.set_viapoint3_y (parse_string2double(str2set))
+				elseif variable_name.is_equal ("viapoint3_z")	then
+				parsed_parameters.set_viapoint3_z (parse_string2double(str2set))
+				end
 
 			end
 

@@ -1,8 +1,7 @@
 note
-	description: "Summary description for {CONTROLLER_PARAMETERS_PARSER}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "To parse controller parameters"
+	author: "Fu Lanke"
+	date: "11.12.15"
 
 class
 	CONTROLLER_PARAMETERS_PARSER
@@ -30,10 +29,10 @@ feature
 		end
 
 		from
-    			input_file.read_line
-    		until
-    			input_file.exhausted
-    		loop
+    		input_file.read_line
+    	until
+    		input_file.exhausted
+    	loop
 			if not input_file.last_string.is_empty then
 			string_tokens := input_file.last_string.split (':')
 				-- Separate variable name from given value	
@@ -41,21 +40,21 @@ feature
 			variable_name.adjust
 			str2set := string_tokens.at (2)
 			str2set.adjust
-			if variable_name.is_equal ("CONTROLLER_NAME")  then
-			parsed_parameters.set_controller_name (str2set)
-			elseif variable_name.is_equal ("k_d_go")	then
-			parsed_parameters.set_k_d_go (parse_string2double(str2set))
-			elseif variable_name.is_equal (  "k_d_vleave")	then
-			parsed_parameters.set_k_d_vleave (parse_string2double(str2set))
-			elseif variable_name.is_equal (  "k_i_go")	then
-			parsed_parameters.set_k_i_go (parse_string2double(str2set))
-			elseif variable_name.is_equal (  "k_i_vleave")	then
-			parsed_parameters.set_k_i_vleave (parse_string2double(str2set))
-			elseif variable_name.is_equal (  "k_p_go")	then
-			parsed_parameters.set_k_p_go (parse_string2double(str2set))
-			elseif variable_name.is_equal (  "k_p_vleave")	then
-			parsed_parameters.set_k_p_vleave (parse_string2double(str2set))
-			end
+				if variable_name.is_equal ("CONTROLLER_NAME")  then
+				parsed_parameters.set_controller_name (str2set)
+				elseif variable_name.is_equal ("k_d_go")	then
+				parsed_parameters.set_k_d_go (parse_string2double(str2set))
+				elseif variable_name.is_equal (  "k_d_vleave")	then
+				parsed_parameters.set_k_d_vleave (parse_string2double(str2set))
+				elseif variable_name.is_equal (  "k_i_go")	then
+				parsed_parameters.set_k_i_go (parse_string2double(str2set))
+				elseif variable_name.is_equal (  "k_i_vleave")	then
+				parsed_parameters.set_k_i_vleave (parse_string2double(str2set))
+				elseif variable_name.is_equal (  "k_p_go")	then
+				parsed_parameters.set_k_p_go (parse_string2double(str2set))
+				elseif variable_name.is_equal (  "k_p_vleave")	then
+				parsed_parameters.set_k_p_vleave (parse_string2double(str2set))
+				end
 
 			end
 			input_file.read_line
@@ -65,5 +64,4 @@ feature
 
 		result := parsed_parameters
 	end
-
 end

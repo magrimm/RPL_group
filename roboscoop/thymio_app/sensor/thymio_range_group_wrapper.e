@@ -96,6 +96,7 @@ feature -- Access
 					-- Eg. when parallel to the wall
 				d_desired := 0.12
 				k_p_wall_following := 8
+
 				if r_sens.sensors[prev_closest_sensor_index].range > 0.101 and r_sens.is_obstacle_mostly_at_left
 					and r_sens.sensors[1].is_valid_range and not r_sens.sensors[2].is_valid_range then
 						-- This if statement only has to be there, since the sensor emitter is always on the right and the detector on the left!
